@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML in Canvas — 3D Foil Card Demo</title>
+<script type="importmap">
+{
+	"imports": {
+		"three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/",
+		"three-html-render/renderer": "https://cdn.jsdelivr.net/npm/three-html-render/dist/renderer.js"
+	}
+}
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Klee+One&display=swap');
+
+@font-face {
+	font-family: 'SourceIcons';
+	src: url('../1/source-icons.woff2') format('woff2');
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 20px;
+	box-sizing: border-box;
+	min-height: 100vh;
+	margin: 0;
+	padding: 24px;
+	background: #0d0d14;
+}
+
+.page-note {
+	margin: 0;
+	font-family: monospace;
+	font-size: 12px;
+	letter-spacing: 0.06em;
+	color: #999;
+}
+
+.canvas {
+	display: block;
+}
+
+.card {
+	position: relative;
+	width: 480px;
+	height: 670px;
+	border-radius: 16px;
+	overflow: hidden;
+	background: linear-gradient(165deg, #7a8492 0%, #4e5462 48%, #252830 100%);
+}
+
+.card::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	border-radius: 16px;
+	background: url('../1/bg.png') center / cover no-repeat;
+	mix-blend-mode: multiply;
+	pointer-events: none;
+}
+
+.card-inner {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+	height: 100%;
+	padding: 12px;
+}
+
+.card-header {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	gap: 8px;
+	box-sizing: border-box;
+	height: 36px;
+	padding: 0 10px;
+	border: 1px solid rgba(180, 185, 200, 0.8);
+	border-radius: 6px;
+	background: linear-gradient(90deg,
+		rgba(80, 88, 104, 0.95) 0%,
+		rgba(50, 55, 68, 0.95) 100%
+	);
+}
+
+.card-name {
+	flex: 1;
+	min-width: 0;
+	padding: 0;
+	border: none;
+	font-family: 'Klee One', serif;
+	font-size: 17px;
+	color: #e8e8f0;
+	background: transparent;
+}
+
+.card-cost {
+	flex-shrink: 0;
+	width: 58px;
+	padding: 0;
+	border: none;
+	font-family: 'SourceIcons', serif;
+	font-size: 22px;
+	letter-spacing: 4px;
+	text-align: right;
+	color: #ffffff;
+	background: transparent;
+}
+
+.card-art-frame {
+	flex-shrink: 0;
+	box-sizing: border-box;
+	height: 268px;
+	border: 2px solid rgba(180, 185, 200, 0.8);
+	border-radius: 3px;
+	overflow: hidden;
+}
+
+.card-art-frame img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.card-type-bar {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	box-sizing: border-box;
+	height: 28px;
+	padding: 0 10px;
+	border: 1px solid rgba(180, 185, 200, 0.8);
+	border-radius: 6px;
+	background: linear-gradient(90deg,
+		rgba(80, 88, 104, 0.95) 0%,
+		rgba(50, 55, 68, 0.95) 100%
+	);
+}
+
+.card-type {
+	width: 100%;
+	padding: 0;
+	border: none;
+	font-family: 'Klee One', serif;
+	font-size: 16px;
+	color: #d0d0e0;
+	background: transparent;
+}
+
+.card-text-box {
+	flex: 1;
+	min-height: 0;
+	padding: 10px;
+	border: 1px solid rgba(130, 138, 158, 0.5);
+	border-radius: 4px;
+	background: rgba(18, 20, 28, 0.78);
+}
+
+.card-text {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	border: none;
+	font-family: 'SourceIcons', 'Klee One', serif;
+	font-size: 16px;
+	line-height: 1.75;
+	color: #d8d8e0;
+	background: transparent;
+	resize: none;
+}
+
+.card-bottom {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: space-between;
+	height: 16px;
+}
+
+.card-bottom span {
+	font-family: 'Klee One', serif;
+	font-size: 9px;
+	letter-spacing: 0.04em;
+	color: #7a8898;
+}
+</style>
+</head>
+<body>
+
+<p class="page-note">HTML in Canvas が有効なブラウザで表示してください</p>
+
+<canvas class="canvas" layoutsubtree>
+	<div class="card">
+		<div class="card-inner">
+
+			<div class="card-header">
+				<input class="card-name" type="text" value="運命の分岐器">
+				<input class="card-cost" type="text" value="④">
+			</div>
+
+			<div class="card-art-frame">
+				<img src="../1/illus.webp" alt="">
+			</div>
+
+			<div class="card-type-bar">
+				<input class="card-type" type="text" value="伝説のアーティファクト">
+			</div>
+
+			<div class="card-text-box">
+				<textarea class="card-text">&#xE005;, &#xE000;：あなたは3点のライフを得る。または、いずれかの対象が受ける次のダメージを3点軽減する。
+&#xE002;, &#xE000;：カードを3枚引く。
+&#xE006;, &#xE000;：あなたのエネルギープールに&#xE006;&#xE006;&#xE006;を加える。
+&#xE001;, &#xE000;：任意の対象1つに3点のダメージを与える。
+&#xE003;, &#xE000;：対象1体はターン終了時まで+3/+3を得る。
+
+“未来は無数に枝分かれする。だが、そのすべてを見通す者はほとんどいない。”</textarea>
+			</div>
+
+			<div class="card-bottom">
+				<span>★ Rare</span>
+				<span>Illus. Chat GPT</span>
+			</div>
+
+		</div>
+	</div>
+</canvas>
+
+<script type="module">
+import * as THREE from 'three';
+import { ThreeHTMLRenderer } from 'three-html-render/renderer';
+
+if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) {
+
+	alert( 'HTML in Canvas が有効なブラウザで表示してください' );
+
+}
+
+const card = document.querySelector( '.card' );
+
+const elWidth = card.offsetWidth;
+const elHeight = card.offsetHeight;
+const artFrame = card.querySelector( '.card-art-frame' );
+const canvas = document.querySelector( '.canvas' );
+
+const renderer = new THREE.WebGLRenderer( { canvas, antialias: true } );
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.setSize( elWidth, elHeight );
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color( 0x0d0d14 );
+
+const camera = new THREE.PerspectiveCamera( 50, elWidth / elHeight, 0.1, 100 );
+camera.position.z = 2.6;
+
+// ---- テクスチャ生成 ----
+
+// 虹グラデーション (1D・横方向)
+function makeGradientTexture() {
+
+	const c = document.createElement( 'canvas' );
+	c.width = 512; c.height = 2;
+	const ctx = c.getContext( '2d' );
+	const g = ctx.createLinearGradient( 0, 0, 512, 0 );
+	g.addColorStop( 0 / 6, '#ff0040' );
+	g.addColorStop( 1 / 6, '#ff8800' );
+	g.addColorStop( 2 / 6, '#ffe000' );
+	g.addColorStop( 3 / 6, '#00ffcc' );
+	g.addColorStop( 4 / 6, '#0088ff' );
+	g.addColorStop( 5 / 6, '#cc44ff' );
+	g.addColorStop( 6 / 6, '#ff0040' );
+	ctx.fillStyle = g;
+	ctx.fillRect( 0, 0, 512, 2 );
+	const tex = new THREE.CanvasTexture( c );
+	tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+	return tex;
+
+}
+
+// スムーズノイズ — sin/cos 合成でシマー感を出す
+function makeNoiseTexture() {
+
+	const size = 256;
+	const data = new Uint8Array( size * size * 4 );
+	for ( let y = 0; y < size; y++ ) {
+
+		for ( let x = 0; x < size; x++ ) {
+
+			const nx = x / size, ny = y / size;
+			const v = (
+				Math.sin( nx * 6.28 *  3 + 1.2 ) * Math.cos( ny * 6.28 *  2 + 0.7 ) +
+				Math.sin( nx * 6.28 *  7 + 2.3 ) * Math.cos( ny * 6.28 *  5 + 1.5 ) +
+				Math.sin( nx * 6.28 * 11 + 3.1 ) * Math.cos( ny * 6.28 *  9 + 2.3 )
+			) / 3.0;
+			const vn = Math.floor( ( v * 0.5 + 0.5 ) * 255 );
+			const i = ( y * size + x ) * 4;
+			data[ i ] = data[ i + 1 ] = data[ i + 2 ] = vn;
+			data[ i + 3 ] = 255;
+
+		}
+
+	}
+	const tex = new THREE.DataTexture( data, size, size );
+	tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+	tex.needsUpdate = true;
+	return tex;
+
+}
+
+const gradientTex = makeGradientTexture();
+const noiseTex    = makeNoiseTexture();
+
+// ---- カスタム foil シェーダー ----
+// Godot shader (Slavrick/GodotShaderFoilCardExample) のアルゴリズムを移植:
+//   1. カードの傾き角 (uTilt) から参照ノーマルベクトルを回転
+//   2. 回転後ノーマルを使って虹グラデーションの UV をシフト
+//      → 傾くと虹の見える帯が動く
+//   3. ノイズと乗算してシマーを加える
+//   4. ベース画像と mix() して合成
+
+const vertexShader = /* glsl */`
+varying vec2 vUv;
+
+void main() {
+	vUv = uv;
+	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+`;
+
+const fragmentShader = /* glsl */`
+#define PI 3.14159265358979
+
+uniform sampler2D uCardTex;
+uniform sampler2D uGradient;
+uniform sampler2D uNoise;
+uniform vec2      uTilt;
+uniform float     uTime;
+uniform float     uPeriod;
+uniform float     uDirection;
+uniform float     uFoilStrength;
+
+varying vec2 vUv;
+
+uniform vec2 uArtMin;
+uniform vec2 uArtMax;
+
+mat3 rotX( float a ) {
+	float s = sin( a ), c = cos( a );
+	return mat3( 1.0, 0.0, 0.0,  0.0, c, -s,  0.0, s, c );
+}
+
+mat3 rotY( float a ) {
+	float s = sin( a ), c = cos( a );
+	return mat3( c, 0.0, s,  0.0, 1.0, 0.0,  -s, 0.0, c );
+}
+
+void main() {
+
+	vec4 albedo = texture2D( uCardTex, vUv );
+
+	// 傾き角をスケール。大きいほど虹の色変化が鋭くなる
+	float tiltX     = uTilt.x * 4.0;
+	float tiltY     = uTilt.y * 4.0;
+	float magnitude = length( vec2( tiltX, tiltY ) );
+
+	float xRota = abs( tiltX ) / PI;
+	float yRota = abs( tiltY ) / PI;
+
+	// 傾きで参照ノーマルを回転 (rotate_vector の移植)
+	vec3 n = normalize( rotX( xRota ) * rotY( yRota ) * vec3( 1.0, 1.0, 1.0 ) ) * ( magnitude * magnitude );
+
+	// グラデーション UV を傾き + カード UV から算出
+	float dir = uDirection;
+	float gradX = 0.25
+		+ ( n.y * dir * 2.0 - n.x * ( 1.0 - dir ) * 2.0 ) / 2.0
+		+ ( vUv.y * dir + vUv.x * ( 1.0 - dir ) ) * 0.5;
+	vec2 gradUV = mod( vec2( gradX, 0.5 ) + vUv * uPeriod, 1.0 );
+
+	// 時間でゆっくりスクロールして常時アニメーション
+	gradUV.x = mod( gradUV.x + uTime * 0.04, 1.0 );
+
+	vec3 grad  = texture2D( uGradient, gradUV ).rgb;
+	vec3 noise = texture2D( uNoise, vUv + uTime * 0.015 ).rgb;
+
+	// イラスト枠の内側では foil を適用しない (1=foil あり / 0=foil なし)
+	float inArt  = step( uArtMin.x, vUv.x ) * step( vUv.x, uArtMax.x ) * step( uArtMin.y, vUv.y ) * step( vUv.y, uArtMax.y );
+	float artMask = 1.0 - inArt;
+
+	// 傾きが大きいほど foil が強くなる。平置き時は控えめ、傾けると最大に
+	float tiltBoost = 0.2 + 0.5 * smoothstep( 0.0, 0.6, magnitude );
+
+	// ノイズで虹の明暗を作り、加算合成でカードの上にシマーを乗せる
+	vec3 foil  = grad * noise;
+	vec3 color = albedo.rgb + foil * ( uFoilStrength * tiltBoost * albedo.a * artMask );
+
+	gl_FragColor = vec4( color, albedo.a );
+
+}
+`;
+
+const material = new THREE.ShaderMaterial( {
+	uniforms: {
+		uCardTex:      { value: null },
+		uGradient:     { value: gradientTex },
+		uNoise:        { value: noiseTex },
+		uTilt:         { value: new THREE.Vector2() },
+		uTime:         { value: 0.0 },
+		uPeriod:       { value: 1.2 },
+		uDirection:    { value: 0.5 },
+		uFoilStrength: { value: 0.38 },
+		uArtMin:       { value: new THREE.Vector2() },
+		uArtMax:       { value: new THREE.Vector2() },
+	},
+	vertexShader,
+	fragmentShader,
+	transparent: true,
+} );
+
+// ThreeHTMLRenderer は material.map にテクスチャを設定する。
+// ShaderMaterial には map プロパティがないのでセッターで uCardTex に転送する。
+Object.defineProperty( material, 'map', {
+	get() { return material.uniforms.uCardTex.value; },
+	set( tex ) { material.uniforms.uCardTex.value = tex; },
+	configurable: true,
+} );
+
+const mesh = new THREE.Mesh(
+	new THREE.PlaneGeometry( elWidth / elHeight * 2.0, 2.0 ),
+	material
+);
+scene.add( mesh );
+
+// .card-art-frame の位置を #card 基準の UV に変換して uniform へ反映
+// UV は Three.js 標準: (0,0)=左下・(1,1)=右上
+function syncArtBounds() {
+
+	const cardRect = card.getBoundingClientRect();
+	const artRect  = artFrame.getBoundingClientRect();
+
+	const xMin = ( artRect.left  - cardRect.left ) / cardRect.width;
+	const xMax = ( artRect.right - cardRect.left ) / cardRect.width;
+	const yMin = 1.0 - ( artRect.bottom - cardRect.top ) / cardRect.height;
+	const yMax = 1.0 - ( artRect.top    - cardRect.top ) / cardRect.height;
+
+	material.uniforms.uArtMin.value.set( xMin, yMin );
+	material.uniforms.uArtMax.value.set( xMax, yMax );
+
+}
+
+syncArtBounds();
+
+const htmlRenderer = new ThreeHTMLRenderer();
+htmlRenderer.connect( canvas, camera, renderer );
+htmlRenderer.addObject( card, mesh );
+
+function animate( time ) {
+
+	requestAnimationFrame( animate );
+
+	const t = time * 0.001;
+	mesh.rotation.y = Math.sin( t * 0.5 + 1.0 ) * Math.PI / 8;
+	mesh.rotation.x = Math.sin( t * 0.5 ) * Math.PI / 12;
+
+	material.uniforms.uTilt.value.set( mesh.rotation.x, mesh.rotation.y );
+	material.uniforms.uTime.value = t;
+
+	htmlRenderer.update();
+	renderer.render( scene, camera );
+
+}
+
+requestAnimationFrame( animate );
+</script>
+</body>
+</html>

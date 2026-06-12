@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML in Canvas — Card Demo</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Klee+One&display=swap');
+
+@font-face {
+	font-family: 'SourceIcons';
+	src: url('source-icons.woff2') format('woff2');
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 20px;
+	box-sizing: border-box;
+	min-height: 100vh;
+	margin: 0;
+	padding: 48px 24px;
+	background: #0d0d14;
+}
+
+.page-note {
+	margin: 0;
+	font-family: monospace;
+	font-size: 12px;
+	letter-spacing: 0.06em;
+	color: #999;
+}
+
+.canvas {
+	display: block;
+	border-radius: 16px;
+	box-shadow:
+		0 30px 80px rgba(0, 0, 0, 0.85),
+		0 0 0 1px rgba(180, 145, 45, 0.2);
+}
+
+.save-button {
+	padding: 10px 32px;
+	border: 1px solid rgba(180, 145, 45, 0.4);
+	border-radius: 6px;
+	font-family: 'Klee One', serif;
+	font-size: 14px;
+	letter-spacing: 0.1em;
+	color: #c9a84c;
+	background: rgba(28, 42, 70, 0.9);
+	cursor: pointer;
+	transition: background 0.15s, border-color 0.15s;
+}
+
+.save-button:hover {
+	border-color: rgba(200, 165, 65, 0.7);
+	background: rgba(40, 60, 100, 0.95);
+}
+
+.card {
+	position: relative;
+	width: 480px;
+	height: 670px;
+	border-radius: 16px;
+	overflow: hidden;
+	background: linear-gradient(165deg, #7a8492 0%, #4e5462 48%, #252830 100%);
+}
+
+.card::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	border-radius: 16px;
+	background: url('bg.png') center / cover no-repeat;
+	mix-blend-mode: multiply;
+	pointer-events: none;
+}
+
+.card-inner {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+	height: 100%;
+	padding: 12px;
+}
+
+.card-header {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	gap: 8px;
+	box-sizing: border-box;
+	height: 36px;
+	padding: 0 10px;
+	border: 1px solid rgba(180, 185, 200, 0.8);
+	border-radius: 6px;
+	background: linear-gradient(90deg,
+		rgba(80, 88, 104, 0.95) 0%,
+		rgba(50, 55, 68, 0.95) 100%
+	);
+}
+
+.card-name {
+	flex: 1;
+	min-width: 0;
+	padding: 0;
+	border: none;
+	font-family: 'Klee One', serif;
+	font-size: 17px;
+	color: #e8e8f0;
+	background: transparent;
+}
+
+.card-cost {
+	flex-shrink: 0;
+	width: 58px;
+	padding: 0;
+	border: none;
+	font-family: 'SourceIcons', serif;
+	font-size: 22px;
+	letter-spacing: 4px;
+	text-align: right;
+	color: #ffffff;
+	background: transparent;
+}
+
+.card-art-frame {
+	flex-shrink: 0;
+	box-sizing: border-box;
+	height: 268px;
+	border: 2px solid rgba(180, 185, 200, 0.8);
+	border-radius: 3px;
+	overflow: hidden;
+}
+
+.card-art-frame img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.card-type-bar {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	box-sizing: border-box;
+	height: 28px;
+	padding: 0 10px;
+	border: 1px solid rgba(180, 185, 200, 0.8);
+	border-radius: 6px;
+	background: linear-gradient(90deg,
+		rgba(80, 88, 104, 0.95) 0%,
+		rgba(50, 55, 68, 0.95) 100%
+	);
+}
+
+.card-type {
+	width: 100%;
+	padding: 0;
+	border: none;
+	font-family: 'Klee One', serif;
+	font-size: 16px;
+	color: #d0d0e0;
+	background: transparent;
+}
+
+.card-text-box {
+	flex: 1;
+	min-height: 0;
+	padding: 10px;
+	border: 1px solid rgba(130, 138, 158, 0.5);
+	border-radius: 4px;
+	background: rgba(18, 20, 28, 0.78);
+}
+
+.card-text {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	border: none;
+	font-family: 'SourceIcons', 'Klee One', serif;
+	font-size: 16px;
+	line-height: 1.75;
+	color: #d8d8e0;
+	background: transparent;
+	resize: none;
+}
+
+.card-bottom {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: space-between;
+	height: 16px;
+}
+
+.card-bottom span {
+	font-family: 'Klee One', serif;
+	font-size: 9px;
+	letter-spacing: 0.04em;
+	color: #7a8898;
+}
+</style>
+</head>
+<body>
+
+<p class="page-note">HTML in Canvas が有効なブラウザで表示してください</p>
+
+<canvas class="canvas" layoutsubtree>
+	<div class="card">
+		<div class="card-inner">
+
+			<div class="card-header">
+				<input class="card-name" type="text" value="運命の分岐器">
+				<input class="card-cost" type="text" value="④">
+			</div>
+
+			<div class="card-art-frame">
+				<img src="illus.webp" alt="">
+			</div>
+
+			<div class="card-type-bar">
+				<input class="card-type" type="text" value="伝説のアーティファクト">
+			</div>
+
+			<div class="card-text-box">
+				<textarea class="card-text">&#xE005;, &#xE000;：あなたは3点のライフを得る。または、いずれかの対象が受ける次のダメージを3点軽減する。
+&#xE002;, &#xE000;：カードを3枚引く。
+&#xE006;, &#xE000;：あなたのエネルギープールに&#xE006;&#xE006;&#xE006;を加える。
+&#xE001;, &#xE000;：任意の対象1つに3点のダメージを与える。
+&#xE003;, &#xE000;：対象1体はターン終了時まで+3/+3を得る。
+
+&ldquo;未来は無数に枝分かれする。だが、そのすべてを見通す者はほとんどいない。&rdquo;</textarea>
+			</div>
+
+			<div class="card-bottom">
+				<span>★ Rare</span>
+				<span>Illus. Chat GPT</span>
+			</div>
+
+		</div>
+	</div>
+</canvas>
+
+<button class="save-button">カードを保存</button>
+
+<script type="module">
+if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) {
+
+	alert( 'HTML in Canvas が有効なブラウザで表示してください' );
+
+}
+
+const canvas = document.querySelector( '.canvas' );
+const ctx    = canvas.getContext( '2d' );
+const card   = document.querySelector( '.card' );
+
+const elWidth  = card.offsetWidth;
+const elHeight = card.offsetHeight;
+
+canvas.style.width  = `${ elWidth }px`;
+canvas.style.height = `${ elHeight }px`;
+
+const resizeObserver = new ResizeObserver( ( [ entry ] ) => {
+
+	const px = entry.devicePixelContentBoxSize[ 0 ];
+	canvas.width  = px.inlineSize;
+	canvas.height = px.blockSize;
+
+} );
+
+resizeObserver.observe( canvas, { box: 'device-pixel-content-box' } );
+
+canvas.onpaint = () => {
+
+	ctx.reset();
+	const transform = ctx.drawElementImage( card, 0, 0 );
+	card.style.transform = transform.toString();
+
+};
+
+document.querySelector( '.save-button' ).addEventListener( 'click', () => {
+
+	const link = document.createElement( 'a' );
+	link.download = 'card.png';
+	link.href = canvas.toDataURL( 'image/png' );
+	link.click();
+
+} );
+</script>
+
+</body>
+</html>

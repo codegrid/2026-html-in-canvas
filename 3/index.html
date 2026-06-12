@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML in Canvas — Cyber UI Demo</title>
+<script type="importmap">
+{
+	"imports": {
+		"three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/",
+		"three-html-render/renderer": "https://cdn.jsdelivr.net/npm/three-html-render/dist/renderer.js"
+	}
+}
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+
+body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 20px;
+	min-height: 100vh;
+	margin: 0;
+	padding: 24px;
+	font-family: 'Share Tech Mono', monospace;
+	background: #0d0d14;
+}
+
+.page-note {
+	margin: 0;
+	font-family: monospace;
+	font-size: 12px;
+	letter-spacing: 0.06em;
+	color: #999;
+}
+
+.canvas {
+	display: block;
+	cursor: default;
+}
+
+
+/* =====================================================
+   PANEL
+   ===================================================== */
+
+.panel {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 28px;
+	box-sizing: border-box;
+	width: 480px;
+	padding: 36px 32px 32px;
+	border: 1px solid #0ff4;
+	background: #060d1a;
+	clip-path: polygon(
+		0 0,
+		calc(100% - 24px) 0,
+		100% 24px,
+		100% 100%,
+		24px 100%,
+		0 calc(100% - 24px)
+	);
+}
+
+.panel::before,
+.panel::after {
+	content: '';
+	position: absolute;
+	box-sizing: border-box;
+	width: 12px;
+	height: 12px;
+	border-color: #0ff;
+	border-style: solid;
+}
+
+.panel::before {
+	top: 6px;
+	left: 6px;
+	border-width: 2px 0 0 2px;
+}
+
+.panel::after {
+	bottom: 6px;
+	right: 6px;
+	border-width: 0 2px 2px 0;
+}
+
+@keyframes title-gradient {
+
+	0%   { background-position: 0% 50%; }
+	100% { background-position: 200% 50%; }
+
+}
+
+.panel-title {
+	margin: 0;
+	font-family: 'Orbitron', sans-serif;
+	font-size: 22px;
+	font-weight: 900;
+	letter-spacing: 0.08em;
+	color: transparent;
+	background: linear-gradient(90deg, #0ff, #fff, #a78bfa, #0ff, #39ff14, #0ff);
+	background-size: 200% auto;
+	background-clip: text;
+	-webkit-background-clip: text;
+	animation: title-gradient 4s linear infinite;
+}
+
+.panel-title span {
+	color: transparent;
+}
+
+.divider {
+	height: 1px;
+	background: linear-gradient(90deg, transparent, #0ff5, #0ff, #0ff5, transparent);
+}
+
+.panel-body {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.panel-body p {
+	margin: 0;
+	line-height: 1.8;
+	letter-spacing: 0.04em;
+	color: #a8d8e8cc;
+}
+
+.button-row {
+	display: flex;
+	gap: 10px;
+}
+
+.button {
+	flex: 1;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 14px 8px;
+	border: none;
+	font-family: 'Orbitron', sans-serif;
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: background 0.5s, color 0.5s, outline-color 0.5s, transform 0.1s;
+	clip-path: polygon(
+		0 0,
+		calc(100% - 10px) 0,
+		100% 10px,
+		100% 100%,
+		10px 100%,
+		0 calc(100% - 10px)
+	);
+}
+
+.button:active {
+	transform: scale( 0.97 );
+}
+
+.button-yes {
+	color: #020810;
+	background: #0ff;
+}
+
+.button-yes:hover {
+	color: #020810;
+	background: #39ff14;
+}
+
+.button-no {
+	outline: 1px solid #0ff5;
+	outline-offset: -1px;
+	color: #0ff;
+	background: transparent;
+}
+
+.button-no:hover {
+	outline: 1px solid #ff4060;
+	outline-offset: -1px;
+	color: #ff4060;
+	background: #ff103010;
+}
+
+</style>
+</head>
+<body>
+
+<p class="page-note">HTML in Canvas が有効なブラウザで表示してください</p>
+
+<canvas class="canvas" layoutsubtree>
+	<div class="panel">
+		<h1 class="panel-title">CODE GRID <span>EXAMPLE</span></h1>
+		<div class="divider"></div>
+		<div class="panel-body">
+			<p>
+				クリック効果確認用 demo です。<br />
+				CSS では実現できない「歪み」を適用できます
+			</p>
+		</div>
+		<div class="button-row">
+			<button class="button button-yes">Yes</button>
+			<button class="button button-no">No</button>
+		</div>
+
+	</div>
+</canvas>
+
+<script type="module">
+import * as THREE from 'three';
+import { ThreeHTMLRenderer } from 'three-html-render/renderer';
+
+if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) {
+
+	alert( 'HTML in Canvas が有効なブラウザで表示してください' );
+
+}
+
+const panel  = document.querySelector( '.panel' );
+const canvas = document.querySelector( '.canvas' );
+
+const elWidth = panel.offsetWidth;
+const elHeight = panel.offsetHeight;
+
+// ---- Renderer ----
+
+const renderer = new THREE.WebGLRenderer( { canvas, antialias: true } );
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.setSize( elWidth, elHeight );
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color( 0x03050f );
+
+const camera = new THREE.PerspectiveCamera( 50, elWidth / elHeight, 0.1, 100 );
+camera.position.z = 2.6;
+
+// ---- Panel shader (HTML texture + shockwave distortion) ----
+
+const panelVert = /* glsl */`
+varying vec2 vUv;
+void main() {
+	vUv = uv;
+	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+`;
+
+const panelFrag = /* glsl */`
+uniform sampler2D uMap;
+uniform vec2      uImpact;
+uniform float     uImpactTime;
+varying vec2      vUv;
+
+void main() {
+
+	vec2  uv   = vUv;
+	float t    = uImpactTime;
+	vec2  diff = uv - uImpact;
+	float dist = length( diff );
+	vec2  dir  = normalize( diff + 0.0001 );
+
+	// Expanding shockwave ring displacement
+	float radius    = t * 1.2;
+	float waveFront = exp( -pow( dist - radius, 2.0 ) * 280.0 );
+	float falloff   = exp( -t * 2.2 );
+	uv += dir * waveFront * 0.09 * falloff;
+
+	// Trailing ripple that lingers
+	float ripple = sin( dist * 32.0 - t * 14.0 )
+	             * exp( -dist * 4.5 )
+	             * exp( -t * 2.8 )
+	             * 0.028;
+	uv += dir * ripple;
+
+	vec4 color = texture2D( uMap, clamp( uv, 0.001, 0.999 ) );
+
+	// Cyan shockwave ring glow
+	float ringGlow = exp( -pow( dist - radius, 2.0 ) * 180.0 ) * exp( -t * 2.0 );
+	color.rgb += vec3( 0.0, 1.0, 1.0 ) * ringGlow * 1.1;
+
+	// White flash at impact center
+	float flash = exp( -dist * 20.0 ) * exp( -t * 9.0 );
+	color.rgb += vec3( 1.0 ) * flash;
+
+	gl_FragColor = color;
+
+}
+`;
+
+const panelMat = new THREE.ShaderMaterial( {
+	uniforms: {
+		uMap:        { value: null },
+		uImpact:     { value: new THREE.Vector2( 0.5, 0.5 ) },
+		uImpactTime: { value: 9999.0 },
+	},
+	vertexShader:   panelVert,
+	fragmentShader: panelFrag,
+} );
+
+// ThreeHTMLRenderer が material.map を書き込む内容を uMap uniform に転送する
+Object.defineProperty( panelMat, 'map', {
+	get() { return panelMat.uniforms.uMap.value; },
+	set( tex ) { panelMat.uniforms.uMap.value = tex; },
+	configurable: true,
+} );
+
+const panelMesh = new THREE.Mesh(
+	new THREE.PlaneGeometry( elWidth / elHeight * 2.0, 2.0 ),
+	panelMat
+);
+scene.add( panelMesh );
+
+// ---- Particle system ----
+
+const MAX_P  = 300;
+const pPos   = new Float32Array( MAX_P * 3 );
+const pVel   = new Float32Array( MAX_P * 3 );
+const pAge   = new Float32Array( MAX_P );
+const pLife  = new Float32Array( MAX_P );
+const pSize  = new Float32Array( MAX_P );
+const pColor = new Float32Array( MAX_P * 3 );
+
+for ( let i = 0; i < MAX_P; i ++ ) {
+
+	pAge[ i ]          = 9999;
+	pPos[ i * 3 + 2 ]  = - 100;
+
+}
+
+const pGeo = new THREE.BufferGeometry();
+pGeo.setAttribute( 'position', new THREE.BufferAttribute( pPos,   3 ) );
+pGeo.setAttribute( 'pAge',     new THREE.BufferAttribute( pAge,   1 ) );
+pGeo.setAttribute( 'pLife',    new THREE.BufferAttribute( pLife,  1 ) );
+pGeo.setAttribute( 'pSize',    new THREE.BufferAttribute( pSize,  1 ) );
+pGeo.setAttribute( 'pColor',   new THREE.BufferAttribute( pColor, 3 ) );
+
+const pMat = new THREE.ShaderMaterial( {
+	uniforms: {},
+	vertexShader: /* glsl */`
+		attribute float pAge;
+		attribute float pLife;
+		attribute float pSize;
+		attribute vec3  pColor;
+		varying   float vAlpha;
+		varying   vec3  vColor;
+		void main() {
+			float life  = 1.0 - clamp( pAge / pLife, 0.0, 1.0 );
+			vAlpha      = life;
+			vColor      = pColor;
+			gl_PointSize = pSize * life;
+			gl_Position  = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+		}
+	`,
+	fragmentShader: /* glsl */`
+		varying float vAlpha;
+		varying vec3  vColor;
+		void main() {
+			float r = length( gl_PointCoord - 0.5 ) * 2.0;
+			if ( r > 1.0 ) discard;
+			float a = vAlpha * ( 1.0 - smoothstep( 0.3, 1.0, r ) );
+			gl_FragColor = vec4( vColor, a );
+		}
+	`,
+	transparent: true,
+	depthWrite:  false,
+	blending:    THREE.AdditiveBlending,
+} );
+
+const pPoints = new THREE.Points( pGeo, pMat );
+pPoints.frustumCulled = false;
+scene.add( pPoints );
+
+let pHead = 0;
+
+const PALETTE = [
+	[ 0.0,  1.0,  1.0  ],  // cyan
+	[ 1.0,  1.0,  1.0  ],  // white
+	[ 0.65, 0.55, 0.98 ],  // purple
+	[ 0.24, 1.0,  0.08 ],  // green
+];
+
+function emitParticles( wx, wy, count ) {
+
+	for ( let i = 0; i < count; i++ ) {
+
+		const idx = ( pHead++ ) % MAX_P;
+
+		pPos[ idx * 3 + 0 ] = wx + ( Math.random() - 0.5 ) * 0.08;
+		pPos[ idx * 3 + 1 ] = wy + ( Math.random() - 0.5 ) * 0.08;
+		pPos[ idx * 3 + 2 ] = 0.02;
+
+		const angle = Math.random() * Math.PI * 2;
+		const speed = 0.5 + Math.random() * 2.5;
+		pVel[ idx * 3 + 0 ] = Math.cos( angle ) * speed;
+		pVel[ idx * 3 + 1 ] = Math.sin( angle ) * speed;
+		pVel[ idx * 3 + 2 ] = 0;
+
+		pAge[ idx ]  = 0;
+		pLife[ idx ] = 0.4 + Math.random() * 1.0;
+		pSize[ idx ] = ( 3 + Math.random() * 5 ) * window.devicePixelRatio;
+
+		const c = PALETTE[ Math.floor( Math.random() * PALETTE.length ) ];
+		pColor[ idx * 3 + 0 ] = c[ 0 ];
+		pColor[ idx * 3 + 1 ] = c[ 1 ];
+		pColor[ idx * 3 + 2 ] = c[ 2 ];
+
+	}
+
+	pGeo.attributes.position.needsUpdate = true;
+	pGeo.attributes.pAge.needsUpdate     = true;
+	pGeo.attributes.pLife.needsUpdate    = true;
+	pGeo.attributes.pSize.needsUpdate    = true;
+	pGeo.attributes.pColor.needsUpdate   = true;
+
+}
+
+// ---- ThreeHTMLRenderer ----
+
+const htmlRenderer = new ThreeHTMLRenderer();
+htmlRenderer.connect( canvas, camera, renderer );
+htmlRenderer.addObject( panel, panelMesh );
+// ---- Interaction ----
+
+const raycaster = new THREE.Raycaster();
+const mouse     = new THREE.Vector2();
+let   impactStart = -9999;
+
+function triggerEffects( clientX, clientY ) {
+
+	const rect = canvas.getBoundingClientRect();
+	mouse.x =  ( ( clientX - rect.left ) / rect.width  ) * 2 - 1;
+	mouse.y = -( ( clientY - rect.top  ) / rect.height ) * 2 + 1;
+	raycaster.setFromCamera( mouse, camera );
+	const hits = raycaster.intersectObject( panelMesh );
+	if ( hits.length === 0 ) return;
+
+	const { uv, point } = hits[ 0 ];
+	panelMat.uniforms.uImpact.value.copy( uv );
+	impactStart = performance.now();
+	emitParticles( point.x, point.y, 55 );
+
+}
+
+for ( const button of panel.querySelectorAll( '.button' ) ) {
+
+	button.addEventListener( 'click', ( e ) => triggerEffects( e.clientX, e.clientY ) );
+
+}
+
+// ---- Animation ----
+
+let prevTime = performance.now();
+
+function animate() {
+
+	requestAnimationFrame( animate );
+
+	const now = performance.now();
+	const dt  = ( now - prevTime ) / 1000;
+	prevTime  = now;
+
+	panelMat.uniforms.uImpactTime.value = ( now - impactStart ) / 1000;
+
+	// Update particles
+	for ( let i = 0; i < MAX_P; i++ ) {
+
+		if ( pAge[ i ] >= pLife[ i ] ) continue;
+
+		pAge[ i ]          += dt;
+		pPos[ i * 3 + 0 ]  += pVel[ i * 3 + 0 ] * dt;
+		pPos[ i * 3 + 1 ]  += pVel[ i * 3 + 1 ] * dt;
+		pVel[ i * 3 + 0 ]  *= 0.97;
+		pVel[ i * 3 + 1 ]  *= 0.97;
+
+	}
+
+	pGeo.attributes.position.needsUpdate = true;
+	pGeo.attributes.pAge.needsUpdate     = true;
+
+	htmlRenderer.update();
+	renderer.render( scene, camera );
+
+}
+
+requestAnimationFrame( animate );
+
+</script>
+</body>
+</html>
