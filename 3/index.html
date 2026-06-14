@@ -8,8 +8,7 @@
 {
 	"imports": {
 		"three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
-		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/",
-		"three-html-render/renderer": "https://cdn.jsdelivr.net/npm/three-html-render/dist/renderer.js"
+		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
 	}
 }
 </script>
@@ -215,13 +214,8 @@ body {
 
 <script type="module">
 import * as THREE from 'three';
-import { ThreeHTMLRenderer } from 'three-html-render/renderer';
 
-if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) {
-
-	alert( 'HTML in Canvas が有効なブラウザで表示してください' );
-
-}
+if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
 
 const panel  = document.querySelector( '.panel' );
 const canvas = document.querySelector( '.canvas' );
@@ -235,6 +229,29 @@ const renderer = new THREE.WebGLRenderer( { canvas, antialias: true } );
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( elWidth, elHeight );
 renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+// texElementImage2D の API シグネチャは Chrome 150 で変更された:
+//   Chrome 138 - 149: ( target, level, internalformat, srcformat, srctype, element )  ← 旧 (texImage2D 互換)
+//   Chrome 150+:      ( target, internalformat, element )                              ← 新 (WICG 仕様)
+// three.js r184 は旧シグネチャでしか呼ばないため Chrome 150+ でエラーになる。
+// PR #33788 (2026-06-12 マージ) で両対応済み。r185 以降では不要。
+// https://github.com/mrdoob/three.js/pull/33788
+const gl = renderer.getContext();
+if ( 'texElementImage2D' in gl ) {
+
+	const _orig = gl.texElementImage2D.bind( gl );
+	gl.texElementImage2D = function () {
+
+		const args = Array.from( arguments );
+		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
+			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
+		} else {
+			_orig.apply( gl, args );
+		}
+
+	};
+
+}
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color( 0x03050f );
@@ -304,12 +321,7 @@ const panelMat = new THREE.ShaderMaterial( {
 	fragmentShader: panelFrag,
 } );
 
-// ThreeHTMLRenderer が material.map を書き込む内容を uMap uniform に転送する
-Object.defineProperty( panelMat, 'map', {
-	get() { return panelMat.uniforms.uMap.value; },
-	set( tex ) { panelMat.uniforms.uMap.value = tex; },
-	configurable: true,
-} );
+panelMat.uniforms.uMap.value = new THREE.HTMLTexture( panel );
 
 const panelMesh = new THREE.Mesh(
 	new THREE.PlaneGeometry( elWidth / elHeight * 2.0, 2.0 ),
@@ -421,16 +433,11 @@ function emitParticles( wx, wy, count ) {
 
 }
 
-// ---- ThreeHTMLRenderer ----
-
-const htmlRenderer = new ThreeHTMLRenderer();
-htmlRenderer.connect( canvas, camera, renderer );
-htmlRenderer.addObject( panel, panelMesh );
 // ---- Interaction ----
 
 const raycaster = new THREE.Raycaster();
 const mouse     = new THREE.Vector2();
-let   impactStart = -9999;
+let impactStart = - 9999;
 
 function triggerEffects( clientX, clientY ) {
 
@@ -473,24 +480,22 @@ function animate() {
 
 		if ( pAge[ i ] >= pLife[ i ] ) continue;
 
-		pAge[ i ]          += dt;
-		pPos[ i * 3 + 0 ]  += pVel[ i * 3 + 0 ] * dt;
-		pPos[ i * 3 + 1 ]  += pVel[ i * 3 + 1 ] * dt;
-		pVel[ i * 3 + 0 ]  *= 0.97;
-		pVel[ i * 3 + 1 ]  *= 0.97;
+		pAge[ i ]         += dt;
+		pPos[ i * 3 + 0 ] += pVel[ i * 3 + 0 ] * dt;
+		pPos[ i * 3 + 1 ] += pVel[ i * 3 + 1 ] * dt;
+		pVel[ i * 3 + 0 ] *= 0.97;
+		pVel[ i * 3 + 1 ] *= 0.97;
 
 	}
 
 	pGeo.attributes.position.needsUpdate = true;
 	pGeo.attributes.pAge.needsUpdate     = true;
 
-	htmlRenderer.update();
 	renderer.render( scene, camera );
 
 }
 
 requestAnimationFrame( animate );
-
 </script>
 </body>
 </html>

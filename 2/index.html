@@ -8,8 +8,7 @@
 {
 	"imports": {
 		"three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
-		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/",
-		"three-html-render/renderer": "https://cdn.jsdelivr.net/npm/three-html-render/dist/renderer.js"
+		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
 	}
 }
 </script>
@@ -71,6 +70,7 @@ body {
 	z-index: 2;
 	display: flex;
 	flex-direction: column;
+	box-sizing: border-box;
 	gap: 7px;
 	height: 100%;
 	padding: 12px;
@@ -175,7 +175,7 @@ body {
 	border: none;
 	font-family: 'SourceIcons', 'Klee One', serif;
 	font-size: 16px;
-	line-height: 1.75;
+	line-height: 1.5;
 	color: #d8d8e0;
 	background: transparent;
 	resize: none;
@@ -239,13 +239,8 @@ body {
 
 <script type="module">
 import * as THREE from 'three';
-import { ThreeHTMLRenderer } from 'three-html-render/renderer';
 
-if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) {
-
-	alert( 'HTML in Canvas が有効なブラウザで表示してください' );
-
-}
+if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
 
 const card = document.querySelector( '.card' );
 
@@ -258,6 +253,29 @@ const renderer = new THREE.WebGLRenderer( { canvas, antialias: true } );
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( elWidth, elHeight );
 renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+// texElementImage2D の API シグネチャは Chrome 150 で変更された:
+//   Chrome 138 - 149: ( target, level, internalformat, srcformat, srctype, element )  ← 旧 (texImage2D 互換)
+//   Chrome 150+:      ( target, internalformat, element )                              ← 新 (WICG 仕様)
+// three.js r184 は旧シグネチャでしか呼ばないため Chrome 150+ でエラーになる。
+// PR #33788 (2026-06-12 マージ) で両対応済み。r185 以降では不要。
+// https://github.com/mrdoob/three.js/pull/33788
+const gl = renderer.getContext();
+if ( 'texElementImage2D' in gl ) {
+
+	const _orig = gl.texElementImage2D.bind( gl );
+	gl.texElementImage2D = function () {
+
+		const args = Array.from( arguments );
+		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
+			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
+		} else {
+			_orig.apply( gl, args );
+		}
+
+	};
+
+}
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color( 0x0d0d14 );
@@ -428,13 +446,7 @@ const material = new THREE.ShaderMaterial( {
 	transparent: true,
 } );
 
-// ThreeHTMLRenderer は material.map にテクスチャを設定する。
-// ShaderMaterial には map プロパティがないのでセッターで uCardTex に転送する。
-Object.defineProperty( material, 'map', {
-	get() { return material.uniforms.uCardTex.value; },
-	set( tex ) { material.uniforms.uCardTex.value = tex; },
-	configurable: true,
-} );
+material.uniforms.uCardTex.value = new THREE.HTMLTexture( card );
 
 const mesh = new THREE.Mesh(
 	new THREE.PlaneGeometry( elWidth / elHeight * 2.0, 2.0 ),
@@ -442,6 +454,7 @@ const mesh = new THREE.Mesh(
 );
 scene.add( mesh );
 
+// イラスト部分にはフォイル効果を適用したくないので、該当範囲の UV をシェーダーに渡す。
 // .card-art-frame の位置を #card 基準の UV に変換して uniform へ反映
 // UV は Three.js 標準: (0,0)=左下・(1,1)=右上
 function syncArtBounds() {
@@ -461,10 +474,6 @@ function syncArtBounds() {
 
 syncArtBounds();
 
-const htmlRenderer = new ThreeHTMLRenderer();
-htmlRenderer.connect( canvas, camera, renderer );
-htmlRenderer.addObject( card, mesh );
-
 function animate( time ) {
 
 	requestAnimationFrame( animate );
@@ -476,7 +485,6 @@ function animate( time ) {
 	material.uniforms.uTilt.value.set( mesh.rotation.x, mesh.rotation.y );
 	material.uniforms.uTime.value = t;
 
-	htmlRenderer.update();
 	renderer.render( scene, camera );
 
 }
