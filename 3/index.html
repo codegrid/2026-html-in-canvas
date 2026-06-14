@@ -4,14 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HTML in Canvas — Cyber UI Demo</title>
-<script type="importmap">
-{
-	"imports": {
-		"three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
-		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
-	}
-}
-</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
 
@@ -213,7 +205,7 @@ body {
 </canvas>
 
 <script type="module">
-import * as THREE from 'three';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
 
 if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
 

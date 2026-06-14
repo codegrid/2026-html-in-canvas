@@ -4,14 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HTML in Canvas — 3D Foil Card Demo</title>
-<script type="importmap">
-{
-	"imports": {
-		"three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
-		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
-	}
-}
-</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Klee+One&display=swap');
 
@@ -238,7 +230,7 @@ body {
 </canvas>
 
 <script type="module">
-import * as THREE from 'three';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
 
 if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
 
