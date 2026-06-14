@@ -275,163 +275,249 @@ scene.background = new THREE.Color( 0x0d0d14 );
 const camera = new THREE.PerspectiveCamera( 50, elWidth / elHeight, 0.1, 100 );
 camera.position.z = 2.6;
 
-// ---- テクスチャ生成 ----
-
-// 虹グラデーション (1D・横方向)
-function makeGradientTexture() {
-
-	const c = document.createElement( 'canvas' );
-	c.width = 512; c.height = 2;
-	const ctx = c.getContext( '2d' );
-	const g = ctx.createLinearGradient( 0, 0, 512, 0 );
-	g.addColorStop( 0 / 6, '#ff0040' );
-	g.addColorStop( 1 / 6, '#ff8800' );
-	g.addColorStop( 2 / 6, '#ffe000' );
-	g.addColorStop( 3 / 6, '#00ffcc' );
-	g.addColorStop( 4 / 6, '#0088ff' );
-	g.addColorStop( 5 / 6, '#cc44ff' );
-	g.addColorStop( 6 / 6, '#ff0040' );
-	ctx.fillStyle = g;
-	ctx.fillRect( 0, 0, 512, 2 );
-	const tex = new THREE.CanvasTexture( c );
-	tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-	return tex;
-
-}
-
-// スムーズノイズ — sin/cos 合成でシマー感を出す
-function makeNoiseTexture() {
-
-	const size = 256;
-	const data = new Uint8Array( size * size * 4 );
-	for ( let y = 0; y < size; y++ ) {
-
-		for ( let x = 0; x < size; x++ ) {
-
-			const nx = x / size, ny = y / size;
-			const v = (
-				Math.sin( nx * 6.28 *  3 + 1.2 ) * Math.cos( ny * 6.28 *  2 + 0.7 ) +
-				Math.sin( nx * 6.28 *  7 + 2.3 ) * Math.cos( ny * 6.28 *  5 + 1.5 ) +
-				Math.sin( nx * 6.28 * 11 + 3.1 ) * Math.cos( ny * 6.28 *  9 + 2.3 )
-			) / 3.0;
-			const vn = Math.floor( ( v * 0.5 + 0.5 ) * 255 );
-			const i = ( y * size + x ) * 4;
-			data[ i ] = data[ i + 1 ] = data[ i + 2 ] = vn;
-			data[ i + 3 ] = 255;
-
-		}
-
-	}
-	const tex = new THREE.DataTexture( data, size, size );
-	tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-	tex.needsUpdate = true;
-	return tex;
-
-}
-
-const gradientTex = makeGradientTexture();
-const noiseTex    = makeNoiseTexture();
-
-// ---- カスタム foil シェーダー ----
-// Godot shader (Slavrick/GodotShaderFoilCardExample) のアルゴリズムを移植:
-//   1. カードの傾き角 (uTilt) から参照ノーマルベクトルを回転
-//   2. 回転後ノーマルを使って虹グラデーションの UV をシフト
-//      → 傾くと虹の見える帯が動く
-//   3. ノイズと乗算してシマーを加える
-//   4. ベース画像と mix() して合成
+// ---- foil シェーダー ----
+// https://www.4rknova.com/blog/2025/08/30/foil-sticker を参考にした、
+// 角度依存の薄膜干渉（iridescence）+ 手続き的なフレーク（sparkle）の合成。
+//
+//   1. ビュー方向と法線の cosθ から、sin 波 3 本（RGB 位相 120° ずつ）で
+//      虹色を生成（thin-film 近似）
+//   2. hash() で生成した手続きノイズで小さな金属フレークを散らし、
+//      法線を微小に揺らして反射ベクトルを撹乱 → ギラッとした粒状光沢に
+//   3. Fresnel-Schlick で視野角端ほど反射を強める
+//   4. envMap の代わりに簡易な手続き sky を反射ベクトルから生成
 
 const vertexShader = /* glsl */`
 varying vec2 vUv;
+varying vec3 vNormal;
+varying vec3 vTangent;
+varying vec3 vBitangent;
+varying vec3 vWorldPos;
 
 void main() {
+
 	vUv = uv;
-	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+	mat3 M = mat3( modelMatrix );
+	vNormal    = normalize( M * normal );
+	vTangent   = normalize( M * vec3( 1.0, 0.0, 0.0 ) );
+	vBitangent = normalize( M * vec3( 0.0, 1.0, 0.0 ) );
+	vec4 worldPos = modelMatrix * vec4( position, 1.0 );
+	vWorldPos = worldPos.xyz;
+	gl_Position = projectionMatrix * viewMatrix * worldPos;
+
 }
 `;
 
 const fragmentShader = /* glsl */`
-#define PI 3.14159265358979
+#define PI 3.14159265
 
 uniform sampler2D uCardTex;
-uniform sampler2D uGradient;
-uniform sampler2D uNoise;
-uniform vec2      uTilt;
+uniform sampler2D uVoronoi;
 uniform float     uTime;
-uniform float     uPeriod;
-uniform float     uDirection;
-uniform float     uFoilStrength;
+uniform vec3      uCameraPos;
 
-varying vec2 vUv;
+uniform float uIridescence;
+uniform float uIriMin;
+uniform float uIriRange;
+uniform float uIriCellPhase;
+
+uniform float uVoronoiTiling;
+uniform float uCellNormal;
+
+uniform float uMetalSheen;
+uniform float uArtFoilReduction;
+
+uniform float uFlakesEnabled;
+uniform float uFlakeSize;
+uniform float uFlakeReduction;
+uniform float uFlakeThreshold;
+uniform float uFlakeBrightness;
+
+uniform float uMetalness;
+uniform float uRoughness;
+uniform float uEnvIntensity;
+uniform float uFoilStrength;
 
 uniform vec2 uArtMin;
 uniform vec2 uArtMax;
 
-mat3 rotX( float a ) {
-	float s = sin( a ), c = cos( a );
-	return mat3( 1.0, 0.0, 0.0,  0.0, c, -s,  0.0, s, c );
+varying vec2 vUv;
+varying vec3 vNormal;
+varying vec3 vTangent;
+varying vec3 vBitangent;
+varying vec3 vWorldPos;
+
+float hash( vec2 p ) {
+
+	return fract( sin( dot( p, vec2( 127.1, 311.7 ) ) ) * 43758.5453123 );
+
 }
 
-mat3 rotY( float a ) {
-	float s = sin( a ), c = cos( a );
-	return mat3( c, 0.0, s,  0.0, 1.0, 0.0,  -s, 0.0, c );
+float foilLuminance( vec3 c ) {
+
+	return dot( c, vec3( 0.2126, 0.7152, 0.0722 ) );
+
+}
+
+// 薄膜干渉の色。cosθ を主軸に、Voronoi 由来の小さな位相揺らぎを加えて
+// ROYGBIV の色順は連続させつつセルごとに僅かにずらす。
+vec3 iridescenceColor( float cosTheta, float phaseJitter ) {
+
+	float thickness = uIriMin + uIriRange * ( 1.0 - cosTheta );
+	float phase     = 6.28318 * thickness * 0.01 + phaseJitter + uTime * 0.35;
+	vec3 rainbow    = 0.5 + 0.5 * vec3( sin( phase ), sin( phase + 2.094 ), sin( phase + 4.188 ) );
+	return mix( vec3( 1.0 ), rainbow, uIridescence );
+
+}
+
+// envMap の代わりに、明るめのヘミスフィア sky + 鋭い帯 lobe を合成する。
+// 暗い base に foil が埋もれないよう、off-band でも一定以上の env を確保する。
+vec3 sampleEnv( vec3 R, float roughness ) {
+
+	// ヘミスフィア sky: 全方向で底値が高いので「反射ゼロ」にならない
+	float hemi = R.y * 0.5 + 0.5;
+	vec3 sky = mix(
+		vec3( 0.60, 0.60, 0.70 ),  // 下向き反射でも foil が乗る最低レベル
+		vec3( 1.20, 1.22, 1.35 ),  // 上向き反射のピーク
+		hemi
+	);
+
+	// 主役: 縦寄りの斜め線光源
+	vec3 lineAxis = normalize( vec3( 0.3, 1.0, 0.0 ) );
+	float lineAlign = abs( dot( R, lineAxis ) );
+	float e = mix( 25.0, 4.0, roughness );
+	float bandLobe = pow( max( 1.0 - lineAlign, 0.0 ), e );
+
+	return sky + vec3( 3.5 ) * bandLobe;
+
 }
 
 void main() {
 
-	vec4 albedo = texture2D( uCardTex, vUv );
+	vec4 base = texture2D( uCardTex, vUv );
 
-	// 傾き角をスケール。大きいほど虹の色変化が鋭くなる
-	float tiltX     = uTilt.x * 4.0;
-	float tiltY     = uTilt.y * 4.0;
-	float magnitude = length( vec2( tiltX, tiltY ) );
+	vec3 V = normalize( uCameraPos - vWorldPos );
 
-	float xRota = abs( tiltX ) / PI;
-	float yRota = abs( tiltY ) / PI;
+	// ---- Voronoi 鱗 (タンジェント空間 normal map) ----
+	// 反射ベクトルにだけ Voronoi の摂動を効かせ、虹色の cosθ には原法線を使う。
+	// → 帯の内側で ROYGBIV の色順が連続しつつ、ハイライト強度はセルごとに変動する。
+	vec3 nm = texture2D( uVoronoi, vUv * uVoronoiTiling ).xyz * 2.0 - 1.0;
+	nm.xy *= uCellNormal;
+	vec3 N0 = normalize( vNormal );
+	vec3 N  = normalize( nm.x * vTangent + nm.y * vBitangent + nm.z * vNormal );
+	vec3 R  = reflect( -V, N );
 
-	// 傾きで参照ノーマルを回転 (rotate_vector の移植)
-	vec3 n = normalize( rotX( xRota ) * rotY( yRota ) * vec3( 1.0, 1.0, 1.0 ) ) * ( magnitude * magnitude );
+	float cosTheta0  = clamp( dot( N0, V ), 0.0, 1.0 );
+	float cosTheta   = clamp( dot( N,  V ), 0.0, 1.0 );
+	float brightness = foilLuminance( base.rgb );
 
-	// グラデーション UV を傾き + カード UV から算出
-	float dir = uDirection;
-	float gradX = 0.25
-		+ ( n.y * dir * 2.0 - n.x * ( 1.0 - dir ) * 2.0 ) / 2.0
-		+ ( vUv.y * dir + vUv.x * ( 1.0 - dir ) ) * 0.5;
-	vec2 gradUV = mod( vec2( gradX, 0.5 ) + vUv * uPeriod, 1.0 );
+	// セル由来の小さな位相ジッタ (帯内の色順を保ちつつ、隣接セルで微かにずれる)
+	float phaseJitter = ( nm.x + nm.y ) * uIriCellPhase;
 
-	// 時間でゆっくりスクロールして常時アニメーション
-	gradUV.x = mod( gradUV.x + uTime * 0.04, 1.0 );
+	// ---- フレーク ----
+	float flakeIntensity = 0.0;
+	vec3  flakeEnv       = vec3( 0.0 );
 
-	vec3 grad  = texture2D( uGradient, gradUV ).rgb;
-	vec3 noise = texture2D( uNoise, vUv + uTime * 0.015 ).rgb;
+	if ( uFlakesEnabled > 0.5 ) {
 
-	// イラスト枠の内側では foil を適用しない (1=foil あり / 0=foil なし)
-	float inArt  = step( uArtMin.x, vUv.x ) * step( vUv.x, uArtMax.x ) * step( uArtMin.y, vUv.y ) * step( vUv.y, uArtMax.y );
-	float artMask = 1.0 - inArt;
+		float flake     = hash( floor( vUv * uFlakeSize ) );
+		float flakeMask = smoothstep( uFlakeReduction, 1.0, flake );
 
-	// 傾きが大きいほど foil が強くなる。平置き時は控えめ、傾けると最大に
-	float tiltBoost = 0.2 + 0.5 * smoothstep( 0.0, 0.6, magnitude );
+		float flakeBoost = smoothstep( uFlakeThreshold, 1.0, brightness );
 
-	// ノイズで虹の明暗を作り、加算合成でカードの上にシマーを乗せる
-	vec3 foil  = grad * noise;
-	vec3 color = albedo.rgb + foil * ( uFoilStrength * tiltBoost * albedo.a * artMask );
+		// 法線を粒ごとに揺らして反射方向を撹乱
+		float angleOffset    = ( hash( vec2( flake, flake + 3.0 ) ) - 0.5 ) * 0.4;
+		float angleOffset2   = ( hash( vec2( flake + 7.0, flake ) ) - 0.5 ) * 0.4;
+		vec3  perturbedN     = normalize( N + vec3( angleOffset, angleOffset2, 0.0 ) );
+		vec3  PR             = reflect( -V, perturbedN );
 
-	gl_FragColor = vec4( color, albedo.a );
+		// 時間で位相を変えて、キラッとした明滅
+		float flakePhase = hash( floor( vUv * uFlakeSize ) + floor( PR.xy * 18.0 ) + floor( uTime * 6.0 ) );
+		float phaseMod   = mix( 1.0, 1.8, flakePhase );
+
+		float flakeSpec = pow( clamp( dot( perturbedN, V ) * 0.5 + 0.5, 0.0, 1.0 ), 8.0 );
+		flakeSpec = max( flakeSpec, 0.15 );
+
+		float flakeRough = clamp( uRoughness * 0.4, 0.0, 1.0 );
+		flakeEnv = sampleEnv( PR, flakeRough ) * mix( 0.9, 1.2, brightness );
+		flakeEnv = max( flakeEnv, vec3( uFlakeBrightness ) );
+
+		vec3 flakeIri = iridescenceColor( dot( perturbedN, V ), phaseJitter );
+		flakeEnv *= mix( vec3( 1.0 ), flakeIri, 0.9 );
+
+		flakeIntensity = flakeMask * flakeBoost * flakeSpec * phaseMod * 18.0;
+		flakeIntensity = clamp( flakeIntensity, 0.0, 1.0 );
+
+	}
+
+	// ---- 反射 + Fresnel ----
+	float finalRough = clamp( mix( uRoughness, 1.0, flakeIntensity ), 0.0, 1.0 );
+
+	vec3 env = sampleEnv( R, finalRough ) * uEnvIntensity;
+	env = mix( env, flakeEnv, flakeIntensity );
+
+	float F0   = mix( 0.04, 1.0, uMetalness );
+	float fres = F0 + ( 1.0 - F0 ) * pow( 1.0 - cosTheta, 5.0 );
+
+	// 虹色 (原法線ベースで連続、Voronoi は位相を微かに揺らすだけ)
+	float metalicMask = mix( 0.55, 1.0, brightness );
+	vec3  iriCol      = iridescenceColor( cosTheta0, phaseJitter ) * metalicMask;
+	vec3  iriSpec     = env * fres * iriCol * ( 1.0 - finalRough * 0.85 );
+
+	// 金属シーン (虹色を載せない、ベース反射)。帯の外側でも金属箔らしい反射を出す。
+	vec3 metalSpec = env * fres * ( 1.0 - finalRough * 0.85 ) * uMetalSheen;
+
+	vec3 spec = iriSpec + metalSpec;
+
+	// ---- イラスト枠は強度を減衰させる (完全マスクではなく弱める) ----
+	float inArt   = step( uArtMin.x, vUv.x ) * step( vUv.x, uArtMax.x ) * step( uArtMin.y, vUv.y ) * step( vUv.y, uArtMax.y );
+	float artMask = mix( 1.0, uArtFoilReduction, inArt );
+
+	vec3 color = base.rgb + spec * uFoilStrength * artMask;
+
+	gl_FragColor = vec4( color, base.a );
 
 }
 `;
 
+// Voronoi テクスチャ。R/G = セル固有方向, B = セル境界距離 (rawデータ扱い)
+const voronoiTex = new THREE.TextureLoader().load( 'voronoi.png' );
+voronoiTex.wrapS = voronoiTex.wrapT = THREE.RepeatWrapping;
+voronoiTex.colorSpace = THREE.NoColorSpace;
+voronoiTex.minFilter = THREE.LinearFilter;
+voronoiTex.magFilter = THREE.LinearFilter;
+voronoiTex.generateMipmaps = false;
+
 const material = new THREE.ShaderMaterial( {
 	uniforms: {
-		uCardTex:      { value: null },
-		uGradient:     { value: gradientTex },
-		uNoise:        { value: noiseTex },
-		uTilt:         { value: new THREE.Vector2() },
-		uTime:         { value: 0.0 },
-		uPeriod:       { value: 1.2 },
-		uDirection:    { value: 0.5 },
-		uFoilStrength: { value: 0.38 },
-		uArtMin:       { value: new THREE.Vector2() },
-		uArtMax:       { value: new THREE.Vector2() },
+		uCardTex:         { value: null },
+		uVoronoi:         { value: voronoiTex },
+		uTime:            { value: 0.0 },
+		uCameraPos:       { value: new THREE.Vector3() },
+
+		uIridescence:     { value: 1.0 },
+		uIriMin:          { value: 0.0 },
+		uIriRange:        { value: 300.0 },
+		uIriCellPhase:    { value: 1.5 },
+
+		uVoronoiTiling:   { value: 2.0 },
+		uCellNormal:      { value: 0.1 },
+
+		uMetalSheen:      { value: 0.05 },
+		uArtFoilReduction:{ value: 0.5 },
+
+		uFlakesEnabled:   { value: 1.0 },
+		uFlakeSize:       { value: 320.0 },
+		uFlakeReduction:  { value: 0.86 },
+		uFlakeThreshold:  { value: 0.05 },
+		uFlakeBrightness: { value: 0.2 },
+
+		uMetalness:       { value: 0.2 },
+		uRoughness:       { value: 0.35 },
+		uEnvIntensity:    { value: 1.0 },
+		uFoilStrength:    { value: 0.85 },
+
+		uArtMin:          { value: new THREE.Vector2() },
+		uArtMax:          { value: new THREE.Vector2() },
 	},
 	vertexShader,
 	fragmentShader,
@@ -466,18 +552,60 @@ function syncArtBounds() {
 
 syncArtBounds();
 
+// ---- DOM 同期 ----
+// WebGL で描画している mesh の位置・回転に合わせて .card に CSS matrix3d を適用する。
+// これにより DOM のヒットテスト位置が WebGL の見た目と一致する。
+// https://github.com/WICG/html-in-canvas — getElementTransform()
+const planeWidth  = elWidth / elHeight * 2.0;
+const planeHeight = 2.0;
+
+// element 座標 (top-left 原点, y-down, px) → mesh ローカル座標 (中心原点, y-up)
+const elementToLocal = new DOMMatrix( [
+	planeWidth / elWidth,  0,                       0, 0,
+	0,                    -planeHeight / elHeight,  0, 0,
+	0,                     0,                       1, 0,
+	-planeWidth / 2,       planeHeight / 2,         0, 1,
+] );
+
+card.style.transformOrigin = '0 0';
+
+function syncCardTransform() {
+
+	const cssW = canvas.clientWidth;
+	const cssH = canvas.clientHeight;
+
+	// NDC → canvas CSS-pixel (top-left, y-down)
+	const ndcToCanvas = new DOMMatrix( [
+		cssW / 2, 0,         0, 0,
+		0,       -cssH / 2,  0, 0,
+		0,        0,         1, 0,
+		cssW / 2, cssH / 2,  0, 1,
+	] );
+
+	// drawTransform = NDC→pixel · projection · view · model · element→local
+	const drawTransform = ndcToCanvas
+		.multiply( new DOMMatrix( [ ...camera.projectionMatrix.elements ] ) )
+		.multiply( new DOMMatrix( [ ...camera.matrixWorldInverse.elements ] ) )
+		.multiply( new DOMMatrix( [ ...mesh.matrixWorld.elements ] ) )
+		.multiply( elementToLocal );
+
+	card.style.transform = canvas.getElementTransform( card, drawTransform ).toString();
+
+}
+
 function animate( time ) {
 
 	requestAnimationFrame( animate );
 
 	const t = time * 0.001;
-	mesh.rotation.y = Math.sin( t * 0.5 + 1.0 ) * Math.PI / 8;
-	mesh.rotation.x = Math.sin( t * 0.5 ) * Math.PI / 12;
+	mesh.rotation.y = Math.sin( t * 0.5 + 1.0 ) * Math.PI / 7;
+	mesh.rotation.x = Math.sin( t * 0.3 ) * Math.PI / 10;
 
-	material.uniforms.uTilt.value.set( mesh.rotation.x, mesh.rotation.y );
 	material.uniforms.uTime.value = t;
+	material.uniforms.uCameraPos.value.copy( camera.position );
 
 	renderer.render( scene, camera );
+	syncCardTransform();
 
 }
 
