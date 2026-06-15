@@ -414,11 +414,15 @@ r184 の [WebGLTextures.js:1303](https://github.com/mrdoob/three.js/blob/r184/sr
 
 #### r184 での回避策
 
-r185 にアップグレードできない場合は、WebGL コンテキスト取得直後にモンキーパッチで r185 と同等の挙動にする:
+r185 にアップグレードできない場合は、WebGL コンテキスト取得直後にモンキーパッチで r185 と同等の挙動にする。
+
+**条件付きで適用すること。** `'texElementImage2D' in gl` だけで判定すると Chrome 148/149（旧 6 引数シグネチャ）にも誤ってパッチが当たり、6 引数の呼び出しを 3 引数に潰してしまい `6 arguments required, but only 3 present` で落ちる。Chrome 148–150 すべてが Origin Trial 対象なので、`gl.texElementImage2D.length === 3` でシグネチャを実行時判定し、新シグネチャの Chrome 150+ にだけパッチを当てる:
 
 ```js
 const gl = renderer.getContext();
-if ( 'texElementImage2D' in gl ) {
+// 新シグネチャ (length === 3) の Chrome 150+ のみパッチ。
+// 旧シグネチャの Chrome 148/149 では three.js r184 の呼び出しがそのまま通る。
+if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
 
 	const _orig = gl.texElementImage2D.bind( gl );
 	gl.texElementImage2D = function () {

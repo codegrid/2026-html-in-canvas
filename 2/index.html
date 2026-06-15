@@ -275,7 +275,7 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 // PR #33788 (2026-06-12 マージ) で両対応済み。r185 以降では不要。
 // https://github.com/mrdoob/three.js/pull/33788
 const gl = renderer.getContext();
-if ( 'texElementImage2D' in gl ) {
+if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
 
 	const _orig = gl.texElementImage2D.bind( gl );
 	gl.texElementImage2D = function () {
