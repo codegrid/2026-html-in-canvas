@@ -45,8 +45,8 @@ body {
 	flex-direction: column;
 	gap: 28px;
 	box-sizing: border-box;
-	width: 480px;
-	padding: 36px 32px 32px;
+	width: 450px;
+	padding: 32px 50px;
 	border: 1px solid #0ff4;
 	background: #060d1a;
 	clip-path: polygon(
@@ -112,17 +112,20 @@ body {
 	background: linear-gradient(90deg, transparent, #0ff5, #0ff, #0ff5, transparent);
 }
 
-.panel-body {
-	display: flex;
-	flex-direction: column;
-	gap: 14px;
-}
-
-.panel-body p {
+.panel p {
 	margin: 0;
 	line-height: 1.8;
 	letter-spacing: 0.04em;
 	color: #a8d8e8cc;
+}
+
+.panel a {
+	color: #39f;
+	transition: color 0.3s;
+}
+
+.panel a:hover {
+	color: #39ff14;
 }
 
 .button-row {
@@ -191,16 +194,17 @@ body {
 	<div class="panel">
 		<h1 class="panel-title">CODE GRID <span>EXAMPLE</span></h1>
 		<div class="divider"></div>
-		<div class="panel-body">
-			<p>
-				クリック効果確認用 demo です。<br />
-				CSS では実現できない「歪み」を適用できます
-			</p>
-		</div>
+		<p>
+			クリック効果確認用 demo です。<br />
+			CSS では実現できない「歪み」を適用できます。
+		</p>
 		<div class="button-row">
 			<button class="button button-yes">Yes</button>
 			<button class="button button-no">No</button>
 		</div>
+		<p>
+			行の途中で折り返して分断される<a href="../">インラインリンク</a>も機能します。
+		</p>
 
 	</div>
 </canvas>
@@ -257,8 +261,13 @@ if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
 const scene = new THREE.Scene();
 scene.background = new THREE.Color( 0x03050f );
 
-const camera = new THREE.PerspectiveCamera( 50, elWidth / elHeight, 0.1, 100 );
-camera.position.z = 2.6;
+// height=2.0 の plane を z=0 で viewport にぴったりフィットさせるため、
+// camera.z = 1 / tan( fov / 2 ) に設定する。これがないと panel mesh は
+// viewport より小さく描画されるが、DOM 上の panel は等倍位置で hit test される
+// ため、ボタンの見た目とクリック判定がズレる。
+const fov = 50;
+const camera = new THREE.PerspectiveCamera( fov, elWidth / elHeight, 0.1, 100 );
+camera.position.z = 1 / Math.tan( THREE.MathUtils.degToRad( fov / 2 ) );
 
 // ---- Panel shader (HTML texture + shockwave distortion) ----
 
@@ -456,7 +465,7 @@ function triggerEffects( clientX, clientY ) {
 
 }
 
-for ( const button of panel.querySelectorAll( '.button' ) ) {
+for ( const button of panel.querySelectorAll( 'button, a' ) ) {
 
 	button.addEventListener( 'click', ( e ) => triggerEffects( e.clientX, e.clientY ) );
 
