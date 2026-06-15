@@ -229,17 +229,49 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 // three.js r184 は旧シグネチャでしか呼ばないため Chrome 150+ でエラーになる。
 // PR #33788 (2026-06-12 マージ) で両対応済み。r185 以降では不要。
 // https://github.com/mrdoob/three.js/pull/33788
+//
+// 判定は実行時の try/catch で行う。`gl.texElementImage2D.length` は
+// Chrome のバージョンによって IDL と実装が一致しないことがあり信頼できない。
 const gl = renderer.getContext();
-if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
+if ( 'texElementImage2D' in gl ) {
 
 	const _orig = gl.texElementImage2D.bind( gl );
+	let useNewSignature = null;  // null = 未判定, true = 3 引数, false = 6 引数
+
 	gl.texElementImage2D = function () {
 
 		const args = Array.from( arguments );
-		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
+
+		// three.js r184 以外の呼び出しはそのまま通す
+		if ( ! ( args.length >= 6 && args[ 5 ] instanceof Element ) ) {
+
+			return _orig.apply( gl, args );
+
+		}
+
+		if ( useNewSignature === true ) {
+
+			return _orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
+
+		}
+
+		if ( useNewSignature === false ) {
+
+			return _orig.apply( gl, args );
+
+		}
+
+		// 初回のみ両シグネチャを試して結果をキャッシュ
+		try {
+
 			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
-		} else {
+			useNewSignature = true;
+
+		} catch ( e ) {
+
 			_orig.apply( gl, args );
+			useNewSignature = false;
+
 		}
 
 	};
