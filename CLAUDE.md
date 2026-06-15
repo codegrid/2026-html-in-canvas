@@ -416,48 +416,23 @@ r184 の [WebGLTextures.js:1303](https://github.com/mrdoob/three.js/blob/r184/sr
 
 r185 にアップグレードできない場合は、WebGL コンテキスト取得直後にモンキーパッチで r185 と同等の挙動にする。
 
-**シグネチャ判定は実行時の try/catch で行うこと。** `gl.texElementImage2D.length` で判定すると、Chrome のバージョンによっては IDL と実装の更新タイミングがズレており（`length === 3` を返すのに呼び出しは 6 引数を要求するなど）誤判定する。実際に 3 引数で呼び、`TypeError` が出たら 6 引数にフォールバックするのが確実:
+`gl.texElementImage2D.length === 3` でシグネチャを判定し、新仕様の Chrome 150+ のときだけ 6 → 3 引数に変換する。旧仕様の Chrome 148/149 では r184 の 6 引数呼び出しがそのまま通るのでパッチ不要（PR #33788 と同じ判定方式）:
 
 ```js
 const gl = renderer.getContext();
-if ( 'texElementImage2D' in gl ) {
+if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
 
 	const _orig = gl.texElementImage2D.bind( gl );
-	let useNewSignature = null;  // null = 未判定, true = 3 引数, false = 6 引数
-
 	gl.texElementImage2D = function () {
 
 		const args = Array.from( arguments );
-
-		// three.js r184 以外の呼び出しはそのまま通す
-		if ( ! ( args.length >= 6 && args[ 5 ] instanceof Element ) ) {
-
-			return _orig.apply( gl, args );
-
-		}
-
-		if ( useNewSignature === true ) {
-
-			return _orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
-
-		}
-
-		if ( useNewSignature === false ) {
-
-			return _orig.apply( gl, args );
-
-		}
-
-		// 初回のみ両シグネチャを試して結果をキャッシュ
-		try {
+		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
 
 			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
-			useNewSignature = true;
 
-		} catch ( e ) {
+		} else {
 
 			_orig.apply( gl, args );
-			useNewSignature = false;
 
 		}
 
