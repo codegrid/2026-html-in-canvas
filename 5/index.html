@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<title>HTML in Canvas — Cyber UI Demo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200..900&display=swap');
+
+body {
+	margin: 0;
+}
+
+.story-canvas {
+	position: fixed;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.story {
+	width: 100%;
+	height: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+
+.story-inner {
+	background: url( "./bg.jpg" ) 0 0 / 256px 256px;
+}
+
+.story-contents {
+	max-width: 800px;
+	padding: 32px;
+	font-size: 18px;
+	font-weight: 500;
+	line-height: 2;
+	margin: 0 auto;
+  font-family: "Noto Serif JP", serif;
+
+	h2 {
+		text-align: center;
+	}
+
+	img {
+		float: left;
+		margin: 0 16px 16px 0;
+		width: 128px;
+	}
+}
+
+.pillars {
+  display: flex;
+  justify-content: space-between;
+  height: 128px;
+}
+
+.pillar {
+  width: 128px;
+  height: 128px;
+}
+
+.dragon {
+	max-width: 800px;
+	aspect-ratio: 1;
+	margin: -100px auto;
+}
+</style>
+</head>
+<body>
+
+<p class="page-note">HTML in Canvas が有効なブラウザで表示してください</p>
+
+<canvas class="story-canvas" layoutsubtree>
+	<div class="story">
+		<div class="story-inner">
+			<div class="story-contents">
+
+				<div class="pillars">
+					<div class="pillar"></div>
+					<div class="pillar"></div>
+				</div>
+
+				<h2>第一章　伝説の神殿</h2>
+				<p><img src="./img_01.svg" alt="" />カッパードラゴンは、古代から伝説として語り継がれてきたドラゴンである。その身体は赤褐色の金属のような鱗に覆われ、山にも匹敵する巨体を持つとされていた。しかし、その姿を実際に見たという確かな記録は存在せず、多くの研究者は神話上の存在に過ぎないと考えていた。</p>
+				<p>ただし、あらゆる文献には共通する記述が残されていた。カッパードラゴンは北方のどこかに存在する巨大な神殿の最奥で眠っているというのである。</p>
+				<p>長い歴史の中で数え切れないほどの探検隊が神殿を探したが、その所在は明らかにならなかった。ところが数年前、北方山脈の地下で発見された巨大遺跡によって状況は一変する。遺跡の壁面には古代文字が刻まれ、その内容の多くが「銅の王」「眠れる守護者」と呼ばれる存在について記していた。</p>
+				<p>さらに調査が進むにつれ、通常のドラゴンでは到底残せないほど巨大な爪痕や、家屋ほどの大きさを持つ鱗の破片が次々と発見された。研究者たちは次第に確信を深めていく。この神殿こそ、伝説に語られてきたカッパードラゴンの眠る場所なのではないかと。</p>
+
+				<div class="pillars">
+					<div class="pillar"></div>
+					<div class="pillar"></div>
+				</div>
+
+				<h2>第二章　最奥への道</h2>
+				<p>神殿内部は迷宮のように複雑だった。巨大な回廊や地下空洞が幾重にも重なり、ところどころには古代の封印装置が残されていた。調査団は数年にわたり探索を続け、そのたびに新たな通路や広間を発見していった。</p>
+				<p>やがて最深部へ続くと考えられる巨大な扉が発見される。その扉は百メートルを超える高さを持ち、表面には翼を広げたドラゴンの彫刻が刻まれていた。封印の解除には半年を要したが、ついに扉は開かれた。</p>
+				<p>その先には、これまでの神殿とは比較にならないほど広大な空間が広がっていた。中央には祭壇が築かれ、その奥には小さな山のような巨大な影が横たわっている。最初、調査団はそれを自然の岩山だと思った。しかし近づくにつれ違和感が増していく。</p>
+				<p>表面は岩ではなく、巨大な鱗だったのである。</p>
+				<p>さらに空間全体には一定の振動が響いていた。それは地鳴りではなかった。規則的でゆっくりとした鼓動のような振動だった。</p>
+				<p>そのとき調査団は理解した。</p>
+				<p>これは神殿の奥にある岩山ではない。</p>
+				<p>生きている何かだ。</p>
+				
+				<div class="pillars">
+					<div class="pillar"></div>
+					<div class="pillar"></div>
+				</div>
+
+				<h2>第三章　カッパードラゴン</h2>
+				<p>調査団が息を呑む中、暗闇の奥で二つの黄金色の光がゆっくりと開いた。それは瞳だった。</p>
+				<p>次の瞬間、山だと思われていた存在がわずかに動く。巨大な首が持ち上がり、塔のような角が姿を現した。赤褐色の鱗は鈍い金属光沢を放ち、その一枚一枚が建物ほどの大きさを持っていた。</p>
+				<p>その姿はあまりにも巨大だった。神殿がドラゴンを収めているのではない。むしろ神殿のほうが、この一頭を中心として建造されたように見えた。</p>
+				<p>数千年もの間、伝説や神話として語られてきた存在は実在したのである。カッパードラゴンはずっとこの場所で眠り続けていたのだ。</p>
+				<p>巨大な瞳が調査団を静かに見下ろした。その眼差しには怒りも敵意もない。ただ永遠にも思える時間を生きてきた者だけが持つ静かな威厳があった。</p>
+				<p>やがてカッパードラゴンはゆっくりと口を開いた。</p>
+				<p>「……外の世界は、まだ続いているのだな。」</p>
+				<p>その声は雷鳴のように神殿全体へ響き渡った。</p>
+				<p>誰も答えることができなかった。目の前にいる存在があまりにも巨大で、あまりにも古く、あまりにも現実離れしていたからである。</p>
+				<p>こうして調査団は歴史上初めて、伝説のカッパードラゴンとの接触に成功した。神話だと思われていた存在は確かに生きていた。そして長い眠りから目覚めた古き竜は、静かに黄金の瞳を輝かせながら、再び世界を見つめ始めていた。</p>
+				<div class="dragon"></div>
+				<p>
+					<small>
+						<a href="https://sketchfab.com/3d-models/dragon-flying-cycle-ae0831702eac462a9969ff4f8bd57710">
+							Dragon Flying Cycle by RedCoreTimber (CC BY 4.0)
+						</a>
+					</small>
+				</p>
+			</div>
+		</div>
+	</div>
+</canvas>
+
+
+<script type="importmap">
+{
+	"imports": {
+		"three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+	}
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
+
+const canvas     = document.querySelector( '.story-canvas' );
+const story      = document.querySelector( '.story' );
+const dragonDiv  = document.querySelector( '.dragon' );
+const pillarDivs = document.querySelectorAll( '.pillar' );
+
+const renderer = new THREE.WebGLRenderer( { canvas, antialias: true } );
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+
+// r184 monkey patch for Chrome 150+
+const gl = renderer.getContext();
+if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
+
+	const _orig = gl.texElementImage2D.bind( gl );
+	gl.texElementImage2D = function () {
+
+		const args = Array.from( arguments );
+		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
+
+			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
+
+		} else {
+
+			_orig.apply( gl, args );
+
+		}
+
+	};
+
+}
+
+const fov    = 50;
+const camera = new THREE.PerspectiveCamera( fov, 1, 0.1, 100000 );
+
+const scene = new THREE.Scene();
+
+// Lights for the dragon / pillars
+// outputColorSpace = LinearSRGBColorSpace のため gamma encode が切られており、
+// 通常の sRGB 出力に比べて見た目が暗くなる。光量を強めに振って補正する。
+scene.add( new THREE.HemisphereLight( 0xffffff, 0x404040, 3.0 ) );
+const keyLight = new THREE.DirectionalLight( 0xffffff, 5.0 );
+keyLight.position.set( 200, 400, 800 );
+keyLight.castShadow = true;
+// 広い frustum + 小さい mapSize でテクセルは粗くなるが、shadow.radius のブラーで
+// エッジが目立たない範囲に丸まる
+keyLight.shadow.mapSize.set( 1024, 1024 ).multiplyScalar( window.devicePixelRatio );
+keyLight.shadow.radius = 4;
+keyLight.shadow.bias = - 0.0005;
+// ストーリーは縦に長く、ライトの view 方向で原点より遠い caster でも near を割り込まないよう
+// near を小さく、far を広めに取る。
+keyLight.shadow.camera.near = 1;
+keyLight.shadow.camera.far = 3000;
+scene.add( keyLight );
+const fillLight = new THREE.DirectionalLight( 0xccddff, 2.0 );
+fillLight.position.set( - 1, 0.5, 1 );
+scene.add( fillLight );
+
+// --- Story plane (text + bg via HTMLTexture) ---
+const texture = new THREE.HTMLTexture( story );
+texture.colorSpace = THREE.SRGBColorSpace;
+const planeMat = new THREE.MeshBasicMaterial( { map: texture } );
+const plane    = new THREE.Mesh( new THREE.PlaneGeometry( 1, 1 ), planeMat );
+plane.position.z = - 1;
+scene.add( plane );
+
+// --- Shadow overlay plane (受影専用、HTML プレーン上に影を落とす) ---
+const shadowMat   = new THREE.ShadowMaterial( { opacity: 0.4 } );
+const shadowPlane = new THREE.Mesh( new THREE.PlaneGeometry( 1, 1 ), shadowMat );
+shadowPlane.receiveShadow = true;
+shadowPlane.position.z    = - 0.5;
+scene.add( shadowPlane );
+
+// --- Dragon ---
+let dragon = null;
+let mixer  = null;
+
+new GLTFLoader().load( './dragon.glb', ( gltf ) => {
+
+	const inner = gltf.scene;
+
+	const box    = new THREE.Box3().setFromObject( inner );
+	const size   = new THREE.Vector3();
+	const center = new THREE.Vector3();
+	box.getSize( size );
+	box.getCenter( center );
+
+	// rotation.x = PI/2 で original Y は奥行きになるため、画面上のサイズは X と Z で決まる
+	const targetSize = 800;
+	const scale = targetSize / Math.max( size.x, size.z );
+	inner.scale.setScalar( scale );
+	inner.position.sub( center.multiplyScalar( scale ) );
+
+	inner.traverse( ( obj ) => {
+
+		if ( obj.isMesh ) obj.castShadow = true;
+
+	} );
+
+	dragon = new THREE.Group();
+	dragon.add( inner );
+	dragon.rotation.x = Math.PI / 2;
+	dragon.rotation.y = Math.PI;
+	// rotation.x = PI/2 で original Y は world Z 方向になる。
+	// 平面 (z = -1) へのめり込み防止に、その半分ぶんカメラ側へ押し出す。
+	dragon.position.z = size.y * scale / 2;
+	scene.add( dragon );
+
+	if ( gltf.animations && gltf.animations.length ) {
+
+		mixer = new THREE.AnimationMixer( inner );
+		mixer.clipAction( gltf.animations[ 0 ] ).play();
+
+	}
+
+	updateOverlayPositions();
+
+} );
+
+// --- Pillars ---
+const pillars = [];
+
+new GLTFLoader().load( './pillar.glb', ( gltf ) => {
+
+	const proto      = gltf.scene;
+	const protoBox   = new THREE.Box3().setFromObject( proto );
+	const pSize      = new THREE.Vector3();
+	const pCenter    = new THREE.Vector3();
+	protoBox.getSize( pSize );
+	protoBox.getCenter( pCenter );
+
+	// rotation.x = PI/2 で original Y は奥行きになるため、画面上のサイズは X と Z で決まる
+	const targetSize = 128;
+	const scale      = targetSize / Math.max( pSize.x, pSize.z );
+
+	pillarDivs.forEach( ( div ) => {
+
+		const inner = proto.clone();
+		inner.scale.setScalar( scale );
+		inner.position.sub( pCenter.clone().multiplyScalar( scale ) );
+
+		inner.traverse( ( obj ) => {
+
+			if ( obj.isMesh ) obj.castShadow = true;
+
+		} );
+
+		const group = new THREE.Group();
+		group.add( inner );
+		group.rotation.x = Math.PI / 2;
+		group.rotation.y = Math.PI;
+		// rotation.x = PI/2 で original Y は world Z 方向になる。平面へのめり込み防止
+		group.position.z = pSize.y * scale / 2;
+		scene.add( group );
+
+		pillars.push( { group, div } );
+
+	} );
+
+	updateOverlayPositions();
+
+} );
+
+function updateOverlayPositions() {
+
+	const w = window.innerWidth;
+	const h = window.innerHeight;
+
+	if ( dragon ) {
+
+		const rect = dragonDiv.getBoundingClientRect();
+		dragon.position.x = rect.left + rect.width  / 2 - w / 2;
+		dragon.position.y = - ( rect.top + rect.height / 2 - h / 2 );
+
+	}
+
+	for ( const { group, div } of pillars ) {
+
+		const rect = div.getBoundingClientRect();
+		group.position.x = rect.left + rect.width  / 2 - w / 2;
+		group.position.y = - ( rect.top + rect.height / 2 - h / 2 );
+
+	}
+
+}
+
+// --- onpaint wrap: first-render gate + sync overlay positions to texture cache ---
+let painted = false;
+const _htmlTexturePaint = canvas.onpaint;
+canvas.onpaint = ( e ) => {
+
+	painted = true;
+	updateOverlayPositions();
+	if ( _htmlTexturePaint ) _htmlTexturePaint.call( canvas, e );
+
+};
+
+function setSize() {
+
+	const w = window.innerWidth;
+	const h = window.innerHeight;
+
+	renderer.setSize( w, h, false );
+
+	const z = h / ( 2 * Math.tan( THREE.MathUtils.degToRad( fov / 2 ) ) );
+	camera.aspect = w / h;
+	camera.near   = z / 100;
+	camera.far    = z * 100;
+	camera.position.z = z;
+	camera.updateProjectionMatrix();
+
+	plane.geometry.dispose();
+	const planeGeo = new THREE.PlaneGeometry( w, h );
+	plane.geometry       = planeGeo;
+	shadowPlane.geometry = planeGeo;
+
+	// 影カメラの ortho 範囲。ライトは右上手前から差すため、shadow camera 座標系の
+	// "up" 軸はおおむね world +Y に対応する。ストーリーが縦に長いとスクロールアウトした
+	// caster がこの軸方向にどんどん離れるため、top を特に大きく取らないと
+	// 影が途中で切れる（caster が shadow map の外 → shadow map に焼かれない）。
+	const d = Math.hypot( w, h );
+	keyLight.shadow.camera.left   = - d * 2;
+	keyLight.shadow.camera.right  =   d * 2;
+	keyLight.shadow.camera.top    =   d * 16;
+	keyLight.shadow.camera.bottom = - d * 2;
+	keyLight.shadow.camera.updateProjectionMatrix();
+
+}
+
+setSize();
+window.addEventListener( 'resize', setSize );
+
+const clock = new THREE.Clock();
+
+renderer.setAnimationLoop( () => {
+
+	if ( ! painted ) return;
+
+	const dt = clock.getDelta();
+	if ( mixer ) mixer.update( dt );
+
+	renderer.render( scene, camera );
+
+} );
+</script>
+</body>
+</html>
