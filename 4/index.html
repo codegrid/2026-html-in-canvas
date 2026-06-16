@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<title>HTML in Canvas — Cyber UI Demo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&display=swap');
+
+body {
+	margin: 0;
+}
+
+.hero {
+	container-type: inline-size;
+	position: relative;
+
+	img {
+		width: 100%;
+	}
+}
+
+.hero-text {
+	--shadow: 0 0 calc( 4 / 1400 * 100cqw ) #fff, 0 0 calc( 8 / 1400 * 100cqw ) #fff, 0 0 calc( 12 / 1400 * 100cqw ) #fff;
+
+	position: absolute;
+	inset: 0 auto 0 calc( 128 / 1400 * 100cqw );
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.hero-text-inner {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: calc( 16 / 1400 * 100cqw );
+	width: max-content;
+	padding: calc( 32 / 1400 * 100cqw ) calc( 128 / 1400 * 100cqw ) calc( 64 / 1400 * 100cqw );
+  font-family: "Shippori Mincho B1", serif;
+	color: #0c633c;
+}
+
+.hero-title {
+	margin: 0;
+	font-size: calc( 64 / 1400 * 100cqw );
+	line-height: 1.2;
+	text-shadow: var(--shadow);
+
+	em {
+		font-style: normal;
+		font-size: 120%;
+		letter-spacing: .2em;
+	}
+}
+
+.hero-lead {
+	margin: 0;
+	font-size: calc( 32 / 1400 * 100cqw );
+	text-shadow: var(--shadow);
+}
+
+.hero-description {
+	margin: 0;
+	font-size: calc( 18 / 1400 * 100cqw );
+	line-height: 2;
+	text-shadow: var(--shadow);
+
+	a {
+		color: #31aa23;
+		text-decoration: underline;
+	}
+}
+
+.hero-text-canvas {
+	display: block;
+	width: 100%;
+}
+
+.hero-link {
+	width: fit-content;
+	padding: calc( 12 / 1400 * 100cqw ) calc( 24 / 1400 * 100cqw );
+	border-radius: 999px;
+	font-size: calc( 18 / 1400 * 100cqw );
+	text-decoration: none;
+	color: #fff;
+	background: url( "./bg.png" );
+}
+</style>
+</head>
+<body>
+
+<p class="page-note">HTML in Canvas が有効なブラウザで表示してください</p>
+
+<div class="hero">
+	<img src="./img.webp" alt="" />
+	<div class="hero-text">
+		<canvas class="hero-text-canvas" layoutsubtree>
+				<div class="hero-text-inner">
+					<p class="hero-title">
+						ひとくちで、<br />
+						<em>潤う緑茶。</em>
+					</p>
+					<p class="hero-lead">
+						みずみずしい香り、<br />
+						すっとほどける軽やかさ。
+					</p>
+					<p class="hero-description">
+						<a href="#">小山田園</a>の茶葉のみを使用した緑茶。<br />
+						玉露の甘みと、煎茶の爽やかさを併せ持つ、<br />
+						みずみずしい味わいが特徴です。
+					</p>
+					<a href="#" class="hero-link">
+						新しい一杯を味わう
+					</a>
+			</div>
+		</canvas>
+	</div>
+</div>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
+
+const canvas  = document.querySelector( '.hero-text-canvas' );
+const content = document.querySelector( '.hero-text-inner' );
+
+const renderer = new THREE.WebGLRenderer( { canvas, antialias: true, alpha: true } );
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+
+// r184 monkey patch for Chrome 150+
+const gl = renderer.getContext();
+if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
+
+	const _orig = gl.texElementImage2D.bind( gl );
+	gl.texElementImage2D = function () {
+
+		const args = Array.from( arguments );
+		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
+
+			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
+
+		} else {
+
+			_orig.apply( gl, args );
+
+		}
+
+	};
+
+}
+
+const fov    = 50;
+const camera = new THREE.PerspectiveCamera( fov, 1, 0.1, 10000 );
+
+const scene = new THREE.Scene();
+
+// --- テキスト板メッシュ ---
+const texture  = new THREE.HTMLTexture( content );
+texture.colorSpace = THREE.SRGBColorSpace;
+const planeMat = new THREE.ShaderMaterial( {
+
+	uniforms: {
+		uMap: { value: texture },
+		uTime: { value: 0 },
+	},
+	vertexShader: /* glsl */`
+		varying vec2 vUv;
+
+		void main() {
+
+			vUv = uv;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+		}
+	`,
+	fragmentShader: /* glsl */`
+		uniform sampler2D uMap;
+		uniform float uTime;
+		varying vec2 vUv;
+
+		// 流れる小川: 細かく区切られた波が上流から下流へ
+		vec2 wave( vec2 p, float t ) {
+
+			vec2 d;
+			d.x  = sin( p.x * 20.0 + p.y * 10.0 - t * 2.0 ) * 0.00125;
+			d.x += sin( p.x * 35.0 - p.y *  5.0 - t * 3.0 ) * 0.00050;
+			d.y  = cos( p.x * 25.0 + p.y * 15.0 - t * 2.5 ) * 0.00100;
+			d.y += cos( p.x * 40.0 + p.y *  8.0 - t * 3.5 ) * 0.00040;
+			return d;
+
+		}
+
+		// 歪み方向と光源の内積を 0..1 にクランプして反射強度に
+		float lit( vec2 d, vec2 L ) {
+
+			return clamp( dot( d, L ) * 500.0, 0.0, 1.0 );
+
+		}
+
+		void main() {
+
+			float t = uTime;
+			vec2  L = normalize( vec2( -1.0, 1.0 ) );
+
+			vec2 d  = wave( vUv, t );
+			vec2 uv = vUv + d;
+
+			// 9 サンプル (中央 + cardinal + diagonal) で広い halo を作る
+			float h0 = lit( d, L );
+			const float r = 0.050;
+			const float c = 0.035; // r/sqrt(2): 周囲 8 サンプルを等距離にする
+			float h1 = lit( wave( vUv + vec2(  r, 0.0 ), t ), L );
+			float h2 = lit( wave( vUv + vec2( -r, 0.0 ), t ), L );
+			float h3 = lit( wave( vUv + vec2( 0.0,  r ), t ), L );
+			float h4 = lit( wave( vUv + vec2( 0.0, -r ), t ), L );
+			float h5 = lit( wave( vUv + vec2(  c,  c ), t ), L );
+			float h6 = lit( wave( vUv + vec2( -c,  c ), t ), L );
+			float h7 = lit( wave( vUv + vec2(  c, -c ), t ), L );
+			float h8 = lit( wave( vUv + vec2( -c, -c ), t ), L );
+
+			// sharp: 中央の鋭いピーク / bloom: 9 サンプル平均の広い halo
+			float sharp = pow( h0, 3.0 ) * 0.20;
+			float bloom = pow( h0, 2.0 )
+			            + pow( h1, 2.0 ) + pow( h2, 2.0 ) + pow( h3, 2.0 ) + pow( h4, 2.0 )
+			            + pow( h5, 2.0 ) + pow( h6, 2.0 ) + pow( h7, 2.0 ) + pow( h8, 2.0 );
+			bloom *= 0.06;
+
+			vec4 src = texture2D( uMap, uv );
+
+			// wet: 歪みが強い部分はわずかに彩度アップ (黒ずませない)
+			float wetness = clamp( length( d ) * 500.0, 0.0, 1.0 );
+			float lum = dot( src.rgb, vec3( 0.299, 0.587, 0.114 ) );
+			src.rgb = mix( vec3( lum ), src.rgb, 1.0 + wetness * 0.2 );
+
+			// 下地色を白へ 70% 寄せた tint で光らせる
+			vec3 hlColor = mix( src.rgb, vec3( 1.0 ), 0.7 );
+			vec3 glow    = hlColor * ( sharp + bloom );
+
+			// テキスト alpha でマスクして add
+			gl_FragColor = vec4( src.rgb + glow * src.a, src.a );
+
+		}
+	`,
+	transparent: true,
+
+} );
+const plane = new THREE.Mesh( new THREE.PlaneGeometry( 1, 1 ), planeMat );
+scene.add( plane );
+
+const clock = new THREE.Clock();
+
+// --- onpaint wrap ---
+let painted = false;
+const _htmlTexturePaint = canvas.onpaint;
+canvas.onpaint = ( e ) => {
+
+	painted = true;
+	if ( _htmlTexturePaint ) _htmlTexturePaint.call( canvas, e );
+
+};
+
+function setSize() {
+
+	const w = content.offsetWidth;
+	const h = content.offsetHeight;
+
+	canvas.style.height = `${ h }px`;
+	renderer.setSize( w, h, false );
+
+	const z = h / ( 2 * Math.tan( THREE.MathUtils.degToRad( fov / 2 ) ) );
+	camera.aspect = w / h;
+	camera.near   = z / 100;
+	camera.far    = z * 100;
+	camera.position.z = z;
+	camera.updateProjectionMatrix();
+
+	plane.geometry.dispose();
+	plane.geometry = new THREE.PlaneGeometry( w, h );
+
+}
+
+new ResizeObserver( setSize ).observe( content );
+
+renderer.setAnimationLoop( () => {
+
+	if ( ! painted ) return;
+	planeMat.uniforms.uTime.value = clock.getElapsedTime();
+	renderer.render( scene, camera );
+
+} );
+</script>
+</body>
+</html>
