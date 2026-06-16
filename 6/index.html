@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<title>HTML in Canvas — Cyber UI Demo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
+
+body {
+	margin: 0;
+	background: url( "./bg.svg" );
+	font-family: 'DotGothic16', monospace;
+}
+
+.open-button {
+	padding: 16px 28px;
+	border: none;
+	font-family: inherit;
+	font-size: 20px;
+	color: #fff;
+	background: #d23f5b;
+	cursor: pointer;
+	transition: transform 0.08s, background 0.2s;
+	box-shadow:
+		0 0 0 4px #1a1a3e,
+		0 0 0 8px #fff,
+		0 0 0 12px #1a1a3e;
+}
+
+.open-button:hover {
+	background: #ec5c79;
+}
+
+.open-button:active {
+	transform: translate( 2px, 2px );
+}
+
+/* ===== Retro 8-bit dialog ===== */
+
+.retro-dialog {
+	position: fixed;
+	inset: 0;
+	z-index: 100;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	font-family: inherit;
+	opacity: 0;
+	transition:
+		opacity .5s .5s,
+		display 1s allow-discrete;
+}
+
+.retro-dialog.is-open {
+	display: flex;
+	opacity: 1;
+	/* transition: opacity .5s .5s; */
+	transition:
+		opacity .5s,
+		display 1s allow-discrete;
+}
+
+.retro-dialog-canvas {
+	display: block;
+}
+
+.retro-dialog-frame {
+	width: min( 480px, 90vw );
+	padding: 0 64px;
+}
+
+.retro-dialog-frame-inner {
+	position: relative;
+	box-sizing: border-box;
+	padding: 32px 28px 28px;
+	background: #1a1a3e;
+
+}
+
+.retro-dialog-title {
+	margin: 0 0 20px;
+	font-size: 24px;
+	font-weight: normal;
+	text-align: center;
+	letter-spacing: 0.1em;
+	color: #ffe14a;
+	text-shadow: 3px 3px 0 #d23f5b;
+}
+
+.retro-dialog-body {
+	margin: 0 0 28px;
+	padding: 16px;
+	font-size: 18px;
+	line-height: 1.9;
+	letter-spacing: 0.04em;
+	background: #0c0c24;
+	box-shadow: inset 0 0 0 2px #5a5a8e;
+}
+
+@keyframes blink {
+
+	0%, 50%   { opacity: 1; }
+	51%, 100% { opacity: 0; }
+
+}
+
+.retro-cursor {
+	display: inline-block;
+	margin-left: 4px;
+	color: #ffe14a;
+	animation: blink 0.8s steps( 1 ) infinite;
+}
+
+.retro-dialog-actions {
+	display: flex;
+	gap: 16px;
+	justify-content: center;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.retro-dialog-actions li {
+	flex: 1;
+	max-width: 160px;
+}
+
+.retro-button {
+	display: block;
+	width: 100%;
+	padding: 12px 20px;
+	border: none;
+	font-family: inherit;
+	font-size: 18px;
+	letter-spacing: 0.08em;
+	color: #1a1a3e;
+	background: #fff;
+	cursor: pointer;
+	transition: transform 0.08s, background 0.2s, color 0.2s;
+	box-shadow:
+		0 0 0 3px #1a1a3e,
+		0 0 0 6px #fff;
+}
+
+.retro-button:hover {
+	color: #1a1a3e;
+	background: #ffe14a;
+}
+
+.retro-button:active {
+	transform: translate( 2px, 2px );
+}
+
+.retro-button--ghost {
+	color: #fff;
+	background: #1a1a3e;
+	box-shadow:
+		0 0 0 3px #fff,
+		0 0 0 6px #1a1a3e;
+}
+
+.retro-button--ghost:hover {
+	color: #1a1a3e;
+	background: #fff;
+}
+
+.retro-heart {
+	display: inline-block;
+	color: #ff6b9d;
+}
+</style>
+</head>
+<body>
+
+<p class="page-note">HTML in Canvas が有効なブラウザで表示してください</p>
+
+
+<button type="button" class="open-button">
+	dialog を ひらく
+</button>
+
+<div class="retro-dialog" role="dialog" aria-modal="true">
+	<canvas class="retro-dialog-canvas" layoutsubtree>
+		<div class="retro-dialog-frame">
+			<div class="retro-dialog-frame-inner">
+				<h2 class="retro-dialog-title">★ おしらせ ★</h2>
+				<p class="retro-dialog-body">
+					この操作を実行しますか？<br />
+					よろしければ「OK」を押してください。<span class="retro-cursor">▼</span>
+				</p>
+				<menu class="retro-dialog-actions">
+					<li>
+						<button type="button" class="retro-button">
+							OK
+						</button>
+					</li>
+					<li>
+						<button type="button" class="retro-button retro-button--ghost">
+							キャンセル
+						</button>
+					</li>
+				</menu>
+			</div>
+		</div>
+	</canvas>
+</div>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
+
+if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
+
+const openButton   = document.querySelector( '.open-button' );
+const modal        = document.querySelector( '.retro-dialog' );
+const canvas       = document.querySelector( '.retro-dialog-canvas' );
+const frame        = document.querySelector( '.retro-dialog-frame' );
+const closeButtons = modal.querySelectorAll( '.retro-button' );
+
+openButton.addEventListener( 'click', () => {
+
+	modal.classList.add( 'is-open' );
+
+} );
+
+closeButtons.forEach( ( button ) => {
+
+	button.addEventListener( 'click', () => modal.classList.remove( 'is-open' ) );
+
+} );
+
+// ===== Three.js + HTML in Canvas =====
+
+const renderer = new THREE.WebGLRenderer( { canvas, antialias: true, alpha: true } );
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+
+// r184 monkey patch for Chrome 150+
+const gl = renderer.getContext();
+if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
+
+	const _orig = gl.texElementImage2D.bind( gl );
+	gl.texElementImage2D = function () {
+
+		const args = Array.from( arguments );
+		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
+
+			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
+
+		} else {
+
+			_orig.apply( gl, args );
+
+		}
+
+	};
+
+}
+
+const camera = new THREE.OrthographicCamera();
+camera.position.z = 1;
+const scene  = new THREE.Scene();
+
+const texture = new THREE.HTMLTexture( frame );
+texture.colorSpace = THREE.SRGBColorSpace;
+
+// uProgress: 0 = 完全に渦巻いた状態 (旅の扉)、1 = 通常表示
+const material = new THREE.ShaderMaterial( {
+
+	uniforms: {
+		uMap:      { value: texture },
+		uProgress: { value: 0 },
+	},
+
+	vertexShader: /* glsl */`
+		varying vec2 vUv;
+		void main() {
+			vUv = uv;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+		}
+	`,
+
+	fragmentShader: /* glsl */`
+		uniform sampler2D uMap;
+		uniform float     uProgress;
+		varying vec2      vUv;
+
+		void main() {
+
+			float p     = uProgress;
+			float invP  = 1.0 - p;
+			float invP2 = invP * invP;
+
+			// 横揺れ: y に応じて x を変位
+			// 波の数 (freq) は p=0 で多く、p=1 に向けて減る
+			vec2 uv = vUv;
+			float freq = mix( 4.0, 80.0, invP );
+			uv.x += sin( uv.y * freq ) * invP2 * 0.15;
+
+			// 範囲外は透過
+			if ( uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 ) discard;
+
+			vec4 col = texture2D( uMap, uv );
+
+			// ピーク時のシアン寄りフラッシュ (旅の扉感)
+			col.rgb += vec3( 0.3, 0.6, 1.0 ) * invP2 * 0.7;
+
+			gl_FragColor = col;
+
+		}
+	`,
+
+	transparent: true,
+
+} );
+
+const plane = new THREE.Mesh( new THREE.PlaneGeometry( 1, 1 ), material );
+scene.add( plane );
+
+let painted = false;
+const _htmlTexturePaint = canvas.onpaint;
+canvas.onpaint = ( e ) => {
+
+	// frame に実寸がある時だけ painted を立てる。
+	// modal が display:none の状態で requestPaint() が空打ちされても
+	// painted が立たないように防御。
+	if ( frame.offsetWidth > 0 && frame.offsetHeight > 0 ) painted = true;
+	if ( _htmlTexturePaint ) _htmlTexturePaint.call( canvas, e );
+
+};
+
+function setSize() {
+
+	const w = frame.offsetWidth;
+	const h = frame.offsetHeight;
+	if ( w === 0 || h === 0 ) return;
+
+	canvas.style.width  = `${ w }px`;
+	canvas.style.height = `${ h }px`;
+	renderer.setSize( w, h, false );
+
+	camera.left   = - w / 2;
+	camera.right  =   w / 2;
+	camera.top    =   h / 2;
+	camera.bottom = - h / 2;
+	camera.updateProjectionMatrix();
+
+	plane.geometry.dispose();
+	plane.geometry = new THREE.PlaneGeometry( w, h );
+
+}
+
+new ResizeObserver( setSize ).observe( frame );
+
+const clock        = new THREE.Clock();
+const TWIST_SPEED  = 1.0; // 1 / 秒 — 1秒で 0 ⇄ 1 を遷移
+
+renderer.setAnimationLoop( () => {
+
+	const dt      = clock.getDelta();
+	const target  = modal.classList.contains( 'is-open' ) ? 1 : 0;
+	const current = material.uniforms.uProgress.value;
+
+	if ( current !== target ) {
+
+		const step = Math.min( Math.abs( target - current ), dt * TWIST_SPEED );
+		material.uniforms.uProgress.value = current + Math.sign( target - current ) * step;
+
+	}
+
+	if ( ! painted ) return;
+	if ( frame.offsetWidth === 0 || frame.offsetHeight === 0 ) return;
+
+	try {
+
+		renderer.render( scene, camera );
+
+	} catch ( e ) {
+
+		// modal が閉じている間に paint record が無効化されたケース。
+		// 次の onpaint まで render を止めて自己修復。
+		if ( e.name === 'InvalidStateError' ) {
+
+			painted = false;
+			return;
+
+		}
+
+		throw e;
+
+	}
+
+} );
+</script>
+</body>
+</html>
