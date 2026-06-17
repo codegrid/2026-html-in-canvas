@@ -565,12 +565,16 @@
 		transitioning = true;
 		document.body.classList.add( 'transitioning' );
 
-		// 1. leave をクローン
+		// 1. leave をクローン (cloneNode はスクロール位置を複製しないので別途取得しておく)
+		const leaveScrollTop = leaveSection.scrollTop;
 		const clone = leaveSection.cloneNode( true );
 
-		// 2. canvas を表示し、クローンを child に挿入
+		// 2. canvas を表示し、クローンを child に挿入してからスクロール位置を反映
+		//    (offsetHeight を読んで layout を強制してから scrollTop を設定しないと反映されない)
 		fxCanvas.style.display = 'block';
 		fxCanvas.appendChild( clone );
+		void clone.offsetHeight;
+		clone.scrollTop = leaveScrollTop;
 
 		// 3. HTMLTexture 生成 — constructor が canvas の onpaint を自動登録する
 		const texture = new THREE.HTMLTexture( clone );
