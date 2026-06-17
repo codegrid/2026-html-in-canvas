@@ -185,14 +185,50 @@ const planeMat = new THREE.ShaderMaterial( {
 		uniform float uTime;
 		varying vec2 vUv;
 
-		// 流れる小川: 細かく区切られた波が上流から下流へ
+		// 2D ハッシュ: セル ID から疑似乱数を生成
+		float hash( vec2 c ) {
+
+			return fract( sin( dot( c, vec2( 127.1, 311.7 ) ) ) * 43758.5453 );
+
+		}
+
+		// セルベースの波: 各セルにランダムな進行方向・位相・速度を割り当て
+		// 2x2 の隣接セルをバイリニア補間して海面のような滑らかな方向ゆらぎを得る
+		// セル格子は時間とともにドリフトさせ、固定位置で同じパターンが繰り返さないようにする
 		vec2 wave( vec2 p, float t ) {
 
-			vec2 d;
-			d.x  = sin( p.x * 20.0 + p.y * 10.0 - t * 2.0 ) * 0.00125;
-			d.x += sin( p.x * 35.0 - p.y *  5.0 - t * 3.0 ) * 0.00050;
-			d.y  = cos( p.x * 25.0 + p.y * 15.0 - t * 2.5 ) * 0.00100;
-			d.y += cos( p.x * 40.0 + p.y *  8.0 - t * 3.5 ) * 0.00040;
+			const float scale = 5.0;                      // 単位 uv あたりのセル数
+			const float amp   = 0.0035;                   // 振幅
+			const float freq  = 12.0;                     // セル内の波数スケール
+			const vec2  drift = vec2( 0.30, 0.18 );       // セル単位 / 秒 の流れ
+
+			vec2 q  = p * scale + drift * t;
+			vec2 id = floor( q );
+			vec2 fr = fract( q );
+
+			vec2 d = vec2( 0.0 );
+
+			for ( int j = 0; j < 2; j ++ ) {
+
+				for ( int i = 0; i < 2; i ++ ) {
+
+					vec2  o     = vec2( float( i ), float( j ) );
+					vec2  nid   = id + o;
+					float ang   = hash( nid )        * 6.2832;
+					vec2  dir   = vec2( cos( ang ), sin( ang ) );
+					float phase = hash( nid + 13.7 ) * 6.2832;
+					float speed = 1.5 + hash( nid + 5.3 ) * 2.0;
+
+					float w = ( 1.0 - abs( o.x - fr.x ) )
+					        * ( 1.0 - abs( o.y - fr.y ) );
+
+					float s = sin( dot( q * freq, dir ) + phase - t * speed );
+					d += dir * s * w * amp;
+
+				}
+
+			}
+
 			return d;
 
 		}
@@ -226,11 +262,11 @@ const planeMat = new THREE.ShaderMaterial( {
 			float h8 = lit( wave( vUv + vec2( -c, -c ), t ), L );
 
 			// sharp: 中央の鋭いピーク / bloom: 9 サンプル平均の広い halo
-			float sharp = pow( h0, 3.0 ) * 0.20;
+			float sharp = pow( h0, 3.0 ) * 0.10;
 			float bloom = pow( h0, 2.0 )
 			            + pow( h1, 2.0 ) + pow( h2, 2.0 ) + pow( h3, 2.0 ) + pow( h4, 2.0 )
 			            + pow( h5, 2.0 ) + pow( h6, 2.0 ) + pow( h7, 2.0 ) + pow( h8, 2.0 );
-			bloom *= 0.06;
+			bloom *= 0.03;
 
 			vec4 src = texture2D( uMap, uv );
 
