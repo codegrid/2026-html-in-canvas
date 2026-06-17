@@ -10,19 +10,18 @@
 
 body {
 	margin: 0;
-	background: url( "./bg.svg" );
+	background: url( "./bg.png" );
 	font-family: 'DotGothic16', monospace;
 }
 
 .open-button {
-	padding: 16px 28px;
+	padding: 16px 24px;
 	border: none;
 	font-family: inherit;
-	font-size: 20px;
+	font-size: 16px;
 	color: #fff;
 	background: #d23f5b;
 	cursor: pointer;
-	transition: transform 0.08s, background 0.2s;
 	box-shadow:
 		0 0 0 4px #1a1a3e,
 		0 0 0 8px #fff,
@@ -75,25 +74,20 @@ body {
 .retro-dialog-frame-inner {
 	position: relative;
 	box-sizing: border-box;
-	padding: 32px 28px 28px;
+	padding: 32px;
 	background: #1a1a3e;
 
 }
 
-.retro-dialog-title {
-	margin: 0 0 20px;
-	font-size: 24px;
-	font-weight: normal;
-	text-align: center;
-	letter-spacing: 0.1em;
-	color: #ffe14a;
-	text-shadow: 3px 3px 0 #d23f5b;
+.retro-dialog-icon {
+	display: flex;
+	justify-content: center;
 }
 
 .retro-dialog-body {
-	margin: 0 0 28px;
+	margin: 0 0 16px;
 	padding: 16px;
-	font-size: 18px;
+	font-size: 16px;
 	line-height: 1.9;
 	letter-spacing: 0.04em;
 	background: #0c0c24;
@@ -134,12 +128,11 @@ body {
 	padding: 12px 20px;
 	border: none;
 	font-family: inherit;
-	font-size: 18px;
+	font-size: 16px;
 	letter-spacing: 0.08em;
 	color: #1a1a3e;
 	background: #fff;
 	cursor: pointer;
-	transition: transform 0.08s, background 0.2s, color 0.2s;
 	box-shadow:
 		0 0 0 3px #1a1a3e,
 		0 0 0 6px #fff;
@@ -186,7 +179,9 @@ body {
 	<canvas class="retro-dialog-canvas" layoutsubtree>
 		<div class="retro-dialog-frame">
 			<div class="retro-dialog-frame-inner">
-				<h2 class="retro-dialog-title">★ おしらせ ★</h2>
+				<div class="retro-dialog-icon">
+					<img src="./img.png" alt="" />
+				</div>
 				<p class="retro-dialog-body">
 					この操作を実行しますか？<br />
 					よろしければ「OK」を押してください。<span class="retro-cursor">▼</span>
@@ -272,6 +267,7 @@ const material = new THREE.ShaderMaterial( {
 	uniforms: {
 		uMap:      { value: texture },
 		uProgress: { value: 0 },
+		uTexSize:  { value: new THREE.Vector2( 1, 1 ) },
 	},
 
 	vertexShader: /* glsl */`
@@ -285,6 +281,7 @@ const material = new THREE.ShaderMaterial( {
 	fragmentShader: /* glsl */`
 		uniform sampler2D uMap;
 		uniform float     uProgress;
+		uniform vec2      uTexSize;
 		varying vec2      vUv;
 
 		void main() {
@@ -293,11 +290,19 @@ const material = new THREE.ShaderMaterial( {
 			float invP  = 1.0 - p;
 			float invP2 = invP * invP;
 
-			// 横揺れ: y に応じて x を変位
+			// 8-bit ドット: CSS 4px を 1 ドットとして量子化
+			const float DOT = 4.0;
+			vec2 dots = uTexSize / DOT;
+
+			// 横揺れ: y を dot 単位で量子化し、x の変位も dot 単位に丸める
 			// 波の数 (freq) は p=0 で多く、p=1 に向けて減る
-			vec2 uv = vUv;
+			float yq = floor( vUv.y * dots.y ) / dots.y;
 			float freq = mix( 4.0, 80.0, invP );
-			uv.x += sin( uv.y * freq ) * invP2 * 0.15;
+			float displacement = sin( yq * freq ) * invP2 * 0.15;
+			displacement = floor( displacement * dots.x + 0.5 ) / dots.x;
+
+			vec2 uv = vUv;
+			uv.x += displacement;
 
 			// 範囲外は透過
 			if ( uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 ) discard;
@@ -341,6 +346,8 @@ function setSize() {
 	canvas.style.height = `${ h }px`;
 	renderer.setSize( w, h, false );
 
+	material.uniforms.uTexSize.value.set( w, h );
+
 	camera.left   = - w / 2;
 	camera.right  =   w / 2;
 	camera.top    =   h / 2;
@@ -354,12 +361,13 @@ function setSize() {
 
 new ResizeObserver( setSize ).observe( frame );
 
-const clock        = new THREE.Clock();
-const TWIST_SPEED  = 1.0; // 1 / 秒 — 1秒で 0 ⇄ 1 を遷移
+const timer       = new THREE.Timer();
+const TWIST_SPEED = 1.0; // 1 / 秒 — 1秒で 0 ⇄ 1 を遷移
 
 renderer.setAnimationLoop( () => {
 
-	const dt      = clock.getDelta();
+	timer.update();
+	const dt      = timer.getDelta();
 	const target  = modal.classList.contains( 'is-open' ) ? 1 : 0;
 	const current = material.uniforms.uProgress.value;
 
