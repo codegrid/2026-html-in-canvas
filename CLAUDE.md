@@ -308,6 +308,33 @@ if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) {
 }
 ```
 
+### layoutsubtree 直下の要素には `width: 100%` を明示する
+
+`<canvas layoutsubtree>` の直接の子要素は仕様上 stacking context + containing block + paint containment を持つが、Chrome 実装では **block / flex container でも width が containing block の 100% に自動展開されない** ケースがある。
+
+通常 DOM では block 要素は親の content width を default で占めるが、layoutsubtree 配下では containing-block 解決ロジックが異なるらしく、子孫の `max-width + auto margin` や flex item の幅計算が main DOM 表示と一致しなくなる。
+
+#### 症状
+
+`<canvas layoutsubtree>` 内に full-viewport 用のセクション (`min-height: 100vh` + `display: flex; align-items: center` 等) を入れ、その内側に `max-width: 1152px; margin: 0 auto` で中央寄せされる grid を置くと、テクスチャに焼き込まれる時の grid 位置が main DOM の表示とズレる。max-width 未満のビューポート (cap が効かない領域) では問題が起きず、max-width 超のビューポートで content が左寄りに/横に伸びて見える。
+
+#### 対策
+
+layoutsubtree 配下に置く可能性のある「フルビュー型」のルート要素には、明示的に `width: 100%` を付ける:
+
+```css
+.MySection {
+	width: 100%;  /* layoutsubtree 配下でも containing block を確実に占有させる */
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	/* ... */
+}
+```
+
+これだけで内側の `max-width + margin: auto` 中央寄せが main DOM と layoutsubtree の両方で同じ結果になる。
+
 ---
 
 ## プライバシー制限
@@ -419,8 +446,8 @@ material.map = new THREE.HTMLTexture( element );
 
 ```idl
 void texElementImage2D(GLenum target, GLenum internalformat,
-                       (Element or ElementImage) element,
-                       optional WebGLCopyElementImageConfig config = {});
+	(Element or ElementImage) element,
+	optional WebGLCopyElementImageConfig config = {});
 ```
 
 r184 の [WebGLTextures.js:1303](https://github.com/mrdoob/three.js/blob/r184/src/renderers/webgl/WebGLTextures.js#L1303) は旧 6 引数のみで呼んでいるため、Chrome 150+ で `The provided value is not of type '(Element or ElementImage)'` エラーになる。
