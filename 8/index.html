@@ -33,6 +33,7 @@ body {
 
 .AshCanvas {
 	display: block;
+	width: 100%;
 }
 
 .AshText {
@@ -40,13 +41,13 @@ body {
 	width: 100%;
 	padding: 256px 32px;
 	font-weight: 900;
-	font-size: 32px;
+	font-size: 24px;
 	font-family: "New Tegomin", serif;
 	text-align: center;
 }
 
 .AshText p {
-	margin: 0;
+	margin: 2em 0;
 }
 
 </style>
@@ -57,7 +58,8 @@ body {
 
 <canvas class="AshCanvas" layoutsubtree>
 	<div class="AshText">
-		<p>文字が灰になっていく。</p>
+		<p>コードグリッドを購読りっど</p>
+		<p>文字が灰になっていく</p>
 	</div>
 </canvas>
 
@@ -155,7 +157,7 @@ const textMaterial = new THREE.ShaderMaterial( {
 			// 高周波 noise + step で pixel スケールに近いハードな穴を空ける。
 			// threshold を下げて erosion 量を倍に。
 			float n = noise( vec2( vUv.x * 320.0 + uTime * 0.5, vUv.y * 320.0 - uTime * 0.3 ) );
-			float erode = step( 0.7, n );
+			float erode = step( 0.8, n );
 			c.a *= 1.0 - erode;
 
 			gl_FragColor = c;
@@ -171,7 +173,7 @@ textPlane.renderOrder = 1;
 scene.add( textPlane );
 
 // --- パーティクル ---
-const PARTICLE_COUNT = 5000;
+const PARTICLE_COUNT = 100000;
 const LIFETIME = 5.0;
 const RISE = 0.55;
 const ALPHA_THRESHOLD = 128;
@@ -211,8 +213,10 @@ const particleMaterial = new THREE.ShaderMaterial( {
 		uLifetime: { value: LIFETIME },
 		uRise: { value: RISE },
 		uPointSize: { value: 1.0 * window.devicePixelRatio },
-		// sRGB エンコード済の値を直接フレームバッファに書く (outputColorSpace=Linear)
-		uColor: { value: new THREE.Vector3( 0xeb / 255, 0xe1 / 255, 0xcf / 255 ) },
+		// CSS の color (#ebe1cf) と一致させる。outputColorSpace=Linear のため
+		// Three.js が hex を decode した linear 値をそのまま FB に書くと暗くなる →
+		// convertLinearToSRGB() で sRGB エンコード済の値に戻してから uniform へ
+		uColor: { value: new THREE.Color( 0xebe1cf ).convertLinearToSRGB() },
 		uHomeReady: { value: 0 },
 	},
 	vertexShader: /* glsl */`
