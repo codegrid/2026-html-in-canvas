@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<title>HTML in Canvas — Ash Text Demo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=New+Tegomin&display=swap');
+
+html, body {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	min-height: 100vh;
+	display: grid;
+	place-items: center;
+	background: #010203;
+	color: #ebe1cf;
+}
+
+.page-note {
+	position: absolute;
+	inset: 16px auto auto 16px;
+	margin: 0;
+	font-family: sans-serif;
+	font-size: 12px;
+	color: #888;
+	z-index: 2;
+}
+
+.AshCanvas {
+	display: block;
+}
+
+.AshText {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 256px 32px;
+	font-weight: 900;
+	font-size: 32px;
+	font-family: "New Tegomin", serif;
+	text-align: center;
+}
+
+.AshText p {
+	margin: 0;
+}
+
+</style>
+</head>
+<body>
+
+<p class="page-note">HTML in Canvas が有効なブラウザで表示してください</p>
+
+<canvas class="AshCanvas" layoutsubtree>
+	<div class="AshText">
+		<p>文字が灰になっていく。</p>
+	</div>
+</canvas>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
+
+const canvas = document.querySelector( '.AshCanvas' );
+const textEl = document.querySelector( '.AshText' );
+
+const renderer = new THREE.WebGLRenderer( { canvas, antialias: true, alpha: true } );
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+// 初期サイズは AshText のレイアウト後に sync する (syncCanvasSize)
+
+// r184 + Chrome 150+: texElementImage2D シグネチャ変更への monkey patch
+const gl = renderer.getContext();
+if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
+
+	const _orig = gl.texElementImage2D.bind( gl );
+	gl.texElementImage2D = function () {
+
+		const args = Array.from( arguments );
+		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
+
+			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
+
+		} else {
+
+			_orig.apply( gl, args );
+
+		}
+
+	};
+
+}
+
+// --- Orthographic camera: NDC 直接 (パースで z drift がスクリーン位置に乗らないように) ---
+const camera = new THREE.OrthographicCamera( -1, 1, 1, -1, -1, 1 );
+
+const scene = new THREE.Scene();
+
+// uTime は textMaterial / particleMaterial で共有する
+const uTime = { value: 0 };
+
+// --- Text plane: HTMLTexture を canvas full-view に描画 ---
+const textTexture = new THREE.HTMLTexture( textEl );
+textTexture.colorSpace = THREE.SRGBColorSpace;
+
+const textMaterial = new THREE.ShaderMaterial( {
+
+	uniforms: {
+		uMap: { value: textTexture },
+		uTime,
+	},
+	vertexShader: /* glsl */`
+		varying vec2 vUv;
+
+		void main() {
+
+			vUv = uv;
+			// PlaneGeometry(2,2) の position ∈ [-1, 1] を NDC 直接出力 (canvas が text サイズに同期しているので aspect 補正不要)
+			gl_Position = vec4( position.xy, 0.0, 1.0 );
+
+		}
+	`,
+	fragmentShader: /* glsl */`
+		uniform sampler2D uMap;
+		uniform float uTime;
+		varying vec2 vUv;
+
+		float hash( vec2 p ) {
+
+			return fract( sin( dot( p, vec2( 127.1, 311.7 ) ) ) * 43758.5453 );
+
+		}
+
+		float noise( vec2 p ) {
+
+			vec2 i = floor( p );
+			vec2 f = fract( p );
+			float a = hash( i );
+			float b = hash( i + vec2( 1.0, 0.0 ) );
+			float c = hash( i + vec2( 0.0, 1.0 ) );
+			float d = hash( i + vec2( 1.0, 1.0 ) );
+			vec2 u = f * f * ( 3.0 - 2.0 * f );
+			return mix( mix( a, b, u.x ), mix( c, d, u.x ), u.y );
+
+		}
+
+		void main() {
+
+			vec4 c = texture2D( uMap, vUv );
+
+			// glyph 全体を pixel 単位でランダムに erode (灰になって削られている表現)
+			// 高周波 noise + step で pixel スケールに近いハードな穴を空ける。
+			// threshold を下げて erosion 量を倍に。
+			float n = noise( vec2( vUv.x * 320.0 + uTime * 0.5, vUv.y * 320.0 - uTime * 0.3 ) );
+			float erode = step( 0.7, n );
+			c.a *= 1.0 - erode;
+
+			gl_FragColor = c;
+
+		}
+	`,
+	transparent: true,
+	depthWrite: false,
+} );
+
+const textPlane = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), textMaterial );
+textPlane.renderOrder = 1;
+scene.add( textPlane );
+
+// --- パーティクル ---
+const PARTICLE_COUNT = 5000;
+const LIFETIME = 5.0;
+const RISE = 0.55;
+const ALPHA_THRESHOLD = 128;
+
+const particleGeometry = new THREE.BufferGeometry();
+const aHome = new Float32Array( PARTICLE_COUNT * 2 );
+const aSeed = new Float32Array( PARTICLE_COUNT * 2 );
+const aPhase = new Float32Array( PARTICLE_COUNT );
+const aDepth = new Float32Array( PARTICLE_COUNT );
+
+const Z_RANGE = 1.0; // world units, particles spread in z by ±Z_RANGE/2 from text plane
+
+for ( let i = 0; i < PARTICLE_COUNT; i ++ ) {
+
+	aSeed[ i * 2     ] = Math.random();
+	aSeed[ i * 2 + 1 ] = Math.random();
+	aPhase[ i ] = Math.random();
+	aDepth[ i ] = ( Math.random() - 0.5 ) * Z_RANGE;
+
+}
+
+const homeAttr  = new THREE.BufferAttribute( aHome,  2 );
+const seedAttr  = new THREE.BufferAttribute( aSeed,  2 );
+const phaseAttr = new THREE.BufferAttribute( aPhase, 1 );
+const depthAttr = new THREE.BufferAttribute( aDepth, 1 );
+
+particleGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( PARTICLE_COUNT * 3 ), 3 ) );
+particleGeometry.setAttribute( 'aHome',  homeAttr  );
+particleGeometry.setAttribute( 'aSeed',  seedAttr  );
+particleGeometry.setAttribute( 'aPhase', phaseAttr );
+particleGeometry.setAttribute( 'aDepth', depthAttr );
+
+const particleMaterial = new THREE.ShaderMaterial( {
+
+	uniforms: {
+		uTime,
+		uLifetime: { value: LIFETIME },
+		uRise: { value: RISE },
+		uPointSize: { value: 1.0 * window.devicePixelRatio },
+		// sRGB エンコード済の値を直接フレームバッファに書く (outputColorSpace=Linear)
+		uColor: { value: new THREE.Vector3( 0xeb / 255, 0xe1 / 255, 0xcf / 255 ) },
+		uHomeReady: { value: 0 },
+	},
+	vertexShader: /* glsl */`
+		attribute vec2 aHome;
+		attribute vec2 aSeed;
+		attribute float aPhase;
+		attribute float aDepth;
+
+		uniform float uTime;
+		uniform float uLifetime;
+		uniform float uRise;
+		uniform float uPointSize;
+		uniform float uHomeReady;
+
+		varying float vAlpha;
+
+		float hash( vec2 p ) {
+
+			return fract( sin( dot( p, vec2( 127.1, 311.7 ) ) ) * 43758.5453 );
+
+		}
+
+		float noise( vec2 p ) {
+
+			vec2 i = floor( p );
+			vec2 f = fract( p );
+			float a = hash( i );
+			float b = hash( i + vec2( 1.0, 0.0 ) );
+			float c = hash( i + vec2( 0.0, 1.0 ) );
+			float d = hash( i + vec2( 1.0, 1.0 ) );
+			vec2 u = f * f * ( 3.0 - 2.0 * f );
+			return mix( mix( a, b, u.x ), mix( c, d, u.x ), u.y );
+
+		}
+
+		// スカラーポテンシャル (2 周波を重ねて時間で位相シフト)
+		float potential( vec2 p, float tt ) {
+
+			return noise( p + vec2( tt * 0.20, - tt * 0.05 ) )
+			     + 0.5 * noise( p * 2.3 + vec2( - tt * 0.12, tt * 0.18 ) );
+
+		}
+
+		// 有限差分で curl を取って divergence-free な 2D 流れにする
+		vec2 curlNoise( vec2 p, float tt ) {
+
+			const float eps = 0.05;
+			float a = potential( p + vec2( 0.0, eps ), tt );
+			float b = potential( p - vec2( 0.0, eps ), tt );
+			float c = potential( p + vec2( eps, 0.0 ), tt );
+			float d = potential( p - vec2( eps, 0.0 ), tt );
+			return vec2( a - b, - ( c - d ) ) / ( 2.0 * eps );
+
+		}
+
+		void main() {
+
+			float t = fract( uTime / uLifetime + aPhase );
+
+			// aHome (0..1) を NDC ±1 へ (ortho カメラなので世界 = NDC)
+			vec2 home_ndc = ( aHome - 0.5 ) * 2.0;
+
+			// curl noise (domain warp で大小の渦を混在)
+			vec2 flowP = aHome * 5.0 + aSeed * 1.5 + vec2( aDepth * 4.0, 0.0 );
+			vec2 warp = curlNoise( flowP * 0.7, uTime * 0.5 ) * 0.4;
+			vec2 curl = curlNoise( flowP + warp, uTime * 1.1 );
+
+			// spread は緩い ease-in (pow(t, 1.2)) で序盤のまっすぐ直進区間を短く。
+			// 振幅を上げて末期の swirl を強める。curl.y は rise (0.40) に常に負ける範囲に。
+			float spread = pow( t, 1.2 );
+			vec2 drift_xy = vec2( curl.x * 0.50, curl.y * 0.18 ) * spread;
+
+			// 上昇 + 右方向の wind (左からのそよ風)
+			// wind は uTime ベースの 1D noise で強弱を変調 (約 0.1〜0.6 の範囲でゆっくり振れる)
+			float rise = ( 1.0 - pow( 1.0 - t, 2.5 ) ) * uRise;
+			float wind = mix( 0.10, 0.60, noise( vec2( uTime * .75, 0.0 ) ) );
+			vec2 advect = vec2( rise * 0.50 + t * wind, rise );
+
+			vec2 pos = home_ndc + drift_xy + advect;
+
+			gl_Position = vec4( pos, 0.0, 1.0 );
+
+			// テキストの輪郭から立ち上がるように見せるため、t=0 から可視。後半でゆっくり消える。
+			vAlpha = 1.0 - smoothstep( 0.35, 1.0, t );
+			// aDepth を atmospheric perspective として使う (奥=薄く)
+			vAlpha *= mix( 0.45, 1.0, clamp( ( aDepth + 0.5 ) / 1.0, 0.0, 1.0 ) );
+			vAlpha *= uHomeReady;
+
+			// strict 1 CSS px
+			gl_PointSize = uPointSize;
+
+		}
+	`,
+	fragmentShader: /* glsl */`
+		uniform vec3 uColor;
+		varying float vAlpha;
+
+		void main() {
+
+			// 1px ベースで edge smoothstep なし、くっきりした dot。alpha を抑えて軽い煙の透明感に
+			gl_FragColor = vec4( uColor, vAlpha * 0.55 );
+
+		}
+	`,
+	transparent: true,
+	depthWrite: false,
+	blending: THREE.NormalBlending,
+} );
+
+const particles = new THREE.Points( particleGeometry, particleMaterial );
+particles.renderOrder = 0;
+scene.add( particles );
+
+// --- canvas サイズを AshText のサイズに同期 ---
+// AshText の content サイズを測り、canvas の CSS サイズと backing buffer をそれに合わせる。
+// text plane は canvas いっぱい (rectCenter=0, rectHalfSize=1) に描く。
+let canvasCssW = 0;
+let canvasCssH = 0;
+
+function syncCanvasSize() {
+
+	const w = textEl.offsetWidth;
+	const h = textEl.offsetHeight;
+	if ( w === 0 || h === 0 ) return false;
+	if ( w === canvasCssW && h === canvasCssH ) return true;
+
+	canvasCssW = w;
+	canvasCssH = h;
+	renderer.setSize( w, h, true );
+
+	return true;
+
+}
+
+// --- home position サンプリング: HTMLTexture を RT に焼いて readPixels ---
+const sampleScene = new THREE.Scene();
+const sampleMaterial = new THREE.ShaderMaterial( {
+
+	uniforms: { uMap: { value: textTexture } },
+	vertexShader: /* glsl */`
+		varying vec2 vUv;
+		void main() {
+			vUv = uv;
+			gl_Position = vec4( position.xy, 0.0, 1.0 );
+		}
+	`,
+	fragmentShader: /* glsl */`
+		varying vec2 vUv;
+		uniform sampler2D uMap;
+		void main() { gl_FragColor = texture2D( uMap, vUv ); }
+	`,
+	transparent: true,
+} );
+const samplePlane = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), sampleMaterial );
+sampleScene.add( samplePlane );
+const sampleCamera = new THREE.OrthographicCamera( -1, 1, 1, -1, -1, 1 );
+
+function sampleHomes() {
+
+	const rect = textEl.getBoundingClientRect();
+	const dpr = window.devicePixelRatio;
+	const w = Math.max( 4, Math.floor( rect.width  * dpr ) );
+	const h = Math.max( 4, Math.floor( rect.height * dpr ) );
+
+	const rt = new THREE.WebGLRenderTarget( w, h, {
+		minFilter: THREE.LinearFilter,
+		magFilter: THREE.LinearFilter,
+		format: THREE.RGBAFormat,
+		type: THREE.UnsignedByteType,
+	} );
+
+	const prevTarget = renderer.getRenderTarget();
+	renderer.setRenderTarget( rt );
+	renderer.setClearColor( 0x000000, 0 );
+	renderer.clear();
+	renderer.render( sampleScene, sampleCamera );
+	renderer.setRenderTarget( prevTarget );
+
+	const buf = new Uint8Array( w * h * 4 );
+	renderer.readRenderTargetPixels( rt, 0, 0, w, h, buf );
+	rt.dispose();
+
+	const opaque = [];
+	for ( let y = 0; y < h; y ++ ) {
+
+		for ( let x = 0; x < w; x ++ ) {
+
+			if ( buf[ ( y * w + x ) * 4 + 3 ] > ALPHA_THRESHOLD ) {
+
+				opaque.push( x, y );
+
+			}
+
+		}
+
+	}
+
+	if ( opaque.length === 0 ) return false;
+
+	const n = opaque.length / 2;
+	for ( let i = 0; i < PARTICLE_COUNT; i ++ ) {
+
+		const idx = ( Math.random() * n ) | 0;
+		const px = opaque[ idx * 2     ];
+		const py = opaque[ idx * 2 + 1 ];
+		aHome[ i * 2     ] = px / w;
+		aHome[ i * 2 + 1 ] = py / h;
+
+	}
+
+	homeAttr.needsUpdate = true;
+	return true;
+
+}
+
+// --- 初回 paint 検出 ---
+let firstPainted = false;
+let needHomeResample = false;
+
+const _htmlTexturePaint = canvas.onpaint;
+
+canvas.onpaint = ( e ) => {
+
+	if ( _htmlTexturePaint ) _htmlTexturePaint.call( canvas, e );
+
+	const sized = syncCanvasSize();
+
+	if ( sized && ! firstPainted ) {
+
+		firstPainted = true;
+		needHomeResample = true;
+
+	}
+
+};
+
+// --- resize: 主に DPR 変化 (ズームなど) に対応。AshText 自体は固定サイズなので普通は再 paint で十分 ---
+window.addEventListener( 'resize', () => {
+
+	particleMaterial.uniforms.uPointSize.value = 1.0 * window.devicePixelRatio;
+	if ( syncCanvasSize() && firstPainted ) needHomeResample = true;
+
+} );
+
+// --- メインループ ---
+renderer.setAnimationLoop( ( now ) => {
+
+	if ( ! firstPainted ) return;
+
+	if ( needHomeResample ) {
+
+		if ( sampleHomes() ) {
+
+			needHomeResample = false;
+			particleMaterial.uniforms.uHomeReady.value = 1;
+
+		}
+
+	}
+
+	uTime.value = now * 0.001;
+	renderer.render( scene, camera );
+
+} );
+
+</script>
+</body>
+</html>
