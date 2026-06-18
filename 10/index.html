@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<title>HTML in Canvas — Glitch Effect Demo</title>
+<link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+<canvas class="PageEffect" layoutsubtree>
+
+<div class="Page">
+
+	<header class="PageHeader">
+		<div class="PageHeader__Logo">
+			<img src="./img/img_001.svg" alt="Script." />
+			AI-Powered Fountain Pen
+		</div>
+		<nav>
+			<a href="#">特徴</a>
+			<a href="#">使い方</a>
+			<a href="#">仕様</a>
+			<a href="#">FAQ</a>
+		</nav>
+		<a
+			class="PageHeader__BuyButton"
+			href="#"
+		>
+			購入する
+		</a>
+	</header>
+
+
+	<div class="Hero">
+		<div class="Hero__Inner">
+			<p class="Hero__Catchphrase">
+				美しい文字は、<br />
+				才能じゃない。
+			</p>
+			<p class="Hero__Lead">
+				AIがあなたの筆跡とリズムを学習し、<br />
+				読みやすく、美しい文字へと導く万年筆。
+			</p>
+			<div class="Hero__Image">
+				<img src="./img/img_002.webp" alt="" />
+			</div>
+			<a
+				href="#"
+				class="Hero__MoreButton"
+			>
+				詳しく見る
+			</a>
+			<div class="Hero__Award">
+				<img src="./img/img_003.svg" alt="Great Design Products 受賞プロダクト" />
+			</div>
+		</div>
+	</div>
+
+	<div class="Experience">
+		<div class="Experience__Inner">
+			<div class="Experience__Text">
+				<h2 class="Experience__Title">
+					書くたびに、<br />
+					上手くなる。
+				</h2>
+				<p>
+					筆圧・速度・感覚を解析し、<br />
+					AIが最適なバランスを導き出し、<br />
+					あなたの「伝わる文字」をサポート。<br />
+					あなたが書く文字を認識し、<br />
+					自動で配色もサポートします。
+				</p>
+			</div>
+			<div class="Experience__Compare">
+				<div class="Experience__Before">
+					<p class="Experience__Label">Before</p>
+					<img src="./img/img_004.webp" alt="" />
+					<p>本製品使用前（筆跡の癖が強い例）</p>
+				</div>
+				<div class="Experience__After">
+					<p class="Experience__Label">After</p>
+					<img src="./img/img_005.webp" alt="" />
+					<p>本製品使用後</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="Features">
+		<h2 class="Features__Title">
+			AIが、あなたの書く体験を進化させる。
+		</h2>
+		<ul class="Features__List">
+			<li>
+				<img src="./img/img_006.svg" alt="" />
+				<h3>
+					書き方を解析
+				</h3>
+				<p>
+					筆圧・速度・角度を高精度に計算。<br />
+					AIがあなたの癖を数値化します。
+				</p>
+			</li>
+			<li>
+				<img src="./img/img_007.svg" alt="" />
+				<h3>
+					座標誘導
+				</h3>
+				<p>
+					指先への電気刺激により、<br />
+					最適な書き方へ誘導します。
+				</p>
+			</li>
+			<li>
+				<img src="./img/img_008.svg" alt="" />
+				<h3>
+					配色サポート
+				</h3>
+				<p>
+					AIが言語の種類を認識し、<br />
+					自動で最適な配色を提案します。
+				</p>
+			</li>
+		</ul>
+	</div>
+
+
+	<footer class="PageFooter">
+		<div class="PageFooter__Inner">
+			<div class="PageFooter__Image">
+				<img src="./img/img_009.webp" alt="" />
+			</div>
+			<p class="PageFooter__Catchphrase">
+				<em>The future of writing.</em>
+				テクノロジーが、書くことをもっと自由にする。
+			</p>
+			<a
+				class="PageFooter__BuyButton"
+				href="#"
+			>
+				購入する
+			</a>
+		</div>
+	</footer>
+
+</div>
+
+</canvas>
+
+
+<script type="importmap">
+{
+	"imports": {
+		"three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+	}
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+const canvas      = document.querySelector( '.PageEffect' );
+const pageElement = canvas.querySelector( '.Page' );
+
+const renderer = new THREE.WebGLRenderer( { canvas, antialias: true, alpha: true } );
+renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
+renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+
+// r184 + Chrome 150+ の texElementImage2D シグネチャ差を吸収
+const gl = renderer.getContext();
+if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
+
+	const _orig = gl.texElementImage2D.bind( gl );
+	gl.texElementImage2D = function () {
+
+		const args = Array.from( arguments );
+		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
+
+			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
+
+		} else {
+
+			_orig.apply( gl, args );
+
+		}
+
+	};
+
+}
+
+const scene  = new THREE.Scene();
+const camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
+
+const pageTexture = new THREE.HTMLTexture( pageElement );
+pageTexture.minFilter = THREE.LinearFilter;
+pageTexture.magFilter = THREE.LinearFilter;
+pageTexture.flipY = false;
+
+const material = new THREE.ShaderMaterial( {
+	uniforms: {
+		tMap: { value: pageTexture },
+		uAmount: { value: 0 },
+		uSeed: { value: 0 },
+		uResolution: { value: new THREE.Vector2( window.innerWidth, window.innerHeight ) },
+	},
+	vertexShader: /* glsl */`
+		varying vec2 vUv;
+
+		void main() {
+
+			vUv = uv;
+			gl_Position = vec4( position, 1.0 );
+
+		}
+	`,
+	fragmentShader: /* glsl */`
+		precision highp float;
+
+		uniform sampler2D tMap;
+		uniform float uAmount;
+		uniform float uSeed;
+		uniform vec2 uResolution;
+
+		varying vec2 vUv;
+
+		float hash11( float x ) {
+
+			return fract( sin( x * 78.233 ) * 43758.5453 );
+
+		}
+
+		void main() {
+
+			// flipY=false にしているので、HTML の top が v=0。NDC quad の vUv は下が 0 なので反転して渡す。
+			vec2 uv = vec2( vUv.x, 1.0 - vUv.y );
+			float amount = uAmount;
+
+			if ( amount <= 0.0 ) {
+
+				gl_FragColor = texture2D( tMap, uv );
+				return;
+
+			}
+
+			float cRows = 36.0;
+			float fRows = 240.0;
+
+			float cBand = floor( uv.y * cRows );
+			float fBand = floor( uv.y * fRows );
+
+			float cAct = pow( hash11( cBand + uSeed * 13.0 ), 2.0 );
+			float fAct = pow( hash11( fBand + uSeed * 91.0 ), 4.0 );
+
+			float cDir = hash11( cBand + uSeed * 71.0 ) < 0.5 ? - 1.0 : 1.0;
+			float fDir = hash11( fBand + uSeed * 17.0 ) < 0.5 ? - 1.0 : 1.0;
+
+			float maxShiftPx = uResolution.x * 0.05;
+			float shiftPx = ( cAct * 0.7 * cDir + fAct * 0.3 * fDir ) * maxShiftPx * amount;
+			float shiftU = shiftPx / uResolution.x;
+
+			vec2 shiftedUv = vec2( uv.x + shiftU, uv.y );
+
+			float rgbShiftPx = 5.0 * amount;
+			float rgbShiftU = rgbShiftPx / uResolution.x;
+
+			float r = texture2D( tMap, shiftedUv + vec2( rgbShiftU, 0.0 ) ).r;
+			float g = texture2D( tMap, shiftedUv ).g;
+			float b = texture2D( tMap, shiftedUv - vec2( rgbShiftU, 0.0 ) ).b;
+			float a = texture2D( tMap, shiftedUv ).a;
+
+			gl_FragColor = vec4( r, g, b, a );
+
+		}
+	`,
+} );
+
+const quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), material );
+scene.add( quad );
+
+window.addEventListener( 'resize', () => {
+
+	const width  = window.innerWidth;
+	const height = window.innerHeight;
+	renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
+	renderer.setSize( width, height );
+	material.uniforms.uResolution.value.set( width, height );
+
+} );
+
+let painted = false;
+const _htmlTexturePaint = canvas.onpaint;
+canvas.onpaint = ( e ) => {
+
+	painted = true;
+	if ( _htmlTexturePaint ) _htmlTexturePaint.call( canvas, e );
+
+};
+
+// プロシージャル生成: 毎バーストごとに total / spike 数 / 各 spike の duration / amp / gap を独立にランダム決定。
+// 固定の opener は持たない。総時間は heavy-tailed 分布で、多くは短く稀に長い。
+
+let burst    = null;
+let firstRun = true;
+
+function scheduleNextBurst() {
+
+	const minDelay = firstRun ? 1000 : 1500;
+	const maxDelay = firstRun ? 2000 : 3500;
+	firstRun = false;
+
+	const delay = minDelay + Math.random() * ( maxDelay - minDelay );
+	setTimeout( startBurst, delay );
+
+}
+
+function buildSpikesForBurst() {
+
+	const r = Math.random();
+	const targetMs = 120 + Math.pow( r, 4 ) * 1800;
+
+	const spikes = [];
+	let elapsed = 0;
+
+	while ( elapsed < targetMs ) {
+
+		const duration = 25 + Math.random() * 110;
+		const gap      = Math.pow( Math.random(), 2 ) * 100;
+		const amp      = 0.3 + Math.pow( Math.random(), 0.7 ) * 2.0;
+		spikes.push( { amp, duration, gap } );
+		elapsed += duration + gap;
+
+	}
+
+	return spikes;
+
+}
+
+function startBurst() {
+
+	const spikes = buildSpikesForBurst();
+	const total  = spikes.reduce( ( s, sp ) => s + sp.duration + sp.gap, 0 );
+
+	burst = {
+		startTime: performance.now(),
+		spikes,
+		seeds: spikes.map( () => Math.random() * 1000 ),
+		total,
+	};
+
+}
+
+function updateGlitchUniforms( now ) {
+
+	if ( ! burst ) {
+
+		material.uniforms.uAmount.value = 0;
+		return;
+
+	}
+
+	const t = now - burst.startTime;
+
+	if ( t >= burst.total ) {
+
+		material.uniforms.uAmount.value = 0;
+		burst = null;
+		scheduleNextBurst();
+		return;
+
+	}
+
+	let cursor = 0;
+	let activeAmp  = 0;
+	let activeSeed = 0;
+
+	for ( let i = 0; i < burst.spikes.length; i ++ ) {
+
+		const spike = burst.spikes[ i ];
+		if ( t >= cursor && t < cursor + spike.duration ) {
+
+			activeAmp  = spike.amp;
+			activeSeed = burst.seeds[ i ];
+			break;
+
+		}
+		cursor += spike.duration + spike.gap;
+
+	}
+
+	material.uniforms.uAmount.value = activeAmp;
+	material.uniforms.uSeed.value   = activeSeed;
+
+}
+
+scheduleNextBurst();
+
+renderer.setAnimationLoop( () => {
+
+	if ( ! painted ) return;
+
+	updateGlitchUniforms( performance.now() );
+	renderer.render( scene, camera );
+
+} );
+</script>
+</body>
+</html>
