@@ -8,6 +8,7 @@
 <style>
 body {
 	margin: 0;
+	background: #2a2a2a;
 }
 
 .page-note {
@@ -542,6 +543,21 @@ renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 
+const backgroundCanvas = document.createElement( 'canvas' );
+backgroundCanvas.width = 2;
+backgroundCanvas.height = 512;
+
+const backgroundContext = backgroundCanvas.getContext( '2d' );
+const backgroundGradient = backgroundContext.createLinearGradient( 0, 0, 0, backgroundCanvas.height );
+backgroundGradient.addColorStop( 0, '#9BC5C3' );
+backgroundGradient.addColorStop( 1, '#616161' );
+backgroundContext.fillStyle = backgroundGradient;
+backgroundContext.fillRect( 0, 0, backgroundCanvas.width, backgroundCanvas.height );
+
+const backgroundTexture = new THREE.CanvasTexture( backgroundCanvas );
+backgroundTexture.colorSpace = THREE.SRGBColorSpace;
+scene.background = backgroundTexture;
+
 // r184 + Chrome 150+ の texElementImage2D シグネチャ差を吸収
 const gl = renderer.getContext();
 if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
@@ -576,24 +592,38 @@ window.addEventListener( 'resize', () => {
 
 } );
 
-const keyLight = new THREE.DirectionalLight( 0xffffff, 1.2 );
+const keyLight = new THREE.DirectionalLight( 0xffffff, 1.5 );
 keyLight.position.set( 1.5, 3, 2.5 );
 
 scene.add(
-	new THREE.HemisphereLight( 0xf6f8ff, 0xcfc6bc, .9 ),
-	new THREE.AmbientLight( 0xffffff, .45 ),
+	new THREE.HemisphereLight( 0xf6f8ff, 0xcfc6bc, 1 ),
+	new THREE.AmbientLight( 0xffffff, .75 ),
 	keyLight,
 );
 
 scene.add( new THREE.GridHelper( 10, 10 ) );
 
+const glassCylinder = new THREE.Mesh(
+	new THREE.CylinderGeometry( .2, .2, .8, 32 ),
+	new THREE.MeshPhysicalMaterial( {
+		color: 0xffffff,
+		transmission: .9,
+		thickness: 0.2,
+		ior: 1.5,
+		roughness: 0,
+	} )
+);
+glassCylinder.position.set( .75, .4, .5 );
+scene.add( glassCylinder );
+
+
 let painted = false;
 let screenMesh = null;
 let screenCornersLocal = null;
 
-new GLTFLoader().load( './pc.glb', ( gltf ) => {
+new GLTFLoader().load( './pc.glb', ( { scene: pc } ) => {
 
-	screenMesh = gltf.scene.children[ 0 ].children[ 0 ].children[ 2 ];
+	screenMesh = pc.children[ 0 ].children[ 0 ].children[ 2 ];
 
 	const screenTexture = new THREE.HTMLTexture( screenElement );
 	screenTexture.minFilter = THREE.LinearFilter;
@@ -620,11 +650,33 @@ new GLTFLoader().load( './pc.glb', ( gltf ) => {
 		return new THREE.Vector3( posAttr.getX( bestIdx ), posAttr.getY( bestIdx ), posAttr.getZ( bestIdx ) );
 
 	};
+	// 湾曲した surface 上の corner 頂点をそのまま使うと、中央でヒットエリアが
+	// 大きくズレる。bbox center を通る平面に corner を投影して、誤差を平均化する。
+	const tlOrig = findVertexByUV( 0, 0 );
+	const trOrig = findVertexByUV( 1, 0 );
+	const brOrig = findVertexByUV( 1, 1 );
+	const blOrig = findVertexByUV( 0, 1 );
+
+	const uAxis = new THREE.Vector3().subVectors( trOrig, tlOrig ).normalize();
+	const vAxis = new THREE.Vector3().subVectors( blOrig, tlOrig ).normalize();
+	const nAxis = new THREE.Vector3().crossVectors( uAxis, vAxis ).normalize();
+
+	screenMesh.geometry.computeBoundingBox();
+	const bbCenter = screenMesh.geometry.boundingBox.getCenter( new THREE.Vector3() );
+
+	const projectToCenterPlane = ( p ) => {
+
+		const offset = new THREE.Vector3().subVectors( p, bbCenter );
+		const distAlongNormal = offset.dot( nAxis );
+		return p.clone().sub( nAxis.clone().multiplyScalar( distAlongNormal ) );
+
+	};
+
 	screenCornersLocal = {
-		tl: findVertexByUV( 0, 0 ),
-		tr: findVertexByUV( 1, 0 ),
-		br: findVertexByUV( 1, 1 ),
-		bl: findVertexByUV( 0, 1 ),
+		tl: projectToCenterPlane( tlOrig ),
+		tr: projectToCenterPlane( trOrig ),
+		br: projectToCenterPlane( brOrig ),
+		bl: projectToCenterPlane( blOrig ),
 	};
 
 	screenElement.style.transformOrigin = '0 0';
@@ -638,7 +690,7 @@ new GLTFLoader().load( './pc.glb', ( gltf ) => {
 
 	};
 
-	scene.add( gltf.scene );
+	scene.add( pc );
 
 } );
 
