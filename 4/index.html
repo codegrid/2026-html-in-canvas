@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
-<title>HTML in Canvas — Cyber UI Demo</title>
+<title>HTML in Canvas — Water Distortion Demo</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&display=swap');
 
@@ -12,7 +12,7 @@ body {
 	margin: 0;
 }
 
-.hero {
+.Hero {
 	container-type: inline-size;
 	position: relative;
 
@@ -21,7 +21,7 @@ body {
 	}
 }
 
-.hero-text {
+.Hero__Text {
 	--shadow: 0 0 calc( 4 / 1400 * 100cqw ) #fff, 0 0 calc( 8 / 1400 * 100cqw ) #fff, 0 0 calc( 12 / 1400 * 100cqw ) #fff;
 
 	position: absolute;
@@ -31,7 +31,7 @@ body {
 	justify-content: center;
 }
 
-.hero-text-inner {
+.Hero__TextInner {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -42,7 +42,7 @@ body {
 	color: #0c633c;
 }
 
-.hero-title {
+.Hero__Title {
 	margin: 0;
 	font-size: calc( 64 / 1400 * 100cqw );
 	line-height: 1.2;
@@ -55,13 +55,13 @@ body {
 	}
 }
 
-.hero-lead {
+.Hero__Lead {
 	margin: 0;
 	font-size: calc( 32 / 1400 * 100cqw );
 	text-shadow: var(--shadow);
 }
 
-.hero-description {
+.Hero__Description {
 	margin: 0;
 	font-size: calc( 18 / 1400 * 100cqw );
 	line-height: 2;
@@ -73,12 +73,12 @@ body {
 	}
 }
 
-.hero-text-canvas {
+.Hero__TextCanvas {
 	display: block;
 	width: 100%;
 }
 
-.hero-link {
+.Hero__Link {
 	width: fit-content;
 	padding: calc( 12 / 1400 * 100cqw ) calc( 24 / 1400 * 100cqw );
 	border-radius: 999px;
@@ -96,27 +96,27 @@ body {
 </head>
 <body>
 
-<p class="page-note">HTML in Canvas が有効なブラウザで表示してください</p>
+<p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
 
-<div class="hero">
+<div class="Hero">
 	<img src="./img.webp" alt="" />
-	<div class="hero-text">
-		<canvas class="hero-text-canvas" layoutsubtree>
-				<div class="hero-text-inner">
-					<p class="hero-title">
+	<div class="Hero__Text">
+		<canvas class="Hero__TextCanvas" layoutsubtree>
+				<div class="Hero__TextInner">
+					<p class="Hero__Title">
 						ひとくちで、<br />
 						<em>潤う緑茶。</em>
 					</p>
-					<p class="hero-lead">
+					<p class="Hero__Lead">
 						みずみずしい香り、<br />
 						すっとほどける軽やかさ。
 					</p>
-					<p class="hero-description">
+					<p class="Hero__Description">
 						<a href="#">小山田園</a>の茶葉のみを使用した緑茶。<br />
 						玉露の甘みと、煎茶の爽やかさを併せ持つ、<br />
 						みずみずしい味わいが特徴です。
 					</p>
-					<a href="#" class="hero-link">
+					<a href="#" class="Hero__Link">
 						新しい一杯を味わう
 					</a>
 			</div>
@@ -127,8 +127,8 @@ body {
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
 
-const canvas  = document.querySelector( '.hero-text-canvas' );
-const content = document.querySelector( '.hero-text-inner' );
+const canvas  = document.querySelector( '.Hero__TextCanvas' );
+const content = document.querySelector( '.Hero__TextInner' );
 
 const renderer = new THREE.WebGLRenderer( { canvas, antialias: true, alpha: true } );
 renderer.setPixelRatio( window.devicePixelRatio );

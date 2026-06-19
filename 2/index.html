@@ -26,7 +26,7 @@ body {
 	background: #0d0d14;
 }
 
-.page-note {
+.PageNote {
 	margin: 0;
 	font-family: monospace;
 	font-size: 12px;
@@ -34,7 +34,7 @@ body {
 	color: #999;
 }
 
-.controls {
+.Controls {
 	display: flex;
 	gap: 16px;
 	font-family: monospace;
@@ -42,18 +42,18 @@ body {
 	color: #ccc;
 }
 
-.controls label {
+.Controls label {
 	display: inline-flex;
 	align-items: center;
 	gap: 4px;
 	cursor: pointer;
 }
 
-.canvas {
+.CardCanvas {
 	display: block;
 }
 
-.card {
+.Card {
 	position: relative;
 	width: 480px;
 	height: 670px;
@@ -62,7 +62,7 @@ body {
 	background: linear-gradient(165deg, #7a8492 0%, #4e5462 48%, #252830 100%);
 }
 
-.card::after {
+.Card::after {
 	content: '';
 	position: absolute;
 	inset: 0;
@@ -73,7 +73,7 @@ body {
 	pointer-events: none;
 }
 
-.card-inner {
+.Card__Inner {
 	position: relative;
 	z-index: 2;
 	display: flex;
@@ -84,7 +84,7 @@ body {
 	padding: 12px;
 }
 
-.card-header {
+.Card__Header {
 	display: flex;
 	flex-shrink: 0;
 	align-items: center;
@@ -100,7 +100,7 @@ body {
 	);
 }
 
-.card-name {
+.Card__Name {
 	flex: 1;
 	min-width: 0;
 	padding: 0;
@@ -111,7 +111,7 @@ body {
 	background: transparent;
 }
 
-.card-cost {
+.Card__Cost {
 	flex-shrink: 0;
 	width: 58px;
 	padding: 0;
@@ -124,7 +124,7 @@ body {
 	background: transparent;
 }
 
-.card-art-frame {
+.Card__ArtFrame {
 	flex-shrink: 0;
 	box-sizing: border-box;
 	height: 268px;
@@ -133,14 +133,14 @@ body {
 	overflow: hidden;
 }
 
-.card-art-frame img {
+.Card__ArtFrame img {
 	display: block;
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
 }
 
-.card-type-bar {
+.Card__TypeBar {
 	display: flex;
 	flex-shrink: 0;
 	align-items: center;
@@ -155,7 +155,7 @@ body {
 	);
 }
 
-.card-type {
+.Card__Type {
 	width: 100%;
 	padding: 0;
 	border: none;
@@ -165,7 +165,7 @@ body {
 	background: transparent;
 }
 
-.card-text-box {
+.Card__TextBox {
 	flex: 1;
 	min-height: 0;
 	padding: 10px;
@@ -174,7 +174,7 @@ body {
 	background: rgba(18, 20, 28, 0.78);
 }
 
-.card-text {
+.Card__Text {
 	position: relative;
 	width: 100%;
 	height: 100%;
@@ -189,7 +189,7 @@ body {
 	resize: none;
 }
 
-.card-bottom {
+.Card__Bottom {
 	display: flex;
 	flex-shrink: 0;
 	align-items: center;
@@ -197,7 +197,7 @@ body {
 	height: 16px;
 }
 
-.card-bottom span {
+.Card__Bottom span {
 	font-family: 'Klee One', serif;
 	font-size: 9px;
 	letter-spacing: 0.04em;
@@ -207,33 +207,33 @@ body {
 </head>
 <body>
 
-<p class="page-note">HTML in Canvas が有効なブラウザで表示してください</p>
+<p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
 
-<div class="controls">
+<div class="Controls">
 	<label><input type="radio" name="effect" value="voronoi" checked> ボロノイ</label>
 	<label><input type="radio" name="effect" value="flakes"> フレーク</label>
 	<label><input type="radio" name="effect" value="none"> 両方なし</label>
 </div>
 
-<canvas class="canvas" layoutsubtree>
-	<div class="card">
-		<div class="card-inner">
+<canvas class="CardCanvas" layoutsubtree>
+	<div class="Card">
+		<div class="Card__Inner">
 
-			<div class="card-header">
-				<input class="card-name" type="text" value="運命の分岐器">
-				<input class="card-cost" type="text" value="④">
+			<div class="Card__Header">
+				<input class="Card__Name" type="text" value="運命の分岐器">
+				<input class="Card__Cost" type="text" value="④">
 			</div>
 
-			<div class="card-art-frame">
+			<div class="Card__ArtFrame">
 				<img src="../1/illus.webp" alt="">
 			</div>
 
-			<div class="card-type-bar">
-				<input class="card-type" type="text" value="伝説のアーティファクト">
+			<div class="Card__TypeBar">
+				<input class="Card__Type" type="text" value="伝説のアーティファクト">
 			</div>
 
-			<div class="card-text-box">
-				<textarea class="card-text">&#xE005;, &#xE000;：あなたは3点のライフを得る。または、いずれかの対象が受ける次のダメージを3点軽減する。
+			<div class="Card__TextBox">
+				<textarea class="Card__Text">&#xE005;, &#xE000;：あなたは3点のライフを得る。または、いずれかの対象が受ける次のダメージを3点軽減する。
 &#xE002;, &#xE000;：カードを3枚引く。
 &#xE006;, &#xE000;：あなたのエネルギープールに&#xE006;&#xE006;&#xE006;を加える。
 &#xE001;, &#xE000;：任意の対象1つに3点のダメージを与える。
@@ -242,7 +242,7 @@ body {
 “未来は無数に枝分かれする。だが、そのすべてを見通す者はほとんどいない。”</textarea>
 			</div>
 
-			<div class="card-bottom">
+			<div class="Card__Bottom">
 				<span>★ Rare</span>
 				<span>Illus. Chat GPT</span>
 			</div>
@@ -256,12 +256,12 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.m
 
 if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
 
-const card = document.querySelector( '.card' );
+const card = document.querySelector( '.Card' );
 
 const elWidth = card.offsetWidth;
 const elHeight = card.offsetHeight;
-const artFrame = card.querySelector( '.card-art-frame' );
-const canvas = document.querySelector( '.canvas' );
+const artFrame = card.querySelector( '.Card__ArtFrame' );
+const canvas = document.querySelector( '.CardCanvas' );
 
 const renderer = new THREE.WebGLRenderer( { canvas, antialias: true } );
 renderer.setPixelRatio( window.devicePixelRatio );
@@ -564,7 +564,7 @@ const mesh = new THREE.Mesh(
 scene.add( mesh );
 
 // イラスト部分にはフォイル効果を適用したくないので、該当範囲の UV をシェーダーに渡す。
-// .card-art-frame の位置を #card 基準の UV に変換して uniform へ反映
+// .Card__ArtFrame の位置を .Card 基準の UV に変換して uniform へ反映
 // UV は Three.js 標準: (0,0)=左下・(1,1)=右上
 function syncArtBounds() {
 

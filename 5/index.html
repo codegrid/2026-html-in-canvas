@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
-<title>HTML in Canvas — Cyber UI Demo</title>
+<title>HTML in Canvas — 3D Objects in HTML Demo</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200..900&display=swap');
 
@@ -12,7 +12,7 @@ body {
 	margin: 0;
 }
 
-.story-canvas {
+.StoryCanvas {
 	position: fixed;
 	inset: 0;
 	display: block;
@@ -20,7 +20,7 @@ body {
 	height: 100%;
 }
 
-.story {
+.Story {
 	width: 100%;
 	height: 100%;
 	overflow-x: hidden;
@@ -28,11 +28,11 @@ body {
 }
 
 
-.story-inner {
+.Story__Inner {
 	background: url( "./bg.jpg" ) 0 0 / 256px 256px;
 }
 
-.story-contents {
+.Story__Contents {
 	max-width: 800px;
 	padding: 32px;
 	font-size: 18px;
@@ -52,18 +52,18 @@ body {
 	}
 }
 
-.pillars {
+.Story__Pillars {
   display: flex;
   justify-content: space-between;
   height: 128px;
 }
 
-.pillar {
+.Story__Pillar {
   width: 128px;
   height: 128px;
 }
 
-.dragon {
+.Story__Dragon {
 	max-width: 800px;
 	aspect-ratio: 1;
 	margin: -100px auto;
@@ -72,16 +72,16 @@ body {
 </head>
 <body>
 
-<p class="page-note">HTML in Canvas が有効なブラウザで表示してください</p>
+<p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
 
-<canvas class="story-canvas" layoutsubtree>
-	<div class="story">
-		<div class="story-inner">
-			<div class="story-contents">
+<canvas class="StoryCanvas" layoutsubtree>
+	<div class="Story">
+		<div class="Story__Inner">
+			<div class="Story__Contents">
 
-				<div class="pillars">
-					<div class="pillar"></div>
-					<div class="pillar"></div>
+				<div class="Story__Pillars">
+					<div class="Story__Pillar"></div>
+					<div class="Story__Pillar"></div>
 				</div>
 
 				<h2>第一章　伝説の神殿</h2>
@@ -94,9 +94,9 @@ body {
 				<p>「最奥に至る者は守護者を見る。」</p>
 				<p>研究院はこれらの記述をもとに大規模な調査隊を編成し、コードグリッド文献が示す座標を追跡した。そして数年にわたる探索の末、北方山脈の地下深くで巨大な神殿を発見したのである。神殿の外壁には古代文字が刻まれ、その内容はすべて一頭のドラゴンについて語っていた。調査隊は、この場所こそ伝説に語られる神殿であると確信した。</p>
 
-				<div class="pillars">
-					<div class="pillar"></div>
-					<div class="pillar"></div>
+				<div class="Story__Pillars">
+					<div class="Story__Pillar"></div>
+					<div class="Story__Pillar"></div>
 				</div>
 
 				<h2>第二章　最奥への道</h2>
@@ -106,9 +106,9 @@ body {
 				<p>調査開始から三年後、ついに最深部へ続く封印扉が発見された。高さ百メートルを超えるその扉には、翼を広げた巨大なドラゴンの姿が刻まれていた。封印解除には半年を要したが、最終的に古代機構は作動を停止し、重々しい音とともに扉が開かれた。</p>
 				<p>その先には地下空洞とは思えないほど広大な空間が広がっていた。中央には巨大な祭壇が築かれ、その奥には小山のような巨大な影が横たわっている。最初は岩山だと思われたが、近づくにつれて奇妙な違和感が生まれた。表面は岩ではなく、無数の鱗で覆われていたのである。さらに空間全体には一定の振動が響いていた。それは地鳴りではなかった。ゆっくりと繰り返される呼吸だった。</p>
 
-				<div class="pillars">
-					<div class="pillar"></div>
-					<div class="pillar"></div>
+				<div class="Story__Pillars">
+					<div class="Story__Pillar"></div>
+					<div class="Story__Pillar"></div>
 				</div>
 
 				<h2>第三章　カッパードラゴン</h2>
@@ -123,7 +123,7 @@ body {
 				<p>カッパードラゴンは再びゆっくりと目を閉じた。しかし調査隊は知っていた。目の前で起きた出来事は幻ではない。伝説は真実であり、神話は現実だったのだ。</p>
 				<p>こうして歴史上初めて、カッパードラゴンの存在は確認された。北方山脈の地下深く、コードグリッド文献が示した神殿の最奥で、世界最古のドラゴンは今も静かに眠り続けているのである。</p>
 
-				<div class="dragon"></div>
+				<div class="Story__Dragon"></div>
 				<p>
 					<small>
 						<a href="https://sketchfab.com/3d-models/dragon-flying-cycle-ae0831702eac462a9969ff4f8bd57710">
@@ -151,10 +151,10 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
 
-const canvas     = document.querySelector( '.story-canvas' );
-const story      = document.querySelector( '.story' );
-const dragonDiv  = document.querySelector( '.dragon' );
-const pillarDivs = document.querySelectorAll( '.pillar' );
+const canvas     = document.querySelector( '.StoryCanvas' );
+const story      = document.querySelector( '.Story' );
+const dragonDiv  = document.querySelector( '.Story__Dragon' );
+const pillarDivs = document.querySelectorAll( '.Story__Pillar' );
 
 const renderer = new THREE.WebGLRenderer( { canvas, antialias: true } );
 renderer.setPixelRatio( window.devicePixelRatio );

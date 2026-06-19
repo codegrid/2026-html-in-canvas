@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
-<title>HTML in Canvas — Glitch Effect Demo</title>
+<title>HTML in Canvas — Glass Crack Effect Demo</title>
 <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
@@ -27,7 +27,7 @@
 				</div>
 
 				<nav class="BlogHeader__Nav">
-					<span class="BlogHeader__NavLink BlogHeader__NavLink--Active">工房便り</span>
+					<span class="BlogHeader__NavLink -active">工房便り</span>
 					<span class="BlogHeader__NavLink">作品目録</span>
 					<span class="BlogHeader__NavLink">ガラス体験</span>
 					<span class="BlogHeader__NavLink">アクセス・店舗</span>
@@ -41,7 +41,7 @@
 			</div>
 			
 			<div id="mobile-menu" class="BlogHeader__MobileMenu">
-				<span class="BlogHeader__MobileLink BlogHeader__MobileLink--Active">工房便り</span>
+				<span class="BlogHeader__MobileLink -active">工房便り</span>
 				<span class="BlogHeader__MobileLink">作品目録</span>
 				<span class="BlogHeader__MobileLink">ガラス体験</span>
 				<span class="BlogHeader__MobileLink">アクセス・店舗</span>
@@ -55,7 +55,7 @@
 				<svg class="BreadcrumbsNav__Separator" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" /></svg>
 				<span class="BreadcrumbsNav__Item">工房日誌</span>
 				<svg class="BreadcrumbsNav__Separator" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" /></svg>
-				<span class="BreadcrumbsNav__Item BreadcrumbsNav__Item--Active">光と風を紡ぐ、夏の吹き硝子</span>
+				<span class="BreadcrumbsNav__Item -active">光と風を紡ぐ、夏の吹き硝子</span>
 			</nav>
 
 			<div class="BlogTitle">
@@ -250,16 +250,8 @@
 	</div>
 </div>
 
-<script type="importmap">
-{
-	"imports": {
-		"three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
-		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
-	}
-}
-</script>
 <script type="module">
-import * as THREE from 'three';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
 
 const canvas      = document.querySelector( '.PageEffect' );
 const pageElement = canvas.querySelector( '.Page' );
@@ -907,7 +899,7 @@ function triggerShatter( impactX, impactY ) {
 	state = 'shatter';
 
 	// modal フェード
-	modal.classList.add( 'is-fading' );
+	modal.classList.add( '-fading' );
 
 }
 

@@ -75,7 +75,7 @@ body {
 	justify-content: flex-start;
 }
 
-.Hero.active {
+.Hero.-active {
 	display: flex;
 }
 
@@ -180,7 +180,7 @@ body {
 	display: none;
 }
 
-.CharacterSection.active {
+.CharacterSection.-active {
 	display: block;
 }
 
@@ -188,7 +188,7 @@ body {
 	.CharacterSection {
 		padding: 64px 32px;
 	}
-	.CharacterSection.active {
+	.CharacterSection.-active {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -280,10 +280,10 @@ body {
 	margin-bottom: 12px;
 }
 
-.DetailsPanel__Ribbon--alice { background-color: var(--alice-badge-bg); color: var(--alice-badge-text); }
-.DetailsPanel__Ribbon--rabbit { background-color: var(--rabbit-badge-bg); color: var(--rabbit-badge-text); }
-.DetailsPanel__Ribbon--cheshire { background-color: var(--cheshire-badge-bg); color: var(--cheshire-badge-text); }
-.DetailsPanel__Ribbon--hatter { background-color: var(--hatter-badge-bg); color: var(--hatter-badge-text); }
+.DetailsPanel__Ribbon.-alice { background-color: var(--alice-badge-bg); color: var(--alice-badge-text); }
+.DetailsPanel__Ribbon.-rabbit { background-color: var(--rabbit-badge-bg); color: var(--rabbit-badge-text); }
+.DetailsPanel__Ribbon.-cheshire { background-color: var(--cheshire-badge-bg); color: var(--cheshire-badge-text); }
+.DetailsPanel__Ribbon.-hatter { background-color: var(--hatter-badge-bg); color: var(--hatter-badge-text); }
 
 .DetailsPanel__Title {
 	font-size: 32px;
@@ -352,8 +352,8 @@ body {
 	pointer-events: none;
 }
 
-.DetailsPanel__QuoteMark--open { top: -12px; left: -4px; }
-.DetailsPanel__QuoteMark--close { bottom: -24px; right: 10px; }
+.DetailsPanel__QuoteMark.-open { top: -12px; left: -4px; }
+.DetailsPanel__QuoteMark.-close { bottom: -24px; right: 10px; }
 
 .DetailsPanel__Desc {
 	font-size: 14px;
@@ -385,7 +385,7 @@ body {
 	width: 100%;
 }
 
-.ButtonContainer--Hero {
+.ButtonContainer.-hero {
 	justify-content: center !important;
 	margin-top: 40px;
 }
@@ -441,6 +441,6 @@ body {
 	display: none;
 }
 
-body.transitioning .NextButton {
+body.-transitioning .NextButton {
 	pointer-events: none;
 }

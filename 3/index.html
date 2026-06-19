@@ -21,7 +21,7 @@ body {
 	background: #0d0d14;
 }
 
-.page-note {
+.PageNote {
 	margin: 0;
 	font-family: monospace;
 	font-size: 12px;
@@ -29,7 +29,7 @@ body {
 	color: #999;
 }
 
-.canvas {
+.PanelCanvas {
 	display: block;
 	cursor: default;
 }
@@ -39,7 +39,7 @@ body {
    PANEL
    ===================================================== */
 
-.panel {
+.Panel {
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -59,8 +59,8 @@ body {
 	);
 }
 
-.panel::before,
-.panel::after {
+.Panel::before,
+.Panel::after {
 	content: '';
 	position: absolute;
 	box-sizing: border-box;
@@ -70,13 +70,13 @@ body {
 	border-style: solid;
 }
 
-.panel::before {
+.Panel::before {
 	top: 6px;
 	left: 6px;
 	border-width: 2px 0 0 2px;
 }
 
-.panel::after {
+.Panel::after {
 	bottom: 6px;
 	right: 6px;
 	border-width: 0 2px 2px 0;
@@ -89,7 +89,7 @@ body {
 
 }
 
-.panel-title {
+.Panel__Title {
 	margin: 0;
 	font-family: 'Orbitron', sans-serif;
 	font-size: 22px;
@@ -103,37 +103,37 @@ body {
 	animation: title-gradient 4s linear infinite;
 }
 
-.panel-title span {
+.Panel__Title span {
 	color: transparent;
 }
 
-.divider {
+.Panel__Divider {
 	height: 1px;
 	background: linear-gradient(90deg, transparent, #0ff5, #0ff, #0ff5, transparent);
 }
 
-.panel p {
+.Panel p {
 	margin: 0;
 	line-height: 1.8;
 	letter-spacing: 0.04em;
 	color: #a8d8e8cc;
 }
 
-.panel a {
+.Panel a {
 	color: #39f;
 	transition: color 0.3s;
 }
 
-.panel a:hover {
+.Panel a:hover {
 	color: #39ff14;
 }
 
-.button-row {
+.Panel__ButtonRow {
 	display: flex;
 	gap: 10px;
 }
 
-.button {
+.Button {
 	flex: 1;
 	box-sizing: border-box;
 	margin: 0;
@@ -156,28 +156,28 @@ body {
 	);
 }
 
-.button:active {
+.Button:active {
 	transform: scale( 0.97 );
 }
 
-.button-yes {
+.Button.-yes {
 	color: #020810;
 	background: #0ff;
 }
 
-.button-yes:hover {
+.Button.-yes:hover {
 	color: #020810;
 	background: #39ff14;
 }
 
-.button-no {
+.Button.-no {
 	outline: 1px solid #0ff5;
 	outline-offset: -1px;
 	color: #0ff;
 	background: transparent;
 }
 
-.button-no:hover {
+.Button.-no:hover {
 	outline: 1px solid #ff4060;
 	outline-offset: -1px;
 	color: #ff4060;
@@ -188,19 +188,19 @@ body {
 </head>
 <body>
 
-<p class="page-note">HTML in Canvas が有効なブラウザで表示してください</p>
+<p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
 
-<canvas class="canvas" layoutsubtree>
-	<div class="panel">
-		<h1 class="panel-title">CODE GRID <span>EXAMPLE</span></h1>
-		<div class="divider"></div>
+<canvas class="PanelCanvas" layoutsubtree>
+	<div class="Panel">
+		<h1 class="Panel__Title">CODE GRID <span>EXAMPLE</span></h1>
+		<div class="Panel__Divider"></div>
 		<p>
 			クリック効果確認用 demo です。<br />
 			CSS では実現できない「歪み」を適用できます。
 		</p>
-		<div class="button-row">
-			<button class="button button-yes">Yes</button>
-			<button class="button button-no">No</button>
+		<div class="Panel__ButtonRow">
+			<button class="Button -yes">Yes</button>
+			<button class="Button -no">No</button>
 		</div>
 		<p>
 			行の途中で折り返して分断される<a href="../">インラインリンク</a>も機能します。
@@ -214,8 +214,8 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.m
 
 if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
 
-const panel  = document.querySelector( '.panel' );
-const canvas = document.querySelector( '.canvas' );
+const panel  = document.querySelector( '.Panel' );
+const canvas = document.querySelector( '.PanelCanvas' );
 
 const elWidth = panel.offsetWidth;
 const elHeight = panel.offsetHeight;

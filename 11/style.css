@@ -139,7 +139,7 @@ body {
   color: #1c1917;
 }
 
-.BlogHeader__NavLink--Active {
+.BlogHeader__NavLink.-active {
   color: #0369a1; /* sky-700 */
   font-weight: 600;
   border-bottom: 2px solid #0ea5e9; /* sky-500 */
@@ -184,7 +184,7 @@ body {
   letter-spacing: 0.05em;
 }
 
-.BlogHeader__MobileMenu--Visible {
+.BlogHeader__MobileMenu.-visible {
   display: flex;
 }
 
@@ -197,7 +197,7 @@ body {
   color: #1c1917;
 }
 
-.BlogHeader__MobileLink--Active {
+.BlogHeader__MobileLink.-active {
   color: #0369a1;
   font-weight: 600;
 }
@@ -228,13 +228,13 @@ body {
   color: #d6d3d1; /* stone-300 */
 }
 
-.BreadcrumbsNav__Item--Active {
+.BreadcrumbsNav__Item.-active {
   color: #57534e; /* stone-600 */
   font-weight: 500;
   cursor: default;
 }
 
-.BreadcrumbsNav__Item--Active:hover {
+.BreadcrumbsNav__Item.-active:hover {
   color: #57534e;
 }
 
@@ -708,7 +708,7 @@ body {
 	transition: opacity 700ms ease-out;
 }
 
-.Modal.is-fading {
+.Modal.-fading {
 	opacity: 0;
 }
 

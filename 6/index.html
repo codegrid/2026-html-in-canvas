@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
-<title>HTML in Canvas — Cyber UI Demo</title>
+<title>HTML in Canvas — Retro Game Effect Demo</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
 
@@ -14,7 +14,7 @@ body {
 	font-family: 'DotGothic16', monospace;
 }
 
-.open-button {
+.OpenButton {
 	padding: 16px 24px;
 	border: none;
 	font-family: inherit;
@@ -28,17 +28,17 @@ body {
 		0 0 0 12px #1a1a3e;
 }
 
-.open-button:hover {
+.OpenButton:hover {
 	background: #ec5c79;
 }
 
-.open-button:active {
+.OpenButton:active {
 	transform: translate( 2px, 2px );
 }
 
 /* ===== Retro 8-bit dialog ===== */
 
-.retro-dialog {
+.RetroDialog {
 	position: fixed;
 	inset: 0;
 	z-index: 100;
@@ -53,7 +53,7 @@ body {
 		display 1s allow-discrete;
 }
 
-.retro-dialog.is-open {
+.RetroDialog.-open {
 	display: flex;
 	opacity: 1;
 	/* transition: opacity .5s .5s; */
@@ -62,16 +62,16 @@ body {
 		display 1s allow-discrete;
 }
 
-.retro-dialog-canvas {
+.RetroDialog__Canvas {
 	display: block;
 }
 
-.retro-dialog-frame {
+.RetroDialog__Frame {
 	width: min( 480px, 90vw );
 	padding: 0 64px;
 }
 
-.retro-dialog-frame-inner {
+.RetroDialog__FrameInner {
 	position: relative;
 	box-sizing: border-box;
 	padding: 32px;
@@ -79,12 +79,12 @@ body {
 
 }
 
-.retro-dialog-icon {
+.RetroDialog__Icon {
 	display: flex;
 	justify-content: center;
 }
 
-.retro-dialog-body {
+.RetroDialog__Body {
 	margin: 0 0 16px;
 	padding: 16px;
 	font-size: 16px;
@@ -101,14 +101,14 @@ body {
 
 }
 
-.retro-cursor {
+.RetroDialog__Cursor {
 	display: inline-block;
 	margin-left: 4px;
 	color: #ffe14a;
 	animation: blink 0.8s steps( 1 ) infinite;
 }
 
-.retro-dialog-actions {
+.RetroDialog__Actions {
 	display: flex;
 	gap: 16px;
 	justify-content: center;
@@ -117,12 +117,12 @@ body {
 	list-style: none;
 }
 
-.retro-dialog-actions li {
+.RetroDialog__Actions li {
 	flex: 1;
 	max-width: 160px;
 }
 
-.retro-button {
+.RetroButton {
 	display: block;
 	width: 100%;
 	padding: 12px 20px;
@@ -138,16 +138,16 @@ body {
 		0 0 0 6px #fff;
 }
 
-.retro-button:hover {
+.RetroButton:hover {
 	color: #1a1a3e;
 	background: #ffe14a;
 }
 
-.retro-button:active {
+.RetroButton:active {
 	transform: translate( 2px, 2px );
 }
 
-.retro-button--ghost {
+.RetroButton.-ghost {
 	color: #fff;
 	background: #1a1a3e;
 	box-shadow:
@@ -155,12 +155,12 @@ body {
 		0 0 0 6px #1a1a3e;
 }
 
-.retro-button--ghost:hover {
+.RetroButton.-ghost:hover {
 	color: #1a1a3e;
 	background: #fff;
 }
 
-.retro-heart {
+.RetroHeart {
 	display: inline-block;
 	color: #ff6b9d;
 }
@@ -168,31 +168,31 @@ body {
 </head>
 <body>
 
-<p class="page-note">HTML in Canvas が有効なブラウザで表示してください</p>
+<p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
 
 
-<button type="button" class="open-button">
+<button type="button" class="OpenButton">
 	dialog を ひらく
 </button>
 
-<div class="retro-dialog" role="dialog" aria-modal="true">
-	<canvas class="retro-dialog-canvas" layoutsubtree>
-		<div class="retro-dialog-frame">
-			<div class="retro-dialog-frame-inner">
-				<div class="retro-dialog-icon">
+<div class="RetroDialog" role="dialog" aria-modal="true">
+	<canvas class="RetroDialog__Canvas" layoutsubtree>
+		<div class="RetroDialog__Frame">
+			<div class="RetroDialog__FrameInner">
+				<div class="RetroDialog__Icon">
 					<img src="./img.png" alt="" />
 				</div>
-				<p class="retro-dialog-body">
-					コードグリッド を しっていますか？<span class="retro-cursor">▼</span>
+				<p class="RetroDialog__Body">
+					コードグリッド を しっていますか？<span class="RetroDialog__Cursor">▼</span>
 				</p>
-				<menu class="retro-dialog-actions">
+				<menu class="RetroDialog__Actions">
 					<li>
-						<button type="button" class="retro-button">
+						<button type="button" class="RetroButton">
 							はい
 						</button>
 					</li>
 					<li>
-						<button type="button" class="retro-button retro-button--ghost">
+						<button type="button" class="RetroButton -ghost">
 							いいえ
 						</button>
 					</li>
@@ -207,21 +207,21 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.m
 
 if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
 
-const openButton   = document.querySelector( '.open-button' );
-const modal        = document.querySelector( '.retro-dialog' );
-const canvas       = document.querySelector( '.retro-dialog-canvas' );
-const frame        = document.querySelector( '.retro-dialog-frame' );
-const closeButtons = modal.querySelectorAll( '.retro-button' );
+const openButton   = document.querySelector( '.OpenButton' );
+const modal        = document.querySelector( '.RetroDialog' );
+const canvas       = document.querySelector( '.RetroDialog__Canvas' );
+const frame        = document.querySelector( '.RetroDialog__Frame' );
+const closeButtons = modal.querySelectorAll( '.RetroButton' );
 
 openButton.addEventListener( 'click', () => {
 
-	modal.classList.add( 'is-open' );
+	modal.classList.add( '-open' );
 
 } );
 
 closeButtons.forEach( ( button ) => {
 
-	button.addEventListener( 'click', () => modal.classList.remove( 'is-open' ) );
+	button.addEventListener( 'click', () => modal.classList.remove( '-open' ) );
 
 } );
 
@@ -367,7 +367,7 @@ renderer.setAnimationLoop( () => {
 
 	timer.update();
 	const dt      = timer.getDelta();
-	const target  = modal.classList.contains( 'is-open' ) ? 1 : 0;
+	const target  = modal.classList.contains( '-open' ) ? 1 : 0;
 	const current = material.uniforms.uProgress.value;
 
 	if ( current !== target ) {
