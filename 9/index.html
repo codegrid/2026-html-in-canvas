@@ -358,9 +358,6 @@ body {
 .BbsList__Author {
 	color: #000080;
 }
-.BbsList__Date {
-	font-family: monospace;
-}
 .BbsList__Message {
 	font-size: 12px;
 	white-space: pre-wrap;
@@ -447,11 +444,11 @@ body {
 								</div>
 								<div class="ProfileList__Row">
 									<div class="ProfileList__Label">【趣味】</div>
-									<div class="ProfileList__Value">HTML/XHTMLタグ手打ち、仕様書の音読、Web深夜回遊</div>
+									<div class="ProfileList__Value">HTML/XHTML タグ手打ち、仕様書の音読、Web 深夜回遊</div>
 								</div>
 								<div class="ProfileList__Row">
 									<div class="ProfileList__Label">【好きな言葉】</div>
-									<div class="ProfileList__Value">「XHTML-CSSによるセマンティック・ウェブ」</div>
+									<div class="ProfileList__Value">「XHTML によるセマンティック・ウェブ」</div>
 								</div>
 							</div>
 						</div>
@@ -467,8 +464,8 @@ body {
 							</div>
 							
 							<div class="Diary__Item">
-								<span class="Diary__Meta">2: Internet Explorer 148 が対応する注目の XHTML 4.0 の新仕様</span>
-								<p class="Diary__Content">いよいよInternet Explorer 148 に関する噂が聞こえてきた。注目は何と言っても次世代のマークアップ言語、XHTML 4.0のフルネイティブサポートだ。スタイルシートとの究極の分離がもたらすセマンティクス向上に、心が躍らずにはいられない。</p>
+								<span class="Diary__Meta">2: Internet Explorer 20 が対応する注目の XHTML 6.0 の新仕様</span>
+								<p class="Diary__Content">いよいよ Internet Explorer 20 に関する噂が聞こえてきた。注目は何と言っても次世代のマークアップ言語、XHTML 6.0 のフルネイティブサポートだ。RDF との完全統合により、「リンク」は単なる遷移手段から、知識同士の関係性をたどるナビゲーションへと変化する。</p>
 							</div>
 
 						</div>
@@ -817,32 +814,16 @@ renderer.setAnimationLoop( () => {
 </script>
 <script type="module">
 // 掲示板 (ゲストブック) 
-function getRelativeDateString( daysAgo ) {
-
-	const d = new Date();
-	d.setDate( d.getDate() - daysAgo );
-	const y = d.getFullYear();
-	const m = String( d.getMonth() + 1 ).padStart( 2, '0' );
-	const day = String( d.getDate() ).padStart( 2, '0' );
-	const hh = String( Math.floor( Math.random() * 24 ) ).padStart( 2, '0' );
-	const mm = String( Math.floor( Math.random() * 60 ) ).padStart( 2, '0' );
-	return `${y}/${m}/${day} ${hh}:${mm}`;
-
-}
 
 const defaultComments = [
 	{
-		id: 1,
-		name: "タカズド",
-		comment: "おもろ",
-		date: getRelativeDateString( 2 )
+		name: "よもつ",
+		comment: "ホムペ解説おめでとうございます",
 	},
 	{
-		id: 2,
-		name: "よもつ",
-		comment: "記念に足跡",
-		date: getRelativeDateString( 1 )
-	}
+		name: "グリオ",
+		comment: "テスト投稿",
+	},
 ];
 
 let activeComments = [ ...defaultComments ];
@@ -856,10 +837,9 @@ function renderComments() {
 	activeComments.forEach( function ( item ) {
 
 		html += `
-			<div class="BbsList__Item" id="bbs-item-${ item.id }">
+			<div class="BbsList__Item">
 				<div class="BbsList__Meta">
 					<span>お名前: <strong class="BbsList__Author">${ escapeHTML( item.name ) }</strong></span>
-					<span class="BbsList__Date">${ item.date }</span>
 				</div>
 				<div class="BbsList__Message">${ escapeHTML( item.comment ) }</div>
 			</div>
@@ -896,21 +876,9 @@ document.getElementById( 'bbs-form' ).addEventListener( 'submit', ( event ) => {
 
 	if ( ! comment ) return;
 
-	const now = new Date();
-	const y = now.getFullYear();
-	const m = String( now.getMonth() + 1 ).padStart( 2, '0' );
-	const d = String( now.getDate() ).padStart( 2, '0' );
-	const hh = String( now.getHours() ).padStart( 2, '0' );
-	const mm = String( now.getMinutes() ).padStart( 2, '0' );
-	const dateStr = `${y}/${m}/${d} ${hh}:${mm}`;
-
-	const nextId = activeComments.length > 0 ? Math.max( ...activeComments.map( c => c.id ) ) + 1 : 1;
-
 	const newItem = {
-		id: nextId,
 		name: name,
 		comment: comment,
-		date: dateStr
 	};
 
 	activeComments.unshift( newItem );
@@ -918,7 +886,6 @@ document.getElementById( 'bbs-form' ).addEventListener( 'submit', ( event ) => {
 
 	// フォームリセット
 	document.getElementById( 'bbs-form' ).reset();
-	alert( '伝言板に一時書き込みを行いました！' );
 
 } );
 

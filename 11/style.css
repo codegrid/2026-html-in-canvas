@@ -63,30 +63,6 @@ body {
   justify-content: space-between;
 }
 
-.BlogHeader__Brand {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-}
-
-.BlogHeader__LogoBox {
-  width: 2rem;
-  height: 2rem;
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(191, 219, 254, 0.5), rgba(129, 140, 248, 0.1));
-  border: 1px solid #7dd3fc; /* sky-300 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.BlogHeader__LogoCharacter {
-  font-family: 'Noto Serif JP', serif;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #0369a1; /* sky-700 */
-  line-height: 1;
-}
-
 .BlogHeader__TitleBox {
   display: flex;
   flex-direction: column;
