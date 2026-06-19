@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
-<title>HTML in Canvas — Ash Text Demo</title>
+<title>HTML in Canvas — Pollen Text Demo</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=New+Tegomin&display=swap');
 
@@ -31,22 +31,22 @@ body {
 	z-index: 2;
 }
 
-.AshCanvas {
+.PollenCanvas {
 	display: block;
-	width: 100%;
+	width: 100vw;
 }
 
-.AshText {
+.PollenText {
 	box-sizing: border-box;
 	width: 100%;
-	padding: 256px 32px;
+	padding: clamp(64px, 25vh, 256px) 32px;
 	font-weight: 900;
 	font-size: 24px;
 	font-family: "New Tegomin", serif;
 	text-align: center;
 }
 
-.AshText p {
+.PollenText p {
 	margin: 2em 0;
 }
 
@@ -56,23 +56,23 @@ body {
 
 <p class="page-note">HTML in Canvas が有効なブラウザで表示してください</p>
 
-<canvas class="AshCanvas" layoutsubtree>
-	<div class="AshText">
-		<p>コードグリッドを購読りっど</p>
-		<p>文字が灰になっていく</p>
+<canvas class="PollenCanvas" layoutsubtree>
+	<div class="PollenText">
+		<p>私は花粉症ではない。</p>
+		<p>しかし、花粉がどこから来るのかは気になる。</p>
 	</div>
 </canvas>
 
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
 
-const canvas = document.querySelector( '.AshCanvas' );
-const textEl = document.querySelector( '.AshText' );
+const canvas = document.querySelector( '.PollenCanvas' );
+const textEl = document.querySelector( '.PollenText' );
 
 const renderer = new THREE.WebGLRenderer( { canvas, antialias: true, alpha: true } );
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
-// 初期サイズは AshText のレイアウト後に sync する (syncCanvasSize)
+// 初期サイズは PollenText のレイアウト後に sync する (syncCanvasSize)
 
 // r184 + Chrome 150+: texElementImage2D シグネチャ変更への monkey patch
 const gl = renderer.getContext();
@@ -101,7 +101,6 @@ const camera = new THREE.OrthographicCamera( -1, 1, 1, -1, -1, 1 );
 
 const scene = new THREE.Scene();
 
-// uTime は textMaterial / particleMaterial で共有する
 const uTime = { value: 0 };
 
 // --- Text plane: HTMLTexture を canvas full-view に描画 ---
@@ -112,7 +111,6 @@ const textMaterial = new THREE.ShaderMaterial( {
 
 	uniforms: {
 		uMap: { value: textTexture },
-		uTime,
 	},
 	vertexShader: /* glsl */`
 		varying vec2 vUv;
@@ -127,40 +125,11 @@ const textMaterial = new THREE.ShaderMaterial( {
 	`,
 	fragmentShader: /* glsl */`
 		uniform sampler2D uMap;
-		uniform float uTime;
 		varying vec2 vUv;
-
-		float hash( vec2 p ) {
-
-			return fract( sin( dot( p, vec2( 127.1, 311.7 ) ) ) * 43758.5453 );
-
-		}
-
-		float noise( vec2 p ) {
-
-			vec2 i = floor( p );
-			vec2 f = fract( p );
-			float a = hash( i );
-			float b = hash( i + vec2( 1.0, 0.0 ) );
-			float c = hash( i + vec2( 0.0, 1.0 ) );
-			float d = hash( i + vec2( 1.0, 1.0 ) );
-			vec2 u = f * f * ( 3.0 - 2.0 * f );
-			return mix( mix( a, b, u.x ), mix( c, d, u.x ), u.y );
-
-		}
 
 		void main() {
 
-			vec4 c = texture2D( uMap, vUv );
-
-			// glyph 全体を pixel 単位でランダムに erode (灰になって削られている表現)
-			// 高周波 noise + step で pixel スケールに近いハードな穴を空ける。
-			// threshold を下げて erosion 量を倍に。
-			float n = noise( vec2( vUv.x * 320.0 + uTime * 0.5, vUv.y * 320.0 - uTime * 0.3 ) );
-			float erode = step( 0.8, n );
-			c.a *= 1.0 - erode;
-
-			gl_FragColor = c;
+			gl_FragColor = texture2D( uMap, vUv );
 
 		}
 	`,
@@ -330,9 +299,9 @@ const particles = new THREE.Points( particleGeometry, particleMaterial );
 particles.renderOrder = 0;
 scene.add( particles );
 
-// --- canvas サイズを AshText のサイズに同期 ---
-// AshText の content サイズを測り、canvas の CSS サイズと backing buffer をそれに合わせる。
-// text plane は canvas いっぱい (rectCenter=0, rectHalfSize=1) に描く。
+// --- canvas サイズを PollenText のサイズに同期 ---
+// width は CSS (100vw) でレスポンシブに、height は text の offsetHeight に追従させる。
+// renderer.setSize( ..., false ) で style.width には触れない (CSS rule をそのまま生かす)。
 let canvasCssW = 0;
 let canvasCssH = 0;
 
@@ -341,11 +310,12 @@ function syncCanvasSize() {
 	const w = textEl.offsetWidth;
 	const h = textEl.offsetHeight;
 	if ( w === 0 || h === 0 ) return false;
-	if ( w === canvasCssW && h === canvasCssH ) return true;
+	if ( w === canvasCssW && h === canvasCssH ) return false;
 
 	canvasCssW = w;
 	canvasCssH = h;
-	renderer.setSize( w, h, true );
+	renderer.setSize( w, h, false );
+	canvas.style.height = `${ h }px`;
 
 	return true;
 
@@ -432,7 +402,7 @@ function sampleHomes() {
 
 }
 
-// --- 初回 paint 検出 ---
+// --- 初回 paint 検出 & 変更検出 ---
 let firstPainted = false;
 let needHomeResample = false;
 
@@ -442,18 +412,36 @@ canvas.onpaint = ( e ) => {
 
 	if ( _htmlTexturePaint ) _htmlTexturePaint.call( canvas, e );
 
-	const sized = syncCanvasSize();
+	const sizeChanged = syncCanvasSize();
+	if ( canvasCssW === 0 || canvasCssH === 0 ) return;
 
-	if ( sized && ! firstPainted ) {
+	if ( ! firstPainted ) {
 
 		firstPainted = true;
+		needHomeResample = true;
+		return;
+
+	}
+
+	// サイズが変わった (window resize / font load / 内容で行数変化) → resample
+	if ( sizeChanged ) {
+
+		needHomeResample = true;
+		return;
+
+	}
+
+	// DOM の中身が変わった (text 編集など) → resample
+	// requestPaint() による強制 paint では changedElements が空になるので、それは無視する。
+	if ( e && e.changedElements && e.changedElements.length > 0 ) {
+
 		needHomeResample = true;
 
 	}
 
 };
 
-// --- resize: 主に DPR 変化 (ズームなど) に対応。AshText 自体は固定サイズなので普通は再 paint で十分 ---
+// --- window resize: DPR 変化に追随しつつ、サイズ変化があれば resample ---
 window.addEventListener( 'resize', () => {
 
 	particleMaterial.uniforms.uPointSize.value = 1.0 * window.devicePixelRatio;
