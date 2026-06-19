@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<title>HTML in Canvas — Glitch Effect Demo</title>
+<link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+<canvas class="PageEffect" layoutsubtree>
+
+<div class="Page">
+
+	<div class="Layout">
+		<header class="BlogHeader">
+			<div class="BlogHeader__Inner">
+				<div class="BlogHeader__Brand">
+					<div class="BlogHeader__LogoBox">
+						<span class="BlogHeader__LogoCharacter">栗</span>
+					</div>
+					<div class="BlogHeader__TitleBox">
+						<h1 class="BlogHeader__Title">栗男硝子工房</h1>
+						<span class="BlogHeader__Subtitle">GURIO GLASS STUDIO</span>
+					</div>
+				</div>
+
+				<nav class="BlogHeader__Nav">
+					<span class="BlogHeader__NavLink BlogHeader__NavLink--Active">工房便り</span>
+					<span class="BlogHeader__NavLink">作品目録</span>
+					<span class="BlogHeader__NavLink">ガラス体験</span>
+					<span class="BlogHeader__NavLink">アクセス・店舗</span>
+				</nav>
+
+				<button id="menu-btn" class="BlogHeader__MenuBtn">
+					<svg class="BlogHeader__MenuIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+					</svg>
+				</button>
+			</div>
+			
+			<div id="mobile-menu" class="BlogHeader__MobileMenu">
+				<span class="BlogHeader__MobileLink BlogHeader__MobileLink--Active">工房便り</span>
+				<span class="BlogHeader__MobileLink">作品目録</span>
+				<span class="BlogHeader__MobileLink">ガラス体験</span>
+				<span class="BlogHeader__MobileLink">アクセス・店舗</span>
+			</div>
+		</header>
+
+		<main class="Layout__Container">
+			
+			<nav class="BreadcrumbsNav">
+				<span class="BreadcrumbsNav__Item">栗男だよりトップ</span>
+				<svg class="BreadcrumbsNav__Separator" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" /></svg>
+				<span class="BreadcrumbsNav__Item">工房日誌</span>
+				<svg class="BreadcrumbsNav__Separator" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" /></svg>
+				<span class="BreadcrumbsNav__Item BreadcrumbsNav__Item--Active">光と風を紡ぐ、夏の吹き硝子</span>
+			</nav>
+
+			<div class="BlogTitle">
+				<h1 class="BlogTitle__Heading">
+					光と風を紡ぐ、夏の吹き硝子。<br />
+					1024度の炉から生まれる「涼」の物語。
+				</h1>
+
+				<p class="BlogTitle__Desc">
+					初夏の風に吹かれながら、瑞々しくきらめく手仕事のグラスと風鈴。
+					静岡県静岡市の山あいに佇む小さな窯元「栗男硝子工房」から、ガラスの持つ “温もり” と “冷やかさ” の魅力、速度と職人のこだわりをお届けします。
+				</p>
+
+				<div class="BlogTitle__Meta">
+					<div class="BlogTitle__Author">
+						<div class="BlogTitle__Avatar">
+							<span class="BlogTitle__AvatarText">栗</span>
+						</div>
+						<div>
+							<span class="BlogTitle__AuthorName">光道 栗夫</span>
+							<span class="BlogTitle__AuthorTitle">栗男硝子工房 主宰 / ガラス工芸作家</span>
+						</div>
+					</div>
+
+					<div class="BlogTitle__Details">
+						<span class="BlogTitle__DateBox">
+							<svg class="BlogTitle__CalendarIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+							2026.06.19
+						</span>
+						<span class="BlogTitle__Badge">
+							<svg class="BlogTitle__BookIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+							工房便り
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<figure class="HeroFigure">
+				<div class="HeroFigure__AspectBox">
+					<img
+						src="./img/img_001.webp"
+						alt=""
+						class="HeroFigure__Img"
+					/>
+					<div class="HeroFigure__Overlay"></div>
+				</div>
+				<figcaption class="HeroFigure__Caption">
+					<p class="HeroFigure__CaptionText">
+						朝の清らかな光を集め、優しくそよぐようにテーブルを満たす栗男硝子。<br />
+						手仕事ならではのかすかな「揺らぎ」が、まるで水面に反射する陽ざしのような情景を描き出します。
+					</p>
+				</figcaption>
+			</figure>
+
+			<article>
+				
+				<p class="BlogParagraph">
+					じりじりと照りつける夏の太陽が、工房のトタン屋根を焦がす季節が近づいてまいりました。
+					皆様、いかがお過ごしでしょうか。栗男硝子（ぐりおがらす）工房の光道です。
+				</p>
+
+				<p class="BlogParagraph">
+					静岡県静岡市の豊かな森と、澄んだ雪解け水に恵まれた私たちの小さな工房では、本格的な夏を前に、毎日1024度を超える溶解炉の熱気と向き合う、一年で最も「熱い」製作の日々を迎えています。
+				</p>
+				
+				<p class="BlogParagraph">
+					吹き硝子は、熱せられてドロドロになった赤いガラスが、空気中で冷えて硬化していく、ほんの数分、数秒の短い猶予の中で形を生み出します。
+					本日は、そんな息をつく暇もない熱情の中から生まれる、驚くほど透明で、暮らしに涼やかさをもたらし、心をも清めてくれる硝子器たちのストーリーをご紹介します。
+				</p>
+
+				<section class="BlogSection">
+					<h2 class="BlogSection__Heading">
+						一、蜜（みつ）のように溶けるガラス。一瞬の呼吸と、1024度の呼吸。
+					</h2>
+					
+					<p class="BlogParagraph">
+						工房のエントランスをくぐると、ごうごうと地鳴りのような炉の音が響いています。
+						ガラスの主原料である珪砂（けいしゃ）や炭酸ソーダなどを調合し、2048度以上の溶解炉の中で一晩かけてじっくり溶かしたガラスは、まるで濁りのない黄金色の“蜂蜜”のようにとろりと、たゆたっています。
+					</p>
+
+					<p class="BlogParagraph">
+						この熱いガラスを「吹き竿」と呼ばれる細長口の金属製管の端に巻き取り、息を吹き込むのが「吹き硝子」の原点です。
+						巻き取った直後のガラスの温度は約1024度。金属の竿を通じてすら、その凄まばゆい熱量と脈打つようなガラスの「重み」が肌に伝わってきます。
+					</p>
+
+					<div class="BlogSection__ProcessGrid">
+						<div class="BlogSection__ProcessColText">
+							<p class="BlogSection__ProcessText">
+								ただ息を吹き込めばよいというわけではありません。強すぎる息はガラスを風船のように薄く破裂させてしまい、弱すぎる息ではピクリとも動きません。
+								最初は驚くほど軽やかに、けれど均一に。ガラスが一番柔らかい瞬間を見極めて優しく吹く、まさに職人の「息遣い」がそのまま形となるのです。
+							</p>
+						</div>
+						<div class="BlogSection__ProcessColImg">
+							<img
+								src="./img/img_002.webp"
+								alt="溶解炉から巻き取ったガラスを吹く職人の姿"
+								class="BlogSection__ProcessImg"
+							/>
+						</div>
+					</div>
+				</section>
+
+				<section class="BlogSection">
+					<h2 class="BlogSection__Heading">
+						二、そよ風を奏でる風鈴。厚み0.1ミリの調律。
+					</h2>
+					<p class="BlogParagraph">
+						夏の風物詩である風鈴。栗男硝子工房が作る「光道（こおど）風鈴」は、目に映る美しさだけでなく、「耳で聴く涼」に極限までこだわっています。
+					</p>
+
+					<div class="BlogSection__WindChimes">
+						<div class="BlogSection__WindChimesImgBox">
+							<img
+								src="./img/img_003.webp"
+								alt="夏の庭に揺れる光道風鈴"
+								class="BlogSection__WindChimesImg"
+							/>
+						</div>
+						<div class="BlogSection__WindChimesText">
+							<p class="BlogSection__WindChimesParagraph">
+								ガラスの厚みがわずか0.1ミリ違うだけでも、風が短冊をノックした時の音の高さや、余音の長さは驚くほど変化します。浮動小数点以下の微細な厚みの違いを調整しながら、ひとつひとつ丁寧に手づくりすることで、高く透き通るような「チリン……」というクリスタルの響きから、少しふっくらと落ち着きのある「コロン……」という懐かしい郷愁の音まで。
+							</p>
+							<p class="BlogSection__WindChimesParagraph">
+								私たちは、すべての風鈴にそれぞれ違う「声」を与えています。
+								お好みのひとつを探すときは、ぜひ目を閉じて、その声の響き、風のささやきを聴き比べてみてください。
+							</p>
+						</div>
+					</div>
+				</section>
+
+				<section class="BlogSection">
+					<h2 class="BlogSection__Heading">
+						三、均一ではないからこそ愛おしい、手仕事の「揺らぎ」と気泡
+					</h2>
+
+					<p class="BlogParagraph">
+						現代のものづくりにおいて、寸分の狂いもない均一性は基本とされます。
+						しかし、手づくりの吹きガラスが持つ面白さは、その真逆にある「揺らぎ」の中にこそ宿っています。
+					</p>
+
+					<p class="BlogParagraph">
+						日差しが入る窓辺に, 手吹きのグラスを置いてみてください。
+						そこから床や壁に映し出される影は、不思議なことにまっすぐではなく、まるでキラキラと輝く穏やかな水面のようにゆらゆらと波打つはずです。
+						これは、ガラスの肉厚がほんの少しだけ不均一であるために起こる「陽だまりの仕草」。機械で作られたガラスには決して現れない、光のダンスです。
+					</p>
+
+					<blockquote class="BlogSection__Quote">
+						かつて、ガラスの中の気泡は不良品とされた歴史もありました。
+						しかし私たちは、それらを「ガラスに閉じ込められた、職人の一呼吸」として大切に残しています。
+					</blockquote>
+
+					<p class="BlogParagraph">
+						日差しを内側に閉じ込め、水を満たしたときに川底のように涼しげにきらめく気泡。
+						それこそが、手仕事だからこそ宿る「小さくて優しい命」だと思うのです。
+						特別な日だけでなく、日々のお茶（よも茶）を飲むとき、庭のハーブをぽんと生けるとき、この不均一な愛おしい硝子器に触れてみてください。
+						そこにあるだけで、少しだけ夏の午後が、穏やかでひんやりと静かなものに変わるはずです。
+					</p>
+				</section>
+			</article>
+
+			<footer class="BlogFooter">
+				<div class="BlogFooter__Brand">
+					<div>
+						<h4 class="BlogFooter__BrandName">栗男硝子工房（ぐりおがらすこうぼう）</h4>
+					</div>
+				</div>
+
+				<div class="BlogFooter__Meta">
+					<p class="BlogFooter__Copyright">© 2026 Gurio Glass Studio. All Rights Reserved.</p>
+					<p class="BlogFooter__Notes">
+						吹きガラス体験・見学は、完全予約制にて承っております。
+					</p>
+				</div>
+			</footer>
+
+		</main>
+	</div>
+
+</div>
+
+</canvas>
+
+<div class="Backdrop"></div>
+
+<div class="Modal">
+	<div class="Modal__Card">
+		<h2 class="Modal__Title">割って閉じるモーダル</h2>
+		<p class="Modal__Body">
+			このモーダルを閉じるには<br />
+			外周をたくさんクリックしてください
+		</p>
+	</div>
+</div>
+
+<script type="importmap">
+{
+	"imports": {
+		"three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+	}
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+const canvas      = document.querySelector( '.PageEffect' );
+const pageElement = canvas.querySelector( '.Page' );
+
+const renderer = new THREE.WebGLRenderer( { canvas, antialias: true, alpha: true } );
+renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
+renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+
+// r184 + Chrome 150+ の texElementImage2D シグネチャ差を吸収
+const gl = renderer.getContext();
+if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
+
+	const _orig = gl.texElementImage2D.bind( gl );
+	gl.texElementImage2D = function () {
+
+		const args = Array.from( arguments );
+		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
+
+			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
+
+		} else {
+
+			_orig.apply( gl, args );
+
+		}
+
+	};
+
+}
+
+const scene  = new THREE.Scene();
+const camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
+
+const pageTexture = new THREE.HTMLTexture( pageElement );
+pageTexture.minFilter = THREE.LinearFilter;
+pageTexture.magFilter = THREE.LinearFilter;
+pageTexture.flipY = false;
+
+const MAX_CLICKS    = 10;
+const VORONOI_COUNT = 64;
+const SHATTER_MS    = 700;
+
+const material = new THREE.ShaderMaterial( {
+	uniforms: {
+		tMap:           { value: pageTexture },
+		tSnapshot:      { value: null },
+		uResolution:    { value: new THREE.Vector2( window.innerWidth, window.innerHeight ) },
+		uTime:          { value: 0 },
+		uClickCount:    { value: 0 },
+		uClickPoints:   { value: Array.from( { length: MAX_CLICKS }, () => new THREE.Vector2() ) },
+		uClickTimes:    { value: new Array( MAX_CLICKS ).fill( 0 ) },
+		uShatterT:      { value: 0 },
+		uImpactOrigin:  { value: new THREE.Vector2() },
+		uVoronoiSeeds:  { value: Array.from( { length: VORONOI_COUNT }, () => new THREE.Vector2() ) },
+	},
+	vertexShader: /* glsl */`
+		varying vec2 vUv;
+
+		void main() {
+
+			vUv = uv;
+			gl_Position = vec4( position, 1.0 );
+
+		}
+	`,
+	fragmentShader: /* glsl */`
+		precision highp float;
+
+		uniform sampler2D tMap;
+		uniform sampler2D tSnapshot;
+		uniform vec2 uResolution;
+		uniform float uTime;
+
+		uniform int uClickCount;
+		uniform vec2 uClickPoints[ ${ MAX_CLICKS } ];
+		uniform float uClickTimes[ ${ MAX_CLICKS } ];
+
+		uniform float uShatterT;
+		uniform vec2 uImpactOrigin;
+		uniform vec2 uVoronoiSeeds[ ${ VORONOI_COUNT } ];
+
+		varying vec2 vUv;
+
+		float hash11( float x ) {
+
+			return fract( sin( x * 78.233 ) * 43758.5453 );
+
+		}
+
+		vec3 sampleLP( vec2 uvHTML ) {
+
+			return texture2D( tMap, uvHTML ).rgb;
+
+		}
+
+		vec3 sampleSnapshot( vec2 uvHTML ) {
+
+			return texture2D( tSnapshot, vec2( uvHTML.x, 1.0 - uvHTML.y ) ).rgb;
+
+		}
+
+		// 主線 polyline の waypoint perpendicular offset を距離 distAlong で評価
+		float polyWobbleAt( float distAlong, float rayLength, float seedBase, float jf ) {
+
+			float wp1 = ( hash11( seedBase + jf * 31.0 ) - 0.5 ) * 8.0;
+			float wp2 = ( hash11( seedBase + jf * 41.0 ) - 0.5 ) * 14.0;
+			float wp3 = ( hash11( seedBase + jf * 51.0 ) - 0.5 ) * 20.0;
+			float wp4 = ( hash11( seedBase + jf * 61.0 ) - 0.5 ) * 16.0;
+
+			float wpStep = rayLength * 0.25;
+			float seg = clamp( distAlong / wpStep, 0.0, 4.0 );
+			float segIdx = floor( seg );
+			float segFrac = seg - segIdx;
+
+			float wpStart, wpEnd;
+			if ( segIdx < 0.5 )      { wpStart = 0.0; wpEnd = wp1; }
+			else if ( segIdx < 1.5 ) { wpStart = wp1; wpEnd = wp2; }
+			else if ( segIdx < 2.5 ) { wpStart = wp2; wpEnd = wp3; }
+			else                     { wpStart = wp3; wpEnd = wp4; }
+
+			return mix( wpStart, wpEnd, segFrac );
+
+		}
+
+		float distToSegment( vec2 p, vec2 a, vec2 b ) {
+
+			vec2 ab = b - a;
+			float lenSq = dot( ab, ab );
+			if ( lenSq < 0.001 ) return length( p - a );
+			float t = clamp( dot( p - a, ab ) / lenSq, 0.0, 1.0 );
+			return length( p - ( a + ab * t ) );
+
+		}
+
+		// 多角形 (8 角形) の頂点を返す。等角分布 + 角度/半径ランダム jitter
+		vec2 polyVertex( float i, float seedBase ) {
+
+			float baseAng = i * 0.7854; // 2π / 8
+			float angJ = ( hash11( seedBase + i * 11.0 + 41.0 ) - 0.5 ) * 0.55;
+			float r = 2.5 + hash11( seedBase + i * 13.0 + 7.0 ) * 6.5;
+			return vec2( cos( baseAng + angJ ), sin( baseAng + angJ ) ) * r;
+
+		}
+
+		// 多角形頂点の角度（同じ jitter）
+		float polyVertexAngle( float i, float seedBase ) {
+
+			float baseAng = i * 0.7854;
+			return baseAng + ( hash11( seedBase + i * 11.0 + 41.0 ) - 0.5 ) * 0.55;
+
+		}
+
+		// ヒビ: 多角形穴 (8角、瞬時) + 8 本放射 polyline (太さ可変) + 角の隣接 pair に橋線 (穴近く密) + 粉々破片
+		float renderCrack( vec2 uvHTML, vec2 center, float seedBase, float growthT, inout vec2 displacement ) {
+
+			if ( growthT <= 0.0 ) return 0.0;
+
+			vec2 pixelD = ( uvHTML - center ) * uResolution;
+			float pixelDist = length( pixelD );
+
+			float maxRadiusPx = 160.0 * growthT;
+			if ( pixelDist > maxRadiusPx ) return 0.0;
+
+			float intensity = 0.0;
+
+			// ----- 多角形穴 (instant, no growth) -----
+			// 8 つの edge を巡り SDF と inside/outside を計算
+			float minEdgeDist = 1e6;
+			bool inside = true;
+			for ( int i = 0; i < 8; i ++ ) {
+
+				float jf = float( i );
+				int ni = i + 1; if ( ni >= 8 ) ni = 0;
+				vec2 a = polyVertex( jf, seedBase );
+				vec2 b = polyVertex( float( ni ), seedBase );
+
+				float d = distToSegment( pixelD, a, b );
+				if ( d < minEdgeDist ) minEdgeDist = d;
+
+				vec2 ab = b - a;
+				vec2 ap = pixelD - a;
+				float cr = ab.x * ap.y - ab.y * ap.x;
+				if ( cr < 0.0 ) inside = false;
+
+			}
+
+			// 穴の内側: 白っぽい noise shatter (粉々演出) + 強い refraction
+			if ( inside ) {
+
+				vec2 noiseCell = floor( pixelD * 1.8 );
+				float ns = hash11( noiseCell.x * 19.0 + noiseCell.y * 29.0 + seedBase );
+				intensity = max( intensity, ns * 0.55 + 0.35 ); // ベースの白を上乗せ
+
+				vec2 dir = pixelDist > 0.001 ? pixelD / pixelDist : vec2( 1.0, 0.0 );
+				float hf = clamp( minEdgeDist / 9.0, 0.0, 1.0 );
+				displacement += dir * ( 1.0 - hf ) * 5.0 / uResolution.x;
+
+			}
+
+			// 多角形の縁 + 縁の外側に halo (粉々の白)
+			intensity = max( intensity, smoothstep( 1.4, 0.3, minEdgeDist ) * 0.9 );
+			if ( ! inside ) {
+
+				vec2 noiseCell2 = floor( pixelD * 1.2 );
+				float halo = smoothstep( 14.0, 0.0, minEdgeDist );
+				float haloNoise = hash11( noiseCell2.x * 23.0 + noiseCell2.y * 31.0 + seedBase + 7.0 );
+				intensity = max( intensity, halo * ( 0.4 + haloNoise * 0.4 ) );
+
+			}
+
+			// ----- 8 本主線 — 多角形の角から外向き、太さ可変 -----
+			for ( int j = 0; j < 8; j ++ ) {
+
+				float jf = float( j );
+				vec2 vertexP = polyVertex( jf, seedBase );
+				float vertexA = polyVertexAngle( jf, seedBase );
+				float vertexR = length( vertexP );
+
+				vec2 alongDir = vec2( cos( vertexA ), sin( vertexA ) );
+				vec2 perpDir = vec2( - sin( vertexA ), cos( vertexA ) );
+
+				float rayLengthPx = 50.0 + hash11( seedBase + jf * 2.3 ) * 105.0;
+				float effRayLengthPx = rayLengthPx * growthT;
+
+				// 太さスケール: 0.4 (細) - 1.15 (太)
+				float thicknessScale = mix( 0.4, 1.15, hash11( seedBase + jf * 3.7 + 19.0 ) );
+				// アルファ scale: 0.3 (薄) - 1.0 (濃) — ray ごとにバラつき
+				float rayAlpha = mix( 0.3, 1.0, hash11( seedBase + jf * 4.3 + 29.0 ) );
+
+				// 頂点を起点とした相対位置
+				vec2 relP = pixelD - vertexP;
+				float distAlong = dot( relP, alongDir );
+				float distAcrossSigned = dot( relP, perpDir );
+
+				if ( distAlong >= 0.0 && distAlong <= effRayLengthPx ) {
+
+					float wobble = polyWobbleAt( distAlong, rayLengthPx, seedBase, jf );
+					float effAcrossSigned = distAcrossSigned - wobble;
+					float perpSign = sign( effAcrossSigned );
+					float perpDistPx = abs( effAcrossSigned );
+
+					float distFrac = distAlong / rayLengthPx;
+					float thicknessPx = mix( 1.0, 0.3, distFrac ) * thicknessScale;
+
+					float line = smoothstep( thicknessPx + 0.5, thicknessPx - 0.5, perpDistPx );
+					line *= smoothstep( effRayLengthPx, effRayLengthPx * 0.75, distAlong );
+					intensity = max( intensity, line * rayAlpha );
+
+					float lineFalloff = smoothstep( 18.0, 0.0, perpDistPx ) * smoothstep( effRayLengthPx, effRayLengthPx * 0.7, distAlong );
+					float lineDisplMag = ( hash11( seedBase + jf * 6.1 ) + 0.2 ) * 3.0;
+					displacement += perpDir * perpSign * lineDisplMag * lineFalloff / uResolution.x;
+
+				}
+
+				// ----- 隣接 ray との橋線 4 本 (穴近くに 2 本集中) -----
+				int jn = j + 1; if ( jn >= 8 ) jn = 0;
+				float jnf = float( jn );
+				vec2 vertexN = polyVertex( jnf, seedBase );
+				float vertexAN = polyVertexAngle( jnf, seedBase );
+				float vertexRN = length( vertexN );
+				vec2 alongDirN = vec2( cos( vertexAN ), sin( vertexAN ) );
+				vec2 perpDirN = vec2( - sin( vertexAN ), cos( vertexAN ) );
+				float rayLengthN = 50.0 + hash11( seedBase + jnf * 2.3 ) * 105.0;
+				float effRayLengthN = rayLengthN * growthT;
+
+				for ( int k = 0; k < 6; k ++ ) {
+
+					float kf = float( k );
+
+					// slot ごとに半径レンジを階段状に増やす — pair × slot で独立 random
+					float fromVertex;
+					if ( k == 0 )      fromVertex = hash11( seedBase + jf * 91.0 + kf * 7.0 ) * 10.0;
+					else if ( k == 1 ) fromVertex = 5.0  + hash11( seedBase + jf * 97.0 + kf * 11.0 ) * 15.0;
+					else if ( k == 2 ) fromVertex = 15.0 + hash11( seedBase + jf * 101.0 + kf * 13.0 ) * 20.0;
+					else if ( k == 3 ) fromVertex = 30.0 + hash11( seedBase + jf * 103.0 + kf * 17.0 ) * 25.0;
+					else if ( k == 4 ) fromVertex = 50.0 + hash11( seedBase + jf * 107.0 + kf * 19.0 ) * 30.0;
+					else               fromVertex = 75.0 + hash11( seedBase + jf * 109.0 + kf * 23.0 ) * 30.0;
+
+					// 出現確率を距離に対して指数関数的に減衰 (τ=18px) × 1.5 倍 (1.0 で頭打ち)
+					// 中心付近 (0-12px) は 1.0 に張り付き、中距離 (18-36px) で密度向上
+					float renderProb = min( exp( - fromVertex / 18.0 ) * 1.5, 1.0 );
+					float skipHash = hash11( seedBase + jf * 200.0 + kf * 31.0 );
+					if ( skipHash > renderProb ) continue;
+
+					float distJ = fromVertex;
+					float distN = fromVertex + ( hash11( seedBase + jf * 93.0 + kf * 5.0 ) - 0.5 ) * 3.0;
+
+					if ( distJ > effRayLengthPx || distN > effRayLengthN ) continue;
+					// ray の真ん中以降には橋線を作らない
+					if ( distJ > rayLengthPx * 0.5 || distN > rayLengthN * 0.5 ) continue;
+
+					float wobbleJ = polyWobbleAt( distJ, rayLengthPx, seedBase, jf );
+					float wobbleN = polyWobbleAt( distN, rayLengthN, seedBase, jnf );
+
+					vec2 aPos = vertexP + alongDir * distJ + perpDir * wobbleJ;
+					vec2 bPos = vertexN + alongDirN * distN + perpDirN * wobbleN;
+
+					float dSeg = distToSegment( pixelD, aPos, bPos );
+					if ( dSeg > 1.5 ) continue;
+
+					float segLine = smoothstep( 0.85, 0.3, dSeg );
+					intensity = max( intensity, segLine * 0.7 );
+
+				}
+
+			}
+
+			// ----- 短い追加放射線: 多角形の edge midpoint から外向き、約半数の確率で出現 -----
+			for ( int e = 0; e < 8; e ++ ) {
+
+				float ef = float( e );
+				float prob = hash11( seedBase + ef * 71.0 + 31.0 );
+				if ( prob < 0.5 ) continue; // 約 50% スキップ → 平均 4 本
+
+				int en = e + 1; if ( en >= 8 ) en = 0;
+				vec2 vA = polyVertex( ef, seedBase );
+				vec2 vB = polyVertex( float( en ), seedBase );
+				vec2 midPos = ( vA + vB ) * 0.5;
+
+				float midAng = atan( midPos.y, midPos.x );
+
+				float shortLengthPx = 18.0 + hash11( seedBase + ef * 73.0 ) * 32.0; // 18-50px (主線の 1/3 程度)
+				float effL = shortLengthPx * growthT;
+
+				vec2 alongDir = vec2( cos( midAng ), sin( midAng ) );
+				vec2 perpDir = vec2( - sin( midAng ), cos( midAng ) );
+
+				vec2 relP = pixelD - midPos;
+				float distAlong = dot( relP, alongDir );
+				float distAcrossSigned = dot( relP, perpDir );
+
+				if ( distAlong < 0.0 || distAlong > effL ) continue;
+
+				float distFrac = distAlong / shortLengthPx;
+				float thickScale = 0.5 + hash11( seedBase + ef * 79.0 ) * 0.4; // 0.5-0.9 (細め)
+				float thicknessPx = mix( 0.8, 0.25, distFrac ) * thickScale;
+				float perpDistPx = abs( distAcrossSigned );
+
+				// アルファ scale: 0.3-0.85 — 短線ごとにバラつき
+				float shortAlpha = mix( 0.3, 0.85, hash11( seedBase + ef * 4.7 + 37.0 ) );
+
+				float line = smoothstep( thicknessPx + 0.4, thicknessPx - 0.4, perpDistPx );
+				line *= smoothstep( effL, effL * 0.6, distAlong );
+				intensity = max( intensity, line * shortAlpha );
+
+				float lineFalloff = smoothstep( 12.0, 0.0, perpDistPx ) * smoothstep( effL, effL * 0.6, distAlong );
+				float displMag = ( hash11( seedBase + ef * 83.0 ) + 0.2 ) * 2.0;
+				displacement += perpDir * sign( distAcrossSigned ) * displMag * lineFalloff / uResolution.x;
+
+			}
+
+			// ----- 穴の周辺に短い粉々破片 -----
+			if ( pixelDist < 28.0 * growthT ) {
+
+				for ( int m = 0; m < 10; m ++ ) {
+
+					float mf = float( m );
+					float startAng = mf * 0.6283 + ( hash11( seedBase + mf * 5.7 ) - 0.5 ) * 0.9;
+					float startR = 4.0 + hash11( seedBase + mf * 5.0 ) * 8.0;
+					vec2 startPos = vec2( cos( startAng ), sin( startAng ) ) * startR;
+
+					float a = startAng + ( hash11( seedBase + mf * 7.0 ) - 0.5 ) * 1.2;
+					float L = 3.0 + hash11( seedBase + mf * 7.3 ) * 14.0;
+					float effL = L * growthT;
+
+					vec2 relP = pixelD - startPos;
+					vec2 along = vec2( cos( a ), sin( a ) );
+					vec2 perp = vec2( - sin( a ), cos( a ) );
+					float dA = dot( relP, along );
+					if ( dA < 0.0 || dA > effL ) continue;
+
+					float dP = abs( dot( relP, perp ) );
+					float thick = 0.35;
+					float line = smoothstep( thick + 0.3, thick - 0.3, dP );
+					line *= smoothstep( effL, effL * 0.5, dA );
+					intensity = max( intensity, line * 0.7 );
+
+				}
+
+			}
+
+			return intensity;
+
+		}
+
+		vec3 renderGlass( vec2 uvHTML ) {
+
+			// base 屈折
+			vec2 baseDistortion = vec2(
+				sin( uvHTML.y * 30.0 + uTime * 0.4 ) * 0.0015,
+				cos( uvHTML.x * 24.0 + uTime * 0.3 ) * 0.0015
+			);
+
+			// ヒビ累積: 白ハイライト + UV 破断 displacement
+			float crackIntensity = 0.0;
+			vec2 crackDisplacement = vec2( 0.0 );
+			for ( int i = 0; i < ${ MAX_CLICKS }; i ++ ) {
+
+				if ( i >= uClickCount ) break;
+				float growthT = clamp( ( uTime - uClickTimes[ i ] ) / 0.12, 0.0, 1.0 );
+				crackIntensity = max( crackIntensity, renderCrack( uvHTML, uClickPoints[ i ], float( i ) * 7.3 + 1.0, growthT, crackDisplacement ) );
+
+			}
+
+			vec3 color = sampleLP( uvHTML + baseDistortion + crackDisplacement );
+
+			// 明度持ち上げ
+			color = color * 0.95 + 0.05;
+
+			// 周辺をうっすら turquoise に (washed-out)
+			color = mix( color, color * vec3( 0.72, 0.95, 0.98 ), clamp( crackIntensity * 0.35, 0.0, 0.7 ) );
+
+			// 線の hairline darken (白背景で見える、控えめ)
+			float lineDark = smoothstep( 0.55, 0.9, crackIntensity );
+			color = color * ( 1.0 - lineDark * 0.4 );
+
+			// uesubtle catch-light
+			float glow = smoothstep( 0.3, 0.85, crackIntensity );
+			color += glow * vec3( 0.06, 0.22, 0.27 );
+
+			color = clamp( color, 0.0, 1.0 );
+
+			return color;
+
+		}
+
+		// 砕け散る shard 描画
+		vec3 renderShatter( vec2 uvHTML, out float hasShard ) {
+
+			float t = uShatterT;
+
+			// このピクセルが属する shard を Voronoi で判定
+			int shardId = 0;
+			float minDist = 1e6;
+			for ( int i = 0; i < ${ VORONOI_COUNT }; i ++ ) {
+
+				float d = distance( uvHTML, uVoronoiSeeds[ i ] );
+				if ( d < minDist ) {
+
+					minDist = d;
+					shardId = i;
+
+				}
+
+			}
+
+			vec2 shardCenter = uVoronoiSeeds[ shardId ];
+			float h  = hash11( float( shardId ) * 17.0 + 0.5 );
+			float h2 = hash11( float( shardId ) * 23.0 + 0.7 );
+
+			// impact origin から外向き
+			vec2 outwardDir = normalize( shardCenter - uImpactOrigin + vec2( 0.0001 ) );
+			float speed = 0.35 + h * 0.45;
+			vec2 translation = outwardDir * speed * t;
+
+			// 回転
+			float rotSpeed = ( h2 - 0.5 ) * 6.5;
+			float rotAngle = rotSpeed * t;
+
+			// 逆変換: 現ピクセル → 元の位置
+			vec2 relToNewCenter = uvHTML - ( shardCenter + translation );
+			float c = cos( - rotAngle );
+			float s = sin( - rotAngle );
+			vec2 originalRel = vec2( relToNewCenter.x * c - relToNewCenter.y * s, relToNewCenter.x * s + relToNewCenter.y * c );
+			vec2 sourceUv = shardCenter + originalRel;
+
+			if ( sourceUv.x < 0.0 || sourceUv.x > 1.0 || sourceUv.y < 0.0 || sourceUv.y > 1.0 ) {
+
+				hasShard = 0.0;
+				return vec3( 0.0 );
+
+			}
+
+			// 元位置でも同じ shard か再確認 (clean shard 境界)
+			int closestOriginal = 0;
+			float minDistOrig = 1e6;
+			for ( int i = 0; i < ${ VORONOI_COUNT }; i ++ ) {
+
+				float d = distance( sourceUv, uVoronoiSeeds[ i ] );
+				if ( d < minDistOrig ) {
+
+					minDistOrig = d;
+					closestOriginal = i;
+
+				}
+
+			}
+
+			if ( closestOriginal != shardId ) {
+
+				hasShard = 0.0;
+				return vec3( 0.0 );
+
+			}
+
+			hasShard = 1.0;
+			return sampleSnapshot( sourceUv );
+
+		}
+
+		void main() {
+
+			vec2 uvHTML = vec2( vUv.x, 1.0 - vUv.y );
+
+			if ( uShatterT <= 0.0 ) {
+
+				gl_FragColor = vec4( renderGlass( uvHTML ), 1.0 );
+
+			} else if ( uShatterT < 1.0 ) {
+
+				vec3 lpColor = sampleLP( uvHTML );
+				float hasShard = 0.0;
+				vec3 shardColor = renderShatter( uvHTML, hasShard );
+				float shardAlpha = ( 1.0 - uShatterT ) * hasShard;
+				gl_FragColor = vec4( mix( lpColor, shardColor, shardAlpha ), 1.0 );
+
+			} else {
+
+				gl_FragColor = vec4( sampleLP( uvHTML ), 1.0 );
+
+			}
+
+		}
+	`,
+} );
+
+const quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), material );
+scene.add( quad );
+
+// shatter 時に「ヒビ満タンの glass」をスナップショットする render target
+function makeSnapshotTarget() {
+
+	const dpr = Math.min( window.devicePixelRatio, 2 );
+	return new THREE.WebGLRenderTarget(
+		Math.floor( window.innerWidth * dpr ),
+		Math.floor( window.innerHeight * dpr ),
+		{ format: THREE.RGBAFormat, type: THREE.UnsignedByteType }
+	);
+
+}
+
+let snapshotTarget = makeSnapshotTarget();
+
+window.addEventListener( 'resize', () => {
+
+	const width  = window.innerWidth;
+	const height = window.innerHeight;
+	renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
+	renderer.setSize( width, height );
+	material.uniforms.uResolution.value.set( width, height );
+
+	if ( state === 'glass' ) {
+
+		snapshotTarget.dispose();
+		snapshotTarget = makeSnapshotTarget();
+
+	}
+
+} );
+
+let painted = false;
+const _htmlTexturePaint = canvas.onpaint;
+canvas.onpaint = ( e ) => {
+
+	painted = true;
+	if ( _htmlTexturePaint ) _htmlTexturePaint.call( canvas, e );
+
+};
+
+const startMs = performance.now();
+function nowSeconds() {
+
+	return ( performance.now() - startMs ) / 1000;
+
+}
+
+// state: 'glass' → 'finalizing' → 'shatter' → 'done'
+let state = 'glass';
+const clickPoints = [];
+const clickTimes  = [];
+let shatterStartTime = 0;
+const GROWTH_DURATION_MS  = 120;
+const FINALIZE_PAUSE_MS   = 80;
+
+const backdrop = document.querySelector( '.Backdrop' );
+const modal    = document.querySelector( '.Modal' );
+
+backdrop.addEventListener( 'click', ( e ) => {
+
+	if ( state !== 'glass' ) return;
+
+	const x = e.clientX / window.innerWidth;
+	const y = e.clientY / window.innerHeight;
+	const t = nowSeconds();
+
+	clickPoints.push( [ x, y ] );
+	clickTimes.push( t );
+
+	const pointArr = material.uniforms.uClickPoints.value;
+	const timeArr  = material.uniforms.uClickTimes.value;
+	for ( let i = 0; i < clickPoints.length; i ++ ) {
+
+		pointArr[ i ].set( clickPoints[ i ][ 0 ], clickPoints[ i ][ 1 ] );
+		timeArr[ i ] = clickTimes[ i ];
+
+	}
+	material.uniforms.uClickCount.value = clickPoints.length;
+
+	if ( clickPoints.length === MAX_CLICKS ) {
+
+		// 32 発目のヒビが伸びきってから少しだけ余韻 → shatter
+		state = 'finalizing';
+		setTimeout( () => triggerShatter( x, y ), GROWTH_DURATION_MS + FINALIZE_PAUSE_MS );
+
+	}
+
+} );
+
+function triggerShatter( impactX, impactY ) {
+
+	// Voronoi seeds = 32 click points + 32 jittered random
+	const seeds = material.uniforms.uVoronoiSeeds.value;
+	for ( let i = 0; i < MAX_CLICKS; i ++ ) {
+
+		seeds[ i ].set( clickPoints[ i ][ 0 ], clickPoints[ i ][ 1 ] );
+
+	}
+	for ( let i = MAX_CLICKS; i < VORONOI_COUNT; i ++ ) {
+
+		seeds[ i ].set( Math.random(), Math.random() );
+
+	}
+
+	material.uniforms.uImpactOrigin.value.set( impactX, impactY );
+
+	// 「ヒビ満タンの glass」をスナップショットに焼く
+	renderer.setRenderTarget( snapshotTarget );
+	renderer.render( scene, camera );
+	renderer.setRenderTarget( null );
+	material.uniforms.tSnapshot.value = snapshotTarget.texture;
+
+	// shatter 開始
+	shatterStartTime = performance.now();
+	state = 'shatter';
+
+	// modal フェード
+	modal.classList.add( 'is-fading' );
+
+}
+
+function onShatterComplete() {
+
+	state = 'done';
+	material.uniforms.uShatterT.value = 1.0;
+
+	if ( backdrop.parentNode ) backdrop.parentNode.removeChild( backdrop );
+	if ( modal.parentNode ) modal.parentNode.removeChild( modal );
+
+}
+
+renderer.setAnimationLoop( () => {
+
+	if ( ! painted ) return;
+
+	material.uniforms.uTime.value = nowSeconds();
+
+	if ( state === 'shatter' ) {
+
+		const t = ( performance.now() - shatterStartTime ) / SHATTER_MS;
+		if ( t >= 1.0 ) {
+
+			onShatterComplete();
+
+		} else {
+
+			material.uniforms.uShatterT.value = t;
+
+		}
+
+	}
+
+	renderer.render( scene, camera );
+
+} );
+
+</script>
+</body>
+</html>

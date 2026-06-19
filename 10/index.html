@@ -246,8 +246,9 @@ const material = new THREE.ShaderMaterial( {
 
 			}
 
-			float cRows = 36.0;
-			float fRows = 240.0;
+			// 画面サイズによらず px あたりの密度を一定に保つ（粗 1 本/15px, 細 1 本/2.25px）
+			float cRows = max( 1.0, floor( uResolution.y / 15.0 ) );
+			float fRows = max( 1.0, floor( uResolution.y / 2.25 ) );
 
 			float cBand = floor( uv.y * cRows );
 			float fBand = floor( uv.y * fRows );
@@ -308,8 +309,8 @@ let firstRun = true;
 
 function scheduleNextBurst() {
 
-	const minDelay = firstRun ? 1000 : 1500;
-	const maxDelay = firstRun ? 2000 : 3500;
+	const minDelay = firstRun ? 667 : 1000;
+	const maxDelay = firstRun ? 1333 : 2333;
 	firstRun = false;
 
 	const delay = minDelay + Math.random() * ( maxDelay - minDelay );
