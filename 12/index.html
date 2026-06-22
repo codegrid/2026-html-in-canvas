@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<title>HTML in Canvas — CTA Zoom Blur Demo</title>
+<link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+<canvas class="CTA__Canvas" layoutsubtree>
+	<div class="Page">
+		<div class="Page__Inner">
+			<div class="CTA">
+				<h1>
+					よも茶を定期購入しませんか？
+				</h1>
+				<p>
+					最近話題のよも茶。量販店では売り切れが続出しており、めったに手に入らない状況です。<br />
+					そこで、よも茶を定期購入できるサービスをご用意しました。
+				</p>
+				<div class="CTA__Features">
+					<div class="CTA__Image">
+						<img src="./img.webp" alt="" />
+					</div>
+					<h2>
+						定期購入のメリット
+					</h2>
+					<ul>
+						<li>
+							毎月お届けするので、売り切れの心配がありません。
+						</li>
+						<li>
+							定期購入は、いつでも解約可能です。お客様のライフスタイルに合わせて、柔軟にご利用いただけます。
+						</li>
+						<li>
+							年払いでお支払いいただくと、毎月払いよりも2か月分お得です。
+						</li>
+					</ul>
+				</div>
+				<a href="#">
+					今すぐ定期購入する
+				</a>
+			</div>
+		</div>
+	</div>
+</canvas>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
+
+const canvas   = document.querySelector( '.CTA__Canvas' );
+const pageEl   = document.querySelector( '.Page' );
+const buttonEl = document.querySelector( '.CTA > a' );
+
+const renderer = new THREE.WebGLRenderer( { canvas, antialias: true } );
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+
+// r184 + Chrome 150+: texElementImage2D シグネチャ変更への monkey patch
+const gl = renderer.getContext();
+if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
+
+	const _orig = gl.texElementImage2D.bind( gl );
+	gl.texElementImage2D = function () {
+
+		const args = Array.from( arguments );
+		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
+
+			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
+
+		} else {
+
+			_orig.apply( gl, args );
+
+		}
+
+	};
+
+}
+
+const scene  = new THREE.Scene();
+const camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, - 1, 1 );
+
+const pageTexture = new THREE.HTMLTexture( pageEl );
+pageTexture.colorSpace = THREE.SRGBColorSpace;
+pageTexture.minFilter = THREE.LinearFilter;
+pageTexture.magFilter = THREE.LinearFilter;
+pageTexture.wrapS = THREE.ClampToEdgeWrapping;
+pageTexture.wrapT = THREE.ClampToEdgeWrapping;
+
+const material = new THREE.ShaderMaterial( {
+
+	uniforms: {
+		uMap: { value: pageTexture },
+		uCenter: { value: new THREE.Vector2( 0.5, 0.5 ) },
+		uIntensity: { value: 0 },
+		uBboxMin: { value: new THREE.Vector2( 0, 0 ) },
+		uBboxMax: { value: new THREE.Vector2( 0, 0 ) },
+		uResolution: { value: new THREE.Vector2( 1, 1 ) },
+		uFeatherPx: { value: 8 },
+		uBboxPaddingPx: { value: 2 },
+		uStrength: { value: 0.25 },
+	},
+	vertexShader: /* glsl */`
+		varying vec2 vUv;
+
+		void main() {
+
+			vUv = uv;
+			gl_Position = vec4( position.xy, 0.0, 1.0 );
+
+		}
+	`,
+	fragmentShader: /* glsl */`
+		uniform sampler2D uMap;
+		uniform vec2 uCenter;
+		uniform float uIntensity;
+		uniform vec2 uBboxMin;
+		uniform vec2 uBboxMax;
+		uniform vec2 uResolution;
+		uniform float uFeatherPx;
+		uniform float uBboxPaddingPx;
+		uniform float uStrength;
+		varying vec2 vUv;
+
+		const int N = 32;
+
+		// dithering 用の hash (banding を破壊)
+		float hash( vec2 p ) {
+
+			return fract( sin( dot( p, vec2( 127.1, 311.7 ) ) ) * 43758.5453 );
+
+		}
+
+		void main() {
+
+			vec2 uv = vUv;
+			vec4 sharp = texture2D( uMap, uv );
+
+			// idle: シェーダのほぼ全コストをスキップ
+			if ( uIntensity < 0.001 ) {
+
+				gl_FragColor = sharp;
+				return;
+
+			}
+
+			// bbox を outward に拡張 -> button interior を完全に sharp area の中に押し込む
+			vec2 padUv = vec2( uBboxPaddingPx ) / uResolution;
+			vec2 minE = uBboxMin - padUv;
+			vec2 maxE = uBboxMax + padUv;
+
+			vec2 below = minE - uv;
+			vec2 above = uv - maxE;
+			vec2 outsideUv = max( max( below, above ), vec2( 0.0 ) );
+			float distPx = length( outsideUv * uResolution );
+
+			// mask: 1 = (拡張後) bbox 内 (sharp), 0 = feather 外 (blur)
+			float mask = 1.0 - smoothstep( 0.0, uFeatherPx, distPx );
+
+			if ( mask > 0.999 ) {
+
+				gl_FragColor = sharp;
+				return;
+
+			}
+
+			// Evan Wallace 風 zoom blur:
+			//   t = (i + offset) / N  ∈ (0, 1]
+			//   weight = 4t(1-t)   (中央重み、両端で 0)
+			//   sample = uv + toCenter * t * strength
+			// sample が padded bbox の内側に落ちた場合は weight 0
+			// (button 本体の色を blur に巻き込まない)
+			vec2 toCenter = uCenter - uv;
+			float strength = uStrength * uIntensity;
+			float offset = hash( uv );
+
+			vec4 color = vec4( 0.0 );
+			float total = 0.0;
+			for ( int i = 0; i < N; i ++ ) {
+
+				float t = ( float( i ) + offset ) / float( N );
+				vec2 p = uv + toCenter * t * strength;
+
+				// sample が padded bbox 外なら 1, 内側なら 0
+				vec2 ge = step( minE, p );
+				vec2 le = step( p, maxE );
+				float outsideBtn = 1.0 - ge.x * ge.y * le.x * le.y;
+
+				float w = 4.0 * t * ( 1.0 - t ) * outsideBtn;
+				color += texture2D( uMap, p ) * w;
+				total += w;
+
+			}
+
+			// 全 sample が button 内側に着地したケース (button のすぐ脇で全方位 button 向き) は sharp に fallback
+			vec4 blurred = total > 0.0001 ? color / total : sharp;
+
+			// bbox 内 (拡張後) は sharp, 外側は blurred
+			gl_FragColor = mix( blurred, sharp, mask );
+
+		}
+	`,
+} );
+
+const plane = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), material );
+scene.add( plane );
+
+// canvas を viewport サイズに同期 (100vw x 100vh)
+let canvasCssW = 0;
+let canvasCssH = 0;
+
+function syncCanvasSize() {
+
+	const w = window.innerWidth;
+	const h = window.innerHeight;
+	if ( w === canvasCssW && h === canvasCssH ) return false;
+
+	canvasCssW = w;
+	canvasCssH = h;
+	renderer.setSize( w, h, false );
+	const dpr = window.devicePixelRatio;
+	material.uniforms.uResolution.value.set( w * dpr, h * dpr );
+
+	return true;
+
+}
+
+syncCanvasSize();
+window.addEventListener( 'resize', syncCanvasSize );
+
+// bbox 計測 (毎 paint, 安価)
+function updateBbox() {
+
+	const cRect = canvas.getBoundingClientRect();
+	const bRect = buttonEl.getBoundingClientRect();
+	if ( cRect.width === 0 || cRect.height === 0 ) return;
+
+	const x0 = ( bRect.left  - cRect.left ) / cRect.width;
+	const x1 = ( bRect.right - cRect.left ) / cRect.width;
+	const y0 = ( bRect.top    - cRect.top ) / cRect.height;
+	const y1 = ( bRect.bottom - cRect.top ) / cRect.height;
+
+	// DOM y (top->down) を GL UV y (bottom->up) に flip
+	material.uniforms.uBboxMin.value.set( x0, 1.0 - y1 );
+	material.uniforms.uBboxMax.value.set( x1, 1.0 - y0 );
+
+}
+
+// hover 状態
+let targetIntensity = 0;
+let intensity = 0;
+let lastTime = 0;
+
+function setCenterFromClient( clientX, clientY ) {
+
+	const r = canvas.getBoundingClientRect();
+	if ( r.width === 0 || r.height === 0 ) return;
+	const uvX = ( clientX - r.left ) / r.width;
+	const uvY = 1.0 - ( clientY - r.top ) / r.height;
+	material.uniforms.uCenter.value.set( uvX, uvY );
+
+}
+
+// マウス hover: enter/leave で blur on/off。center は move で追従。
+buttonEl.addEventListener( 'pointerenter', ( e ) => {
+
+	if ( e.pointerType === 'touch' ) return;
+	targetIntensity = 1;
+
+} );
+
+buttonEl.addEventListener( 'pointerleave', ( e ) => {
+
+	if ( e.pointerType === 'touch' ) return;
+	targetIntensity = 0;
+
+} );
+
+window.addEventListener( 'pointermove', ( e ) => {
+
+	if ( e.pointerType === 'touch' ) return;
+	setCenterFromClient( e.clientX, e.clientY );
+
+} );
+
+// タッチ: touchstart で blur on, touchend / touchcancel で off。touchmove で center 追従。
+buttonEl.addEventListener( 'touchstart', ( e ) => {
+
+	if ( e.touches.length === 0 ) return;
+	const t = e.touches[ 0 ];
+	setCenterFromClient( t.clientX, t.clientY );
+	targetIntensity = 1;
+
+}, { passive: true } );
+
+window.addEventListener( 'touchmove', ( e ) => {
+
+	if ( e.touches.length === 0 ) return;
+	const t = e.touches[ 0 ];
+	setCenterFromClient( t.clientX, t.clientY );
+
+}, { passive: true } );
+
+window.addEventListener( 'touchend', () => { targetIntensity = 0; }, { passive: true } );
+window.addEventListener( 'touchcancel', () => { targetIntensity = 0; }, { passive: true } );
+
+// 初回 paint ガード
+let painted = false;
+const _htmlTexturePaint = canvas.onpaint;
+canvas.onpaint = ( e ) => {
+
+	if ( _htmlTexturePaint ) _htmlTexturePaint.call( canvas, e );
+	syncCanvasSize();
+	updateBbox();
+	painted = true;
+
+};
+
+renderer.setAnimationLoop( ( now ) => {
+
+	if ( ! painted ) return;
+
+	const dt = lastTime ? Math.min( 0.05, ( now - lastTime ) / 1000 ) : 0;
+	lastTime = now;
+
+	// ease toward target intensity (tau = 80ms で ~200ms フェード)
+	const k = 1.0 - Math.exp( - dt / 0.08 );
+	intensity += ( targetIntensity - intensity ) * k;
+	material.uniforms.uIntensity.value = intensity;
+
+	updateBbox();
+	renderer.render( scene, camera );
+
+} );
+</script>
+</body>
+</html>

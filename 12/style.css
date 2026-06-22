@@ -1,0 +1,204 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+html, body {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 16px;
+	color: #3a2f1b;
+	background: #f3ede1;
+	line-height: 1.7;
+}
+
+/* Canvas wrapper — viewport 全体 */
+.CTA__Canvas {
+	display: block;
+	width: 100vw;
+	height: 100vh;
+}
+
+/* layoutsubtree 配下の page wrapper. canvas 内の "コンテンツエリア" 役。
+   100vh 固定 + overflow: auto。short viewport で内容がはみ出してもアスペクト比は維持。 */
+.Page {
+	box-sizing: border-box;
+	width: 100vw;
+	height: 100vh;
+	overflow: auto;
+	background: #f3ede1;
+}
+
+.Page__Inner {
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 100%;
+	padding: 40px 16px;
+	display: flex;
+	/* safe center: 収まる時は中央、はみ出す時は start に fallback してスクロール可能に */
+	align-items: safe center;
+	justify-content: center;
+}
+
+/* CTA Card */
+.CTA {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 900px;
+	padding: 0 24px 28px;
+	background: #fbf5e7;
+	border: 1px solid #ecd9a8;
+	box-shadow: 0 4px 16px rgba( 60, 40, 10, 0.06 );
+}
+
+/* Heading band — orange double-line frame */
+.CTA h1 {
+	position: relative;
+	margin: 0 -24px 20px;
+	padding: 18px 24px;
+	color: #d9520b;
+	font-size: 20px;
+	font-weight: 700;
+	text-align: center;
+	letter-spacing: 0.02em;
+	line-height: 1.5;
+	background: #fef4d8;
+	border-top: 2px solid #d9520b;
+	border-bottom: 2px solid #d9520b;
+}
+
+.CTA h1::before,
+.CTA h1::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 1px;
+	background: #d9520b;
+}
+
+.CTA h1::before {
+	top: 3px;
+}
+
+.CTA h1::after {
+	bottom: 3px;
+}
+
+/* Lead paragraph */
+.CTA > p {
+	margin: 0 0 24px;
+	font-size: 16px;
+	line-height: 1.85;
+	color: #4a3a22;
+}
+
+/* Features area: list + image */
+.CTA__Features {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-areas:
+		'heading'
+		'image'
+		'list';
+	gap: 16px 20px;
+	margin-bottom: 28px;
+}
+
+@media ( min-width: 680px ) {
+
+	.CTA__Features {
+		grid-template-columns: 1fr 320px;
+		grid-template-areas:
+			'heading image'
+			'list    image';
+		align-items: start;
+	}
+
+}
+
+.CTA__Features h2 {
+	grid-area: heading;
+	margin: 0;
+	padding-bottom: 8px;
+	font-size: 17px;
+	font-weight: 700;
+	color: #2a2114;
+	border-bottom: 1px solid #d9520b;
+}
+
+.CTA__Features ul {
+	grid-area: list;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 16px;
+	line-height: 1.8;
+}
+
+.CTA__Features ul li {
+	position: relative;
+	padding-left: 20px;
+	margin-bottom: 10px;
+	color: #3a2f1b;
+}
+
+.CTA__Features ul li::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 10px;
+	width: 8px;
+	height: 8px;
+	background: #d9520b;
+	border-radius: 50%;
+}
+
+.CTA__Features ul li:last-child {
+	margin-bottom: 0;
+}
+
+/* Product image */
+.CTA__Image {
+	grid-area: image;
+	overflow: hidden;
+	border: 1px solid #ecd9a8;
+	background: #fff;
+}
+
+.CTA__Image img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+/* Big CTA button */
+.CTA > a {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 420px;
+	margin: 0 auto;
+	padding: 18px 28px;
+	background: #ef6b1a;
+	color: #fff;
+	font-size: 18px;
+	font-weight: 700;
+	text-decoration: none;
+	letter-spacing: 0.05em;
+	border-radius: 6px;
+	transition: background 0.15s ease;
+}
+
+.CTA > a::before {
+	content: '▶';
+	font-size: 13px;
+	line-height: 1;
+}
+
+.CTA > a:hover {
+	background: #f5781f;
+}
