@@ -224,8 +224,7 @@ const particleMaterial = new THREE.ShaderMaterial( {
 		// スカラーポテンシャル (2 周波を重ねて時間で位相シフト)
 		float potential( vec2 p, float tt ) {
 
-			return noise( p + vec2( tt * 0.20, - tt * 0.05 ) )
-			     + 0.5 * noise( p * 2.3 + vec2( - tt * 0.12, tt * 0.18 ) );
+			return noise( p + vec2( tt * 0.20, - tt * 0.05 ) ) + 0.5 * noise( p * 2.3 + vec2( - tt * 0.12, tt * 0.18 ) );
 
 		}
 

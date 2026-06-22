@@ -39,7 +39,7 @@ body {
 	font-weight: 500;
 	line-height: 2;
 	margin: 0 auto;
-  font-family: "Noto Serif JP", serif;
+	font-family: "Noto Serif JP", serif;
 
 	h2 {
 		text-align: center;
@@ -53,14 +53,14 @@ body {
 }
 
 .Story__Pillars {
-  display: flex;
-  justify-content: space-between;
-  height: 128px;
+	display: flex;
+	justify-content: space-between;
+	height: 128px;
 }
 
 .Story__Pillar {
-  width: 128px;
-  height: 128px;
+	width: 128px;
+	height: 128px;
 }
 
 .Story__Dragon {
@@ -160,7 +160,7 @@ const renderer = new THREE.WebGLRenderer( { canvas, antialias: true } );
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // r184 monkey patch for Chrome 150+
 const gl = renderer.getContext();
@@ -184,7 +184,7 @@ if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
 
 }
 
-const fov    = 50;
+const fov = 50;
 const camera = new THREE.PerspectiveCamera( fov, 1, 0.1, 100000 );
 
 const scene = new THREE.Scene();

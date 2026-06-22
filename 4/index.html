@@ -38,7 +38,7 @@ body {
 	gap: calc( 16 / 1400 * 100cqw );
 	width: max-content;
 	padding: calc( 32 / 1400 * 100cqw ) calc( 128 / 1400 * 100cqw ) calc( 64 / 1400 * 100cqw );
-  font-family: "Shippori Mincho B1", serif;
+	font-family: "Shippori Mincho B1", serif;
 	color: #0c633c;
 }
 
@@ -220,7 +220,7 @@ const planeMat = new THREE.ShaderMaterial( {
 					float speed = 1.5 + hash( nid + 5.3 ) * 2.0;
 
 					float w = ( 1.0 - abs( o.x - fr.x ) )
-					        * ( 1.0 - abs( o.y - fr.y ) );
+									* ( 1.0 - abs( o.y - fr.y ) );
 
 					float s = sin( dot( q * freq, dir ) + phase - t * speed );
 					d += dir * s * w * amp;
@@ -264,8 +264,8 @@ const planeMat = new THREE.ShaderMaterial( {
 			// sharp: 中央の鋭いピーク / bloom: 9 サンプル平均の広い halo
 			float sharp = pow( h0, 3.0 ) * 0.10;
 			float bloom = pow( h0, 2.0 )
-			            + pow( h1, 2.0 ) + pow( h2, 2.0 ) + pow( h3, 2.0 ) + pow( h4, 2.0 )
-			            + pow( h5, 2.0 ) + pow( h6, 2.0 ) + pow( h7, 2.0 ) + pow( h8, 2.0 );
+				+ pow( h1, 2.0 ) + pow( h2, 2.0 ) + pow( h3, 2.0 ) + pow( h4, 2.0 )
+				+ pow( h5, 2.0 ) + pow( h6, 2.0 ) + pow( h7, 2.0 ) + pow( h8, 2.0 );
 			bloom *= 0.03;
 
 			vec4 src = texture2D( uMap, uv );
