@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<title>HTML in Canvas — Stone Tablet Engraving</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=New+Tegomin&family=Yuji+Syuku&display=swap');
+
+body {
+	margin: 0;
+	overflow: hidden;
+	background: #1a1a1a;
+}
+
+.Slab {
+	display: block;
+}
+
+.StoneTextarea {
+	width: 1024px;
+	height: 1024px;
+	box-sizing: border-box;
+	padding: 80px;
+	background: #ffffff;
+	color: #000000;
+	font-family: "New Tegomin", serif;
+	font-weight: 900;
+	font-size: 96px;
+	line-height: 1.2;
+	text-align: center;
+	border: none;
+	outline: none;
+	resize: none;
+	overflow: hidden;
+}
+
+.StoneTextarea::selection {
+	background: #ffffff;
+	color: #000000;
+}
+</style>
+</head>
+<body>
+
+<canvas class="Slab" layoutsubtree><textarea class="StoneTextarea" autofocus>CODEGRID</textarea></canvas>
+
+
+<script type="importmap">
+{
+	"imports": {
+		"three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+	}
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+const canvas   = document.querySelector( '.Slab' );
+const textarea = canvas.querySelector( '.StoneTextarea' );
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 0.1, 1000 );
+camera.position.set( 0, 0, 3 );
+camera.lookAt( 0, 0, 0 );
+
+const renderer = new THREE.WebGLRenderer( { canvas, antialias: true } );
+renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
+renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+
+// 背景: 縦 gradient
+const backgroundCanvas = document.createElement( 'canvas' );
+backgroundCanvas.width = 2;
+backgroundCanvas.height = 512;
+const backgroundContext = backgroundCanvas.getContext( '2d' );
+const backgroundGradient = backgroundContext.createLinearGradient( 0, 0, 0, backgroundCanvas.height );
+backgroundGradient.addColorStop( 0, '#3a3a3a' );
+backgroundGradient.addColorStop( 1, '#1a1a1a' );
+backgroundContext.fillStyle = backgroundGradient;
+backgroundContext.fillRect( 0, 0, backgroundCanvas.width, backgroundCanvas.height );
+const backgroundTexture = new THREE.CanvasTexture( backgroundCanvas );
+backgroundTexture.colorSpace = THREE.SRGBColorSpace;
+scene.background = backgroundTexture;
+
+// r184 + Chrome 150+ の texElementImage2D シグネチャ差を吸収
+const gl = renderer.getContext();
+if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
+
+	const _orig = gl.texElementImage2D.bind( gl );
+	gl.texElementImage2D = function () {
+
+		const args = Array.from( arguments );
+		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
+
+			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
+
+		} else {
+
+			_orig.apply( gl, args );
+
+		}
+
+	};
+
+}
+
+window.addEventListener( 'resize', () => {
+
+	const width  = window.innerWidth;
+	const height = window.innerHeight;
+
+	camera.aspect = width / height;
+	camera.updateProjectionMatrix();
+	renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
+	renderer.setSize( width, height );
+
+} );
+
+// ライト
+// 石板法線 (+Z) に対して grazing 角度の directional light を 3 灯。
+// 上方左右 + 下方から、bump の上下エッジ両方に陰影を作る。
+// orbit 中の point light がどこにあっても engraving が陰影で読める状態を保つ。
+const keyLight = new THREE.DirectionalLight( 0xffffff, 2.5 );
+keyLight.position.set( 3, 2, 0.5 );
+scene.add( keyLight );
+
+const fillLight = new THREE.DirectionalLight( 0xffffff, 2.0 );
+fillLight.position.set( - 3, 2, 0.5 );
+scene.add( fillLight );
+
+const rimLight = new THREE.DirectionalLight( 0xffffff, 1.5 );
+rimLight.position.set( 0, - 3, 0.5 );
+scene.add( rimLight );
+
+// 文字エリア ( slab 上部 ) を常に照らす固定 point light。
+// orbit 中の point light が画面下方にある時の text の暗さを補う。
+const textLight = new THREE.PointLight( 0xffffff, 60, 3 );
+textLight.position.set( 0, 1.2, 0.6 );
+scene.add( textLight );
+
+const pointLight = new THREE.PointLight( 0xffd8a0, 80, 5 );
+scene.add( pointLight );
+
+// IBL
+const pmremGenerator = new THREE.PMREMGenerator( renderer );
+pmremGenerator.compileEquirectangularShader();
+
+new THREE.TextureLoader().load( './env.webp', ( texture ) => {
+
+	texture.colorSpace = THREE.SRGBColorSpace;
+	scene.environment = pmremGenerator.fromEquirectangular( texture ).texture;
+	texture.dispose();
+	pmremGenerator.dispose();
+
+} );
+
+// 石板 PBR テクスチャ
+const textureLoader = new THREE.TextureLoader();
+const colorMap     = textureLoader.load( './color.webp' );
+const normalMap    = textureLoader.load( './normal.webp' );
+const roughnessMap = textureLoader.load( './roughness.webp' );
+colorMap.colorSpace = THREE.SRGBColorSpace;
+
+// textarea を bumpMap として
+const bumpTexture = new THREE.HTMLTexture( textarea );
+bumpTexture.minFilter = THREE.LinearFilter;
+bumpTexture.magFilter = THREE.LinearFilter;
+bumpTexture.colorSpace = THREE.NoColorSpace;
+
+const slabMaterial = new THREE.MeshStandardMaterial( {
+	map: colorMap,
+	normalMap: normalMap,
+	normalScale: new THREE.Vector2( 0.4, 0.4 ),
+	roughnessMap: roughnessMap,
+	roughness: 1.0,
+	metalness: 0.0,
+	bumpMap: bumpTexture,
+	bumpScale: 4.5,
+	envMapIntensity: 0.2,
+} );
+
+// MeshStandardMaterial の標準シェーダーでは normalMap と bumpMap が
+// #elif で排他になっており、両方指定しても bumpMap が無視される。
+// normal_fragment_maps の後に bumpMap の perturbation を追加で適用するよう
+// onBeforeCompile で shader を差し替える。
+slabMaterial.onBeforeCompile = ( shader ) => {
+
+	shader.fragmentShader = shader.fragmentShader.replace(
+		'#include <normal_fragment_maps>',
+		`
+		#include <normal_fragment_maps>
+		#ifdef USE_BUMPMAP
+			normal = perturbNormalArb( - vViewPosition, normal, dHdxy_fwd(), faceDirection );
+		#endif
+		`
+	);
+
+};
+
+const slab = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), slabMaterial );
+scene.add( slab );
+
+// 初回 paint ガード ( HTMLTexture が onpaint を登録した直後にラップ )
+let painted = false;
+const _htmlTexturePaint = canvas.onpaint;
+canvas.onpaint = ( e ) => {
+
+	painted = true;
+	if ( _htmlTexturePaint ) _htmlTexturePaint.call( canvas, e );
+
+};
+
+const clock = new THREE.Clock();
+const orbitPeriod = 8;
+const orbitRadius = 1;
+const orbitZ = 1.0;
+
+renderer.setAnimationLoop( () => {
+
+	if ( ! painted ) return;
+
+	const t = clock.getElapsedTime();
+	const angle = t * Math.PI * 2 / orbitPeriod;
+	pointLight.position.set(
+		Math.sin( angle ) * orbitRadius,
+		Math.cos( angle ) * orbitRadius / 2,
+		orbitZ,
+	);
+
+	renderer.render( scene, camera );
+
+} );
+</script>
+
+</body>
+</html>
