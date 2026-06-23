@@ -337,6 +337,33 @@ layoutsubtree 配下に置く可能性のある「フルビュー型」のルー
 
 ---
 
+### 動的に挿入した `<img>` は `decode()` を待ってから snapshot を焼く
+
+`<canvas layoutsubtree>` に動的に DOM を挿入する場面 (ページ遷移用にセクションをクローンして append する等) で、配下に `<img>` を含むと最初の `onpaint` がビットマップ未デコードのまま発火することがある。その状態で `drawElementImage` / `texElementImage2D` / `copyElementImageToTexture` を呼ぶと画像が抜けた snapshot がそのまま焼かれ、curl / fade などの直前 1〜2 フレームだけ画像が消えたように見える。
+
+#### 症状
+
+main DOM ではキャッシュ済みで即表示できる `<img>` でも、`cloneNode(true)` → `canvas.appendChild()` で layoutsubtree 配下に置いた瞬間は decode 状態が独立にリセットされる。`onpaint` は layout 完了で発火するため、decode が間に合わないまま「画像領域が空白」の状態でテクスチャが作られる。
+
+#### 対策
+
+挿入後、最初の paint を待つより前にクローン内の `<img>` 全てに対して `decode()` を await する。decode 済みのキャッシュ画像なら即 resolve するので体感の遅延はない。
+
+```js
+canvas.appendChild( clone );
+
+// onpaint より前にビットマップを揃える
+const imgs = clone.querySelectorAll( 'img' );
+await Promise.all( Array.from( imgs ).map( ( img ) => img.decode().catch( () => {} ) ) );
+
+// この後で HTMLTexture / drawElementImage 等の初回 snapshot を作る
+const texture = new THREE.HTMLTexture( clone );
+```
+
+`decode()` は HTMLImageElement の標準 API。失敗時 (broken image 等) に reject するため `.catch()` で握りつぶしておくと安全。
+
+---
+
 ## プライバシー制限
 
 以下は描画されない:

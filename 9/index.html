@@ -527,7 +527,7 @@
 
 	let transitioning = false;
 
-	function startCurl( leaveSection, enterSection, targetHash ) {
+	async function startCurl( leaveSection, enterSection, targetHash ) {
 
 		if ( transitioning ) return;
 		transitioning = true;
@@ -543,6 +543,12 @@
 		fxCanvas.appendChild( clone );
 		void clone.offsetHeight;
 		clone.scrollTop = leaveScrollTop;
+
+		// クローン内の <img> のデコード完了を待つ。layoutsubtree の初回 onpaint より前に
+		// ビットマップを揃えておかないと、texElementImage2D が画像未デコードの snapshot を
+		// 焼いてしまい、curl 開始直前の 1〜2 フレーム間だけ画像が抜けて見える。
+		const cloneImgs = clone.querySelectorAll( 'img' );
+		await Promise.all( Array.from( cloneImgs ).map( ( img ) => img.decode().catch( () => {} ) ) );
 
 		// 3. HTMLTexture 生成 — constructor が canvas の onpaint を自動登録する
 		const texture = new THREE.HTMLTexture( clone );
