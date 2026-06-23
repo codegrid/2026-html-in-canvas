@@ -142,6 +142,10 @@ body {
 	margin: 12px 0;
 	font-size: 13px;
 	font-weight: bold;
+
+	&::before {
+		content: "・";
+	}
 }
 
 .Contact {
@@ -178,6 +182,11 @@ body {
 	border-bottom: 2px solid #000080;
 	padding-bottom: 4px;
 }
+.Section__Content {
+	font-size: 12px;
+	margin: 0;
+}
+
 .Section__Text {
 	margin: 0;
 	font-size: 13px;
@@ -225,9 +234,11 @@ body {
 }
 .Diary__Meta {
 	color: #000080;
+	font-size: 100%;
 	font-weight: bold;
 	margin-bottom: 5px;
 	display: block;
+	margin: 0;
 }
 .Diary__Content {
 	margin: 0;
@@ -376,7 +387,7 @@ body {
 
 			<div class="Marquee">
 				<marquee scrollamount="2" scrolldelay="80">
-					【更新情報】 技術情報サイト「コードグリッド」準備中！ 伝言板（ゲストブック）常設しました。足跡お気軽に！ 
+					【更新情報】 技術情報サイト「コードグリッド」準備中！ 伝言板（ゲストブック）常設しました。足跡お気軽に！
 				</marquee>
 			</div>
 
@@ -384,9 +395,9 @@ body {
 				<nav class="Sidebar">
 					<h3 class="Menu__Title">◆ メニュー ◆</h3>
 					<ul class="Menu">
-						<li class="Menu__Item">・<a class="Menu__Link" href="#profile">自己紹介</a></li>
-						<li class="Menu__Item">・<a class="Menu__Link" href="#diary">電脳日記 (Diary)</a></li>
-						<li class="Menu__Item">・<a class="Menu__Link" href="#guestbook">伝言板 (Guestbook)</a></li>
+						<li class="Menu__Item"><a class="Menu__Link" href="#profile">自己紹介</a></li>
+						<li class="Menu__Item"><a class="Menu__Link" href="#diary">電脳日記 (Diary)</a></li>
+						<li class="Menu__Item"><a class="Menu__Link" href="#guestbook">伝言板 (Guestbook)</a></li>
 					</ul>
 
 					<div class="Contact">
@@ -400,16 +411,20 @@ body {
 					<article class="Section">
 						<h4 class="Section__Title">■ ようこそ！</h4>
 						<div class="Section__Content">
-							いらっしゃいませ。グリオのホームページへお越しいただきありがとうございます。<br />
-							ここでは、気になっている技術情報のメモや、日常の出来事・考察をテキスト中心に書き残しています。<br />
-							どうぞごゆっくりご覧になっていってください。
+							<p>
+								いらっしゃいませ。グリオのホームページへお越しいただきありがとうございます。<br />
+								ここでは、気になっている技術情報のメモや、日常の出来事・考察をテキスト中心に書き残しています。<br />
+								どうぞごゆっくりご覧になっていってください。
+							</p>
 						</div>
 					</article>
 
 					<article class="Section" id="profile">
 						<h4 class="Section__Title">■ 自己紹介のコーナー</h4>
 						<div class="Section__Content">
-							私のプロフィールです。
+							<p>
+								私のプロフィールです。
+							</p>
 
 							<table class="ProfileList">
 								<tbody>
@@ -419,7 +434,7 @@ body {
 									</tr>
 									<tr>
 										<th>趣味</th>
-										<td>HTML/XHTML タグ手打ち、仕様書の音読、Web 深夜回遊</td>
+										<td>HTML/XHTML タグ手打ち、仕様書の音読、深夜のネットサーフィン</td>
 									</tr>
 									<tr>
 										<th>好きな言葉</th>
@@ -435,13 +450,13 @@ body {
 						<div class="Section__Content Diary">
 
 							<div class="Diary__Item">
-								<span class="Diary__Meta">1: 技術情報サイト コードグリッド準備中</span>
+								<h5 class="Diary__Meta">1: 技術情報サイト コードグリッド準備中</h5>
 								<p class="Diary__Content">現在、新しいウェブの知識を共有するための本格的な技術情報サイト「コードグリッド」の開設に向けて、地道にレイアウトやシステム面を調査している。マークアップの美しさと実践的なノウハウを凝縮したサイトにしたいと考えている。</p>
 							</div>
 
 							<div class="Diary__Item">
-								<span class="Diary__Meta">2: Internet Explorer 20 が対応する注目の XHTML 6.0 の新仕様</span>
-								<p class="Diary__Content">いよいよ Internet Explorer 20 に関する噂が聞こえてきた。注目は何と言っても次世代のマークアップ言語、XHTML 6.0 のフルネイティブサポートだ。同時に、RDF も完全サポートを意味する。「リンク」は単なる遷移手段から、知識同士の関係性をたどるナビゲーションへと変化するはずだ。</p>
+								<h5 class="Diary__Meta">2: Internet Explorer 20 が XHTML 6.0 に対応</h5>
+								<p class="Diary__Content">いよいよ Internet Explorer 20 に関する噂が聞こえてきた。注目は何と言っても次世代のマークアップ言語、XHTML 6.0 のフルネイティブサポートだ。主要 SNS が挙って FOAF をサポートし始めたの背景には、この影響があると思う。</p>
 							</div>
 
 						</div>
@@ -450,9 +465,10 @@ body {
 					<article class="Section" id="guestbook">
 						<h4 class="Section__Title">■ 伝言板 (Guestbook)</h4>
 						<div class="Section__Content">
-							お越しいただいた証しとして、ぜひ短いコメントを残していただけると嬉しいです。<br />
-							<br />
+							<p>
 
+								お越しいただいた証しとして、ぜひ短いコメントを残していただけると嬉しいです。
+							</p>
 							<form class="BbsForm" id="bbs-form" onsubmit="handlePostComment(event);">
 								<div class="BbsForm__Row">
 									<label class="BbsForm__Label" for="bbs-name">【お名前】</label>
@@ -473,9 +489,7 @@ body {
 							</form>
 
 							<span class="BbsSubTitle">▶ あしあとリスト</span>
-							<div class="BbsList" id="bbs-list">
-								
-							</div>
+							<div class="BbsList" id="bbs-list"></div>
 						</div>
 					</article>
 
@@ -798,7 +812,7 @@ renderer.setAnimationLoop( () => {
 } );
 </script>
 <script type="module">
-// 掲示板 (ゲストブック) 
+// 掲示板 (ゲストブック)
 
 const defaultComments = [
 	{
