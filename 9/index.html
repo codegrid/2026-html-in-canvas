@@ -5,36 +5,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=" />
 <title>HTML in Canvas — Page Curl Transition Demo</title>
-<link rel="stylesheet" href="./styles.css" />
+<link rel="stylesheet" href="./style.css" />
 </head>
 <body>
 
-<!-- MAIN HEADER -->
+<!-- COVER -->
 <header class="Hero" id="hero-section">
+	<div class="Hero__Bg"></div>
+	<div class="Hero__Overlay"></div>
+
 	<div class="Hero__Inner">
 		<div class="Hero__Badge">
-			<span class="Hero__Sparkle">✦</span>
-			<span>Lewis Carroll's World</span>
-			<span class="Hero__Sparkle">✦</span>
+			Green Tea Series
 		</div>
 
-		<h1 class="Hero__Title">不思議の国のアリス</h1>
-		<p class="Hero__Subtitle">♦ Character Guidebook & Illustrations ♦</p>
+		<h1 class="Hero__Title">よも茶</h1>
+		<p class="Hero__Subtitle">YOMOCHA — Quiet Hours in Green</p>
 
 		<div class="Hero__DecorLine">
 			<div class="Hero__DecorBar"></div>
-			<span class="Hero__DecorSuits">♠ ♥ ♣ ♦</span>
+			<span class="Hero__DecorMark">茶</span>
 			<div class="Hero__DecorBar"></div>
 		</div>
 
 		<p class="Hero__Intro">
-			ルイス・キャロルによって1865年に発表された不朽の名作『不思議の国のアリス』。少女アリスが夢のなかで迷い込んだのは、言葉遊びとへりくつ、不条理が支配する異世界でした。ここでは、絵本から飛び出してきたような美しいイラストとともに、主要な4人のキャラクターたちの不思議な個性をご紹介します。
+			茶葉ひとさじから始まる、静かな緑の時間。<br />
+			日常にすっとなじむ手軽な一本から、急須でゆっくり淹れる本格の一杯まで。<br />
+			ふだんを少しととのえる、よも茶のシリーズです。
 		</p>
 
-		<!-- Next Section Button -->
 		<div class="ButtonContainer -hero">
-			<button class="NextButton" data-next="#alice-section">
-				<span>アリスの紹介へ</span>
+			<button class="NextButton" data-next="#bottle-section">
+				<span>商品を見る</span>
 				<span class="NextButton__Arrow">➔</span>
 			</button>
 		</div>
@@ -42,45 +44,50 @@
 </header>
 
 
-<!-- 1. ALICE -->
-<section id="alice-section" class="CharacterSection">
+<!-- 1. BOTTLE -->
+<section id="bottle-section" class="ProductSection">
 
-	<div class="CharacterGrid">
-		<!-- Left side: Portrait -->
-		<div class="PortraitPanel">
-			<div class="PortraitPanel__Wrapper">
-				<div class="PortraitPanel__Frame"></div>
-				<div class="PortraitPanel__Inner">
-					<img src="alice.png" alt="Alice" class="PortraitPanel__Photo" />
+	<div class="ProductGrid">
+		<!-- Left: Product image -->
+		<div class="ProductImagePanel">
+			<div class="ProductImagePanel__Wrapper">
+				<div class="ProductImagePanel__Frame"></div>
+				<div class="ProductImagePanel__Inner">
+					<img src="bottle.webp" alt="よも茶 ペットボトル" class="ProductImagePanel__Photo" />
 				</div>
 			</div>
 		</div>
 
-		<!-- Right side: Info details list -->
-		<div class="DetailsPanel">
-			<div class="DetailsPanel__Ribbon -alice">The Traveler of Dreams</div>
-			
-			<h2 class="DetailsPanel__Title">
-				<span>アリス</span>
-				<span class="DetailsPanel__EnName">/ Alice</span>
+		<!-- Right: Details -->
+		<div class="ProductDetails">
+			<div class="ProductDetails__Ribbon">Daily</div>
+
+			<h2 class="ProductDetails__Title">
+				<span>よも茶 ペットボトル</span>
+				<span class="ProductDetails__EnName">/ Bottled Green Tea · 500ml</span>
 			</h2>
 
-			<p class="DetailsPanel__OneLiner">不思議の国に迷い込んだ、好奇心あふれる夢見る少女</p>
+			<p class="ProductDetails__Catch">そのまま、冷たく、毎日のそばに。</p>
 
-			<div class="DetailsPanel__QuoteBox">
-				<span class="DetailsPanel__QuoteMark -open">“</span>
-				<p>「まあ、なんておかしなことばかりかしら！昨日はいつも通りだったのに。一晩で自分が変わっちゃうなんてこと、あるのかしら？」</p>
-				<span class="DetailsPanel__QuoteMark -close">”</span>
+			<div class="ProductDetails__NoteBox">
+				<span class="ProductDetails__QuoteMark -open">“</span>
+				<p>ふくよかな茶香、ほのかな甘み。氷を入れてもにごらないクリアな後味。</p>
+				<span class="ProductDetails__QuoteMark -close">”</span>
 			</div>
 
-			<p class="DetailsPanel__Desc">
-				白いワンピースのエプロンを身にまとった親しみやすく聡明な少女。おしゃべり好きな姉の隣で退屈していたところ、チョッキを着た白うさぎを目撃し、その後を追って深い大穴に飛び込みます。不条理で満ちた「不思議の国」で、体が何倍も巨大化したり縮小したりを繰り返しながら、独自の鋭い常識観と言墨遣いで奇妙な住人たちと渡り合っていきます。
+			<p class="ProductDetails__Desc">
+				急須いらずでいつでも本格的な緑茶を。火入れ直後の青々しさを封じこめた、ペットボトル詰めの一本。デスクの上に、移動の途中に、場所を選ばずに手にとれる毎日の一杯です。
 			</p>
 
-			<!-- Next Section Button -->
+			<dl class="ProductDetails__Specs">
+				<div class="ProductDetails__SpecRow"><dt>内容量</dt><dd>500ml</dd></div>
+				<div class="ProductDetails__SpecRow"><dt>形態</dt><dd>PETボトル</dd></div>
+				<div class="ProductDetails__SpecRow"><dt>希望小売価格</dt><dd>¥200 (税込み)</dd></div>
+			</dl>
+
 			<div class="ButtonContainer">
-				<button class="NextButton" data-next="#rabbit-section">
-					<span>次のキャラクター（白うさぎ）へ</span>
+				<button class="NextButton" data-next="#teabag-section">
+					<span>次の商品（ティーバッグ）へ</span>
 					<span class="NextButton__Arrow">➔</span>
 				</button>
 			</div>
@@ -89,45 +96,49 @@
 	</div>
 </section>
 
-<!-- 2. WHITE RABBIT -->
-<section id="rabbit-section" class="CharacterSection">
 
-	<div class="CharacterGrid">
-		<!-- Left side: Portrait -->
-		<div class="PortraitPanel">
-			<div class="PortraitPanel__Wrapper">
-				<div class="PortraitPanel__Frame"></div>
-				<div class="PortraitPanel__Inner">
-					<img src="rabbit.png" alt="White Rabbit" class="PortraitPanel__Photo" />
+<!-- 2. TEABAG -->
+<section id="teabag-section" class="ProductSection">
+
+	<div class="ProductGrid">
+		<div class="ProductImagePanel">
+			<div class="ProductImagePanel__Wrapper">
+				<div class="ProductImagePanel__Frame"></div>
+				<div class="ProductImagePanel__Inner">
+					<img src="teabag.webp" alt="よも茶 ティーバッグ" class="ProductImagePanel__Photo" />
 				</div>
 			</div>
 		</div>
 
-		<!-- Right side: Info details list -->
-		<div class="DetailsPanel">
-			<div class="DetailsPanel__Ribbon -rabbit">The Time Chaser</div>
-			
-			<h2 class="DetailsPanel__Title">
-				<span>白うさぎ</span>
-				<span class="DetailsPanel__EnName">/ The White Rabbit</span>
+		<div class="ProductDetails">
+			<div class="ProductDetails__Ribbon">Easy</div>
+
+			<h2 class="ProductDetails__Title">
+				<span>よも茶 ティーバッグ</span>
+				<span class="ProductDetails__EnName">/ Tea Bag · 2.5g × 15袋</span>
 			</h2>
 
-			<p class="DetailsPanel__OneLiner">ドタババと時間を追いかける、女王陛下のお抱え廷臣</p>
+			<p class="ProductDetails__Catch">一袋に、一服のしずけさを。</p>
 
-			<div class="DetailsPanel__QuoteBox">
-				<span class="DetailsPanel__QuoteMark -open">“</span>
-				<p>「大変だ、大変だ！遅れてしまう！女王陛下がお怒りになって、首をはねられてしまうぞ！」</p>
-				<span class="DetailsPanel__QuoteMark -close">”</span>
+			<div class="ProductDetails__NoteBox">
+				<span class="ProductDetails__QuoteMark -open">“</span>
+				<p>一煎目はやさしく澄み、二煎目で旨味がふくらむ、2色の表情。</p>
+				<span class="ProductDetails__QuoteMark -close">”</span>
 			</div>
 
-			<p class="DetailsPanel__Desc">
-				仕立ての良い上着を着て、金色の懐中時計を片手にいつも必死で走り回っています。アリスの冒険の旅の案内役とも言える存在です。常に「遅刻」を恐れており、極度の心配性で神経質な性格。家ではアリスをメイドのメアリー・アンと勘違いして顎で使う慌て者ですが、ハートの女王の前では身を縮めて怯え、王宮ではお厳かな式部官を務めます。
+			<p class="ProductDetails__Desc">
+				茶葉そのものの香りを引き出すコットンで包んだティーバッグタイプ。お湯を注ぐだけで、急須を使ったときと同じ豊かな茶香が立ちのぼります。来客時にも、自分時間にも、ふと添えやすい手軽さです。
 			</p>
 
-			<!-- Next Section Button -->
+			<dl class="ProductDetails__Specs">
+				<div class="ProductDetails__SpecRow"><dt>内容量</dt><dd>2.5g × 15袋</dd></div>
+				<div class="ProductDetails__SpecRow"><dt>形態</dt><dd>コットン ティーバッグ</dd></div>
+				<div class="ProductDetails__SpecRow"><dt>希望小売価格</dt><dd>¥4,600 (税込み)</dd></div>
+			</dl>
+
 			<div class="ButtonContainer">
-				<button class="NextButton" data-next="#cheshire-section">
-					<span>次のキャラクター（チェシャ猫）へ</span>
+				<button class="NextButton" data-next="#teatin-section">
+					<span>次の商品（茶葉缶）へ</span>
 					<span class="NextButton__Arrow">➔</span>
 				</button>
 			</div>
@@ -136,92 +147,50 @@
 	</div>
 </section>
 
-<!-- 3. CHESHIRE CAT -->
-<section id="cheshire-section" class="CharacterSection">
 
-	<div class="CharacterGrid">
-		<!-- Left side: Portrait -->
-		<div class="PortraitPanel">
-			<div class="PortraitPanel__Wrapper">
-				<div class="PortraitPanel__Frame"></div>
-				<div class="PortraitPanel__Inner">
-					<img src="cheshire.png" alt="Cheshire Cat" class="PortraitPanel__Photo" />
+<!-- 3. TEATIN -->
+<section id="teatin-section" class="ProductSection">
+
+	<div class="ProductGrid">
+		<div class="ProductImagePanel">
+			<div class="ProductImagePanel__Wrapper">
+				<div class="ProductImagePanel__Frame"></div>
+				<div class="ProductImagePanel__Inner">
+					<img src="teatin.webp" alt="よも茶 茶葉缶" class="ProductImagePanel__Photo" />
 				</div>
 			</div>
 		</div>
 
-		<!-- Right side: Info details list -->
-		<div class="DetailsPanel">
-			<div class="DetailsPanel__Ribbon -cheshire">The Mystical Laugher</div>
-			
-			<h2 class="DetailsPanel__Title">
-				<span>チェシャ猫</span>
-				<span class="DetailsPanel__EnName">/ The Cheshire Cat</span>
+		<div class="ProductDetails">
+			<div class="ProductDetails__Ribbon">Premium</div>
+
+			<h2 class="ProductDetails__Title">
+				<span>よも茶 茶葉缶</span>
+				<span class="ProductDetails__EnName">/ Loose Leaf · 50g</span>
 			</h2>
 
-			<p class="DetailsPanel__OneLiner">ニヤニヤ笑いだけを残して消える、知恵と謎に満ちた超越者</p>
+			<p class="ProductDetails__Catch">ひと匙ごとに、立ちのぼる香り。</p>
 
-			<div class="DetailsPanel__QuoteBox">
-				<span class="DetailsPanel__QuoteMark -open">“</span>
-				<p>「ここでは、誰もがイカれてるんだ。俺もイカれてる。あんたもイカれてる。そうでなきゃ、ここへ来やしないさ」</p>
-				<span class="DetailsPanel__QuoteMark -close">”</span>
+			<div class="ProductDetails__NoteBox">
+				<span class="ProductDetails__QuoteMark -open">“</span>
+				<p>青葉のいきいきとした香り、ふくよかな旨み、湯気のなかに広がる甘やかな余韻。</p>
+				<span class="ProductDetails__QuoteMark -close">”</span>
 			</div>
 
-			<p class="DetailsPanel__Desc">
-				不気味で魅力的な、大きなニヤニヤ笑いを常に浮かべた神秘的な猫。自分の体を空気のように自由に消し去ることができ、時には首だけ、あるいは笑みの一部だけを空中にとどめてアリスに語りかけます。敵でも味方でもないトリックスターであり、混乱したアリスに世界の常識（＝全員狂っていること）を優しく教え示す哲学者のような存在です。
+			<p class="ProductDetails__Desc">
+				小山田園の茶葉を厳選し、密閉性の高い缶に丁寧に詰めました。<br />
+				湯を注ぎ、香りを待ち、ゆっくりと口にふくむ。急須で淹れるその時間が、日常の輪郭をやさしくととのえてくれます。
 			</p>
 
-			<!-- Next Section Button -->
-			<div class="ButtonContainer">
-				<button class="NextButton" data-next="#hatter-section">
-					<span>次のキャラクター（帽子屋）へ</span>
-					<span class="NextButton__Arrow">➔</span>
-				</button>
-			</div>
-		</div>
+			<dl class="ProductDetails__Specs">
+				<div class="ProductDetails__SpecRow"><dt>内容量</dt><dd>50g</dd></div>
+				<div class="ProductDetails__SpecRow"><dt>形態</dt><dd>缶 (リーフタイプ)</dd></div>
+				<div class="ProductDetails__SpecRow"><dt>希望小売価格</dt><dd>¥2,800 (税込み)</dd></div>
+			</dl>
 
-	</div>
-</section>
-
-<!-- 4. MAD HATTER -->
-<section id="hatter-section" class="CharacterSection">
-
-	<div class="CharacterGrid">
-		<!-- Left side: Portrait -->
-		<div class="PortraitPanel">
-			<div class="PortraitPanel__Wrapper">
-				<div class="PortraitPanel__Frame"></div>
-				<div class="PortraitPanel__Inner">
-					<img src="hatter.png" alt="Mad Hatter" class="PortraitPanel__Photo" />
-				</div>
-			</div>
-		</div>
-
-		<!-- Right side: Info details list -->
-		<div class="DetailsPanel">
-			<div class="DetailsPanel__Ribbon -hatter">The Tea Master</div>
-			
-			<h2 class="DetailsPanel__Title">
-				<span>マッドハッター（帽子屋）</span>
-				<span class="DetailsPanel__EnName">/ The Mad Hatter</span>
-			</h2>
-
-			<p class="DetailsPanel__OneLiner">終わらないお茶会を永遠にさまよう、おかしな帽子職人</p>
-
-			<div class="DetailsPanel__QuoteBox">
-				<span class="DetailsPanel__QuoteMark -open">“</span>
-				<p>「なぜカラスは机に似ているか知ってるかい？……さあね！僕だってそんな謎かけの答えは知らないよ！」</p>
-				<span class="DetailsPanel__QuoteMark -close">”</span>
-			</div>
-
-			<p class="DetailsPanel__Desc">
-					三月ウサギや眠りネズミたちと、常識外れの『終わらないお茶会』を延々と開いているおかしな帽子屋。かつて時間を怒らせてしまったため、彼の住む場所だけ時間が「午後6時（お茶の時間）」のまま停止してしまいました。突拍子もない謎かけや、文字通りのジョークでアリスを幻惑し、時計に高級バターを塗りつけるなど、愛すべき奇人です。
-			</p>
-
-			<!-- Next Section Button -->
 			<div class="ButtonContainer">
 				<button class="NextButton" data-next="#hero-section">
-					<span>はじめに（表紙）へ戻る</span>
+					<span>表紙（はじめに）へ戻る</span>
 					<span class="NextButton__Arrow">➔</span>
 				</button>
 			</div>
@@ -237,10 +206,9 @@
 
 	const sections = {
 		'#hero-section': document.getElementById( 'hero-section' ),
-		'#alice-section': document.getElementById( 'alice-section' ),
-		'#rabbit-section': document.getElementById( 'rabbit-section' ),
-		'#cheshire-section': document.getElementById( 'cheshire-section' ),
-		'#hatter-section': document.getElementById( 'hatter-section' ),
+		'#bottle-section': document.getElementById( 'bottle-section' ),
+		'#teabag-section': document.getElementById( 'teabag-section' ),
+		'#teatin-section': document.getElementById( 'teatin-section' ),
 	};
 
 	const fxCanvas = document.querySelector( '.FxCanvas' );
