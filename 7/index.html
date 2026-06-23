@@ -1,677 +1,404 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=" />
-<title>HTML in Canvas — Page Curl Transition Demo</title>
-<link rel="stylesheet" href="./styles.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<title>HTML in Canvas — Glitch Effect Demo</title>
+<link rel="stylesheet" href="./style.css" />
 </head>
 <body>
 
-<!-- MAIN HEADER -->
-<header class="Hero" id="hero-section">
-	<div class="Hero__Inner">
-		<div class="Hero__Badge">
-			<span class="Hero__Sparkle">✦</span>
-			<span>Lewis Carroll's World</span>
-			<span class="Hero__Sparkle">✦</span>
+<canvas class="PageEffect" layoutsubtree>
+
+<div class="Page">
+
+	<header class="PageHeader">
+		<div class="PageHeader__Logo">
+			<img src="./img/img_001.svg" alt="Script." />
+			AI-Powered Fountain Pen
 		</div>
+		<nav>
+			<a href="#">特徴</a>
+			<a href="#">使い方</a>
+			<a href="#">仕様</a>
+			<a href="#">FAQ</a>
+		</nav>
+		<a
+			class="PageHeader__BuyButton"
+			href="#"
+		>
+			購入する
+		</a>
+	</header>
 
-		<h1 class="Hero__Title">不思議の国のアリス</h1>
-		<p class="Hero__Subtitle">♦ Character Guidebook & Illustrations ♦</p>
 
-		<div class="Hero__DecorLine">
-			<div class="Hero__DecorBar"></div>
-			<span class="Hero__DecorSuits">♠ ♥ ♣ ♦</span>
-			<div class="Hero__DecorBar"></div>
-		</div>
-
-		<p class="Hero__Intro">
-			ルイス・キャロルによって1865年に発表された不朽の名作『不思議の国のアリス』。少女アリスが夢のなかで迷い込んだのは、言葉遊びとへりくつ、不条理が支配する異世界でした。ここでは、絵本から飛び出してきたような美しいイラストとともに、主要な4人のキャラクターたちの不思議な個性をご紹介します。
-		</p>
-
-		<!-- Next Section Button -->
-		<div class="ButtonContainer -hero">
-			<button class="NextButton" data-next="#alice-section">
-				<span>アリスの紹介へ</span>
-				<span class="NextButton__Arrow">➔</span>
-			</button>
+	<div class="Hero">
+		<div class="Hero__Inner">
+			<p class="Hero__Catchphrase">
+				美しい文字は、<br />
+				才能じゃない。
+			</p>
+			<p class="Hero__Lead">
+				AIがあなたの筆跡とリズムを学習し、<br />
+				読みやすく、美しい文字へと導く万年筆。
+			</p>
+			<div class="Hero__Image">
+				<img src="./img/img_002.webp" alt="" />
+			</div>
+			<a
+				href="#"
+				class="Hero__MoreButton"
+			>
+				詳しく見る
+			</a>
+			<div class="Hero__Award">
+				<img src="./img/img_003.svg" alt="Great Design Products 受賞プロダクト" />
+			</div>
 		</div>
 	</div>
-</header>
 
-
-<!-- 1. ALICE -->
-<section id="alice-section" class="CharacterSection">
-
-	<div class="CharacterGrid">
-		<!-- Left side: Portrait -->
-		<div class="PortraitPanel">
-			<div class="PortraitPanel__Wrapper">
-				<div class="PortraitPanel__Frame"></div>
-				<div class="PortraitPanel__Inner">
-					<img src="alice.png" alt="Alice" class="PortraitPanel__Photo" />
+	<div class="Experience">
+		<div class="Experience__Inner">
+			<div class="Experience__Text">
+				<h2 class="Experience__Title">
+					書くたびに、<br />
+					上手くなる。
+				</h2>
+				<p>
+					筆圧・速度・感覚を解析し、<br />
+					AIが最適なバランスを導き出し、<br />
+					あなたの「伝わる文字」をサポート。<br />
+					あなたが書く文字を認識し、<br />
+					自動で配色もサポートします。
+				</p>
+			</div>
+			<div class="Experience__Compare">
+				<div class="Experience__Before">
+					<p class="Experience__Label">Before</p>
+					<img src="./img/img_004.webp" alt="" />
+					<p>本製品使用前（筆跡の癖が強い例）</p>
+				</div>
+				<div class="Experience__After">
+					<p class="Experience__Label">After</p>
+					<img src="./img/img_005.webp" alt="" />
+					<p>本製品使用後</p>
 				</div>
 			</div>
 		</div>
-
-		<!-- Right side: Info details list -->
-		<div class="DetailsPanel">
-			<div class="DetailsPanel__Ribbon -alice">The Traveler of Dreams</div>
-			
-			<h2 class="DetailsPanel__Title">
-				<span>アリス</span>
-				<span class="DetailsPanel__EnName">/ Alice</span>
-			</h2>
-
-			<p class="DetailsPanel__OneLiner">不思議の国に迷い込んだ、好奇心あふれる夢見る少女</p>
-
-			<div class="DetailsPanel__QuoteBox">
-				<span class="DetailsPanel__QuoteMark -open">“</span>
-				<p>「まあ、なんておかしなことばかりかしら！昨日はいつも通りだったのに。一晩で自分が変わっちゃうなんてこと、あるのかしら？」</p>
-				<span class="DetailsPanel__QuoteMark -close">”</span>
-			</div>
-
-			<p class="DetailsPanel__Desc">
-				白いワンピースのエプロンを身にまとった親しみやすく聡明な少女。おしゃべり好きな姉の隣で退屈していたところ、チョッキを着た白うさぎを目撃し、その後を追って深い大穴に飛び込みます。不条理で満ちた「不思議の国」で、体が何倍も巨大化したり縮小したりを繰り返しながら、独自の鋭い常識観と言墨遣いで奇妙な住人たちと渡り合っていきます。
-			</p>
-
-			<!-- Next Section Button -->
-			<div class="ButtonContainer">
-				<button class="NextButton" data-next="#rabbit-section">
-					<span>次のキャラクター（白うさぎ）へ</span>
-					<span class="NextButton__Arrow">➔</span>
-				</button>
-			</div>
-		</div>
-
 	</div>
-</section>
 
-<!-- 2. WHITE RABBIT -->
-<section id="rabbit-section" class="CharacterSection">
 
-	<div class="CharacterGrid">
-		<!-- Left side: Portrait -->
-		<div class="PortraitPanel">
-			<div class="PortraitPanel__Wrapper">
-				<div class="PortraitPanel__Frame"></div>
-				<div class="PortraitPanel__Inner">
-					<img src="rabbit.png" alt="White Rabbit" class="PortraitPanel__Photo" />
-				</div>
-			</div>
-		</div>
-
-		<!-- Right side: Info details list -->
-		<div class="DetailsPanel">
-			<div class="DetailsPanel__Ribbon -rabbit">The Time Chaser</div>
-			
-			<h2 class="DetailsPanel__Title">
-				<span>白うさぎ</span>
-				<span class="DetailsPanel__EnName">/ The White Rabbit</span>
-			</h2>
-
-			<p class="DetailsPanel__OneLiner">ドタババと時間を追いかける、女王陛下のお抱え廷臣</p>
-
-			<div class="DetailsPanel__QuoteBox">
-				<span class="DetailsPanel__QuoteMark -open">“</span>
-				<p>「大変だ、大変だ！遅れてしまう！女王陛下がお怒りになって、首をはねられてしまうぞ！」</p>
-				<span class="DetailsPanel__QuoteMark -close">”</span>
-			</div>
-
-			<p class="DetailsPanel__Desc">
-				仕立ての良い上着を着て、金色の懐中時計を片手にいつも必死で走り回っています。アリスの冒険の旅の案内役とも言える存在です。常に「遅刻」を恐れており、極度の心配性で神経質な性格。家ではアリスをメイドのメアリー・アンと勘違いして顎で使う慌て者ですが、ハートの女王の前では身を縮めて怯え、王宮ではお厳かな式部官を務めます。
-			</p>
-
-			<!-- Next Section Button -->
-			<div class="ButtonContainer">
-				<button class="NextButton" data-next="#cheshire-section">
-					<span>次のキャラクター（チェシャ猫）へ</span>
-					<span class="NextButton__Arrow">➔</span>
-				</button>
-			</div>
-		</div>
-
+	<div class="Features">
+		<h2 class="Features__Title">
+			AIが、あなたの書く体験を進化させる。
+		</h2>
+		<ul class="Features__List">
+			<li>
+				<img src="./img/img_006.svg" alt="" />
+				<h3>
+					書き方を解析
+				</h3>
+				<p>
+					筆圧・速度・角度を高精度に計算。<br />
+					AIがあなたの癖を数値化します。
+				</p>
+			</li>
+			<li>
+				<img src="./img/img_007.svg" alt="" />
+				<h3>
+					座標誘導
+				</h3>
+				<p>
+					指先への電気刺激により、<br />
+					最適な書き方へ誘導します。
+				</p>
+			</li>
+			<li>
+				<img src="./img/img_008.svg" alt="" />
+				<h3>
+					配色サポート
+				</h3>
+				<p>
+					AIが言語の種類を認識し、<br />
+					自動で最適な配色を提案します。
+				</p>
+			</li>
+		</ul>
 	</div>
-</section>
 
-<!-- 3. CHESHIRE CAT -->
-<section id="cheshire-section" class="CharacterSection">
 
-	<div class="CharacterGrid">
-		<!-- Left side: Portrait -->
-		<div class="PortraitPanel">
-			<div class="PortraitPanel__Wrapper">
-				<div class="PortraitPanel__Frame"></div>
-				<div class="PortraitPanel__Inner">
-					<img src="cheshire.png" alt="Cheshire Cat" class="PortraitPanel__Photo" />
-				</div>
+	<footer class="PageFooter">
+		<div class="PageFooter__Inner">
+			<div class="PageFooter__Image">
+				<img src="./img/img_009.webp" alt="" />
 			</div>
-		</div>
-
-		<!-- Right side: Info details list -->
-		<div class="DetailsPanel">
-			<div class="DetailsPanel__Ribbon -cheshire">The Mystical Laugher</div>
-			
-			<h2 class="DetailsPanel__Title">
-				<span>チェシャ猫</span>
-				<span class="DetailsPanel__EnName">/ The Cheshire Cat</span>
-			</h2>
-
-			<p class="DetailsPanel__OneLiner">ニヤニヤ笑いだけを残して消える、知恵と謎に満ちた超越者</p>
-
-			<div class="DetailsPanel__QuoteBox">
-				<span class="DetailsPanel__QuoteMark -open">“</span>
-				<p>「ここでは、誰もがイカれてるんだ。俺もイカれてる。あんたもイカれてる。そうでなきゃ、ここへ来やしないさ」</p>
-				<span class="DetailsPanel__QuoteMark -close">”</span>
-			</div>
-
-			<p class="DetailsPanel__Desc">
-				不気味で魅力的な、大きなニヤニヤ笑いを常に浮かべた神秘的な猫。自分の体を空気のように自由に消し去ることができ、時には首だけ、あるいは笑みの一部だけを空中にとどめてアリスに語りかけます。敵でも味方でもないトリックスターであり、混乱したアリスに世界の常識（＝全員狂っていること）を優しく教え示す哲学者のような存在です。
+			<p class="PageFooter__Catchphrase">
+				<em>The future of writing.</em>
+				テクノロジーが、書くことをもっと自由にする。
 			</p>
-
-			<!-- Next Section Button -->
-			<div class="ButtonContainer">
-				<button class="NextButton" data-next="#hatter-section">
-					<span>次のキャラクター（帽子屋）へ</span>
-					<span class="NextButton__Arrow">➔</span>
-				</button>
-			</div>
+			<a
+				class="PageFooter__BuyButton"
+				href="#"
+			>
+				購入する
+			</a>
 		</div>
+	</footer>
 
-	</div>
-</section>
+</div>
 
-<!-- 4. MAD HATTER -->
-<section id="hatter-section" class="CharacterSection">
+</canvas>
 
-	<div class="CharacterGrid">
-		<!-- Left side: Portrait -->
-		<div class="PortraitPanel">
-			<div class="PortraitPanel__Wrapper">
-				<div class="PortraitPanel__Frame"></div>
-				<div class="PortraitPanel__Inner">
-					<img src="hatter.png" alt="Mad Hatter" class="PortraitPanel__Photo" />
-				</div>
-			</div>
-		</div>
-
-		<!-- Right side: Info details list -->
-		<div class="DetailsPanel">
-			<div class="DetailsPanel__Ribbon -hatter">The Tea Master</div>
-			
-			<h2 class="DetailsPanel__Title">
-				<span>マッドハッター（帽子屋）</span>
-				<span class="DetailsPanel__EnName">/ The Mad Hatter</span>
-			</h2>
-
-			<p class="DetailsPanel__OneLiner">終わらないお茶会を永遠にさまよう、おかしな帽子職人</p>
-
-			<div class="DetailsPanel__QuoteBox">
-				<span class="DetailsPanel__QuoteMark -open">“</span>
-				<p>「なぜカラスは机に似ているか知ってるかい？……さあね！僕だってそんな謎かけの答えは知らないよ！」</p>
-				<span class="DetailsPanel__QuoteMark -close">”</span>
-			</div>
-
-			<p class="DetailsPanel__Desc">
-					三月ウサギや眠りネズミたちと、常識外れの『終わらないお茶会』を延々と開いているおかしな帽子屋。かつて時間を怒らせてしまったため、彼の住む場所だけ時間が「午後6時（お茶の時間）」のまま停止してしまいました。突拍子もない謎かけや、文字通りのジョークでアリスを幻惑し、時計に高級バターを塗りつけるなど、愛すべき奇人です。
-			</p>
-
-			<!-- Next Section Button -->
-			<div class="ButtonContainer">
-				<button class="NextButton" data-next="#hero-section">
-					<span>はじめに（表紙）へ戻る</span>
-					<span class="NextButton__Arrow">➔</span>
-				</button>
-			</div>
-		</div>
-
-	</div>
-</section>
-
-<canvas class="FxCanvas" layoutsubtree></canvas>
 
 <script type="module">
-	import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
 
-	const sections = {
-		'#hero-section': document.getElementById( 'hero-section' ),
-		'#alice-section': document.getElementById( 'alice-section' ),
-		'#rabbit-section': document.getElementById( 'rabbit-section' ),
-		'#cheshire-section': document.getElementById( 'cheshire-section' ),
-		'#hatter-section': document.getElementById( 'hatter-section' ),
+const canvas      = document.querySelector( '.PageEffect' );
+const pageElement = canvas.querySelector( '.Page' );
+
+const renderer = new THREE.WebGLRenderer( { canvas, antialias: true, alpha: true } );
+renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
+renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+
+// r184 + Chrome 150+ の texElementImage2D シグネチャ差を吸収
+const gl = renderer.getContext();
+if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
+
+	const _orig = gl.texElementImage2D.bind( gl );
+	gl.texElementImage2D = function () {
+
+		const args = Array.from( arguments );
+		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
+
+			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
+
+		} else {
+
+			_orig.apply( gl, args );
+
+		}
+
 	};
 
-	const fxCanvas = document.querySelector( '.FxCanvas' );
+}
 
-	// --- Renderer / scene 一式（常駐、遷移時のみ rAF を回す） ---
-	const renderer = new THREE.WebGLRenderer( { canvas: fxCanvas, antialias: true, alpha: true } );
-	renderer.setPixelRatio( window.devicePixelRatio );
-	renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+const scene  = new THREE.Scene();
+const camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
 
-	function syncCanvasSize() {
+const pageTexture = new THREE.HTMLTexture( pageElement );
+pageTexture.minFilter = THREE.LinearFilter;
+pageTexture.magFilter = THREE.LinearFilter;
+pageTexture.flipY = false;
 
-		renderer.setSize( window.innerWidth, window.innerHeight, false );
+const material = new THREE.ShaderMaterial( {
+	uniforms: {
+		tMap: { value: pageTexture },
+		uAmount: { value: 0 },
+		uSeed: { value: 0 },
+		uResolution: { value: new THREE.Vector2( window.innerWidth, window.innerHeight ) },
+	},
+	vertexShader: /* glsl */`
+		varying vec2 vUv;
+
+		void main() {
+
+			vUv = uv;
+			gl_Position = vec4( position, 1.0 );
+
+		}
+	`,
+	fragmentShader: /* glsl */`
+		precision highp float;
+
+		uniform sampler2D tMap;
+		uniform float uAmount;
+		uniform float uSeed;
+		uniform vec2 uResolution;
+
+		varying vec2 vUv;
+
+		float hash11( float x ) {
+
+			return fract( sin( x * 78.233 ) * 43758.5453 );
+
+		}
+
+		void main() {
+
+			// flipY=false にしているので、HTML の top が v=0。NDC quad の vUv は下が 0 なので反転して渡す。
+			vec2 uv = vec2( vUv.x, 1.0 - vUv.y );
+			float amount = uAmount;
+
+			if ( amount <= 0.0 ) {
+
+				gl_FragColor = texture2D( tMap, uv );
+				return;
+
+			}
+
+			// 画面サイズによらず px あたりの密度を一定に保つ（粗 1 本/15px, 細 1 本/2.25px）
+			float cRows = max( 1.0, floor( uResolution.y / 15.0 ) );
+			float fRows = max( 1.0, floor( uResolution.y / 2.25 ) );
+
+			float cBand = floor( uv.y * cRows );
+			float fBand = floor( uv.y * fRows );
+
+			float cAct = pow( hash11( cBand + uSeed * 13.0 ), 2.0 );
+			float fAct = pow( hash11( fBand + uSeed * 91.0 ), 4.0 );
+
+			float cDir = hash11( cBand + uSeed * 71.0 ) < 0.5 ? - 1.0 : 1.0;
+			float fDir = hash11( fBand + uSeed * 17.0 ) < 0.5 ? - 1.0 : 1.0;
+
+			float maxShiftPx = uResolution.x * 0.05;
+			float shiftPx = ( cAct * 0.7 * cDir + fAct * 0.3 * fDir ) * maxShiftPx * amount;
+			float shiftU = shiftPx / uResolution.x;
+
+			vec2 shiftedUv = vec2( uv.x + shiftU, uv.y );
+
+			float rgbShiftPx = 5.0 * amount;
+			float rgbShiftU = rgbShiftPx / uResolution.x;
+
+			float r = texture2D( tMap, shiftedUv + vec2( rgbShiftU, 0.0 ) ).r;
+			float g = texture2D( tMap, shiftedUv ).g;
+			float b = texture2D( tMap, shiftedUv - vec2( rgbShiftU, 0.0 ) ).b;
+			float a = texture2D( tMap, shiftedUv ).a;
+
+			gl_FragColor = vec4( r, g, b, a );
+
+		}
+	`,
+} );
+
+const quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), material );
+scene.add( quad );
+
+window.addEventListener( 'resize', () => {
+
+	const width  = window.innerWidth;
+	const height = window.innerHeight;
+	renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
+	renderer.setSize( width, height );
+	material.uniforms.uResolution.value.set( width, height );
+
+} );
+
+let painted = false;
+const _htmlTexturePaint = canvas.onpaint;
+canvas.onpaint = ( e ) => {
+
+	painted = true;
+	if ( _htmlTexturePaint ) _htmlTexturePaint.call( canvas, e );
+
+};
+
+// プロシージャル生成: 毎バーストごとに total / spike 数 / 各 spike の duration / amp / gap を独立にランダム決定。
+// 固定の opener は持たない。総時間は heavy-tailed 分布で、多くは短く稀に長い。
+
+let burst    = null;
+let firstRun = true;
+
+function scheduleNextBurst() {
+
+	const minDelay = firstRun ? 667 : 1000;
+	const maxDelay = firstRun ? 1333 : 2333;
+	firstRun = false;
+
+	const delay = minDelay + Math.random() * ( maxDelay - minDelay );
+	setTimeout( startBurst, delay );
+
+}
+
+function buildSpikesForBurst() {
+
+	const r = Math.random();
+	const targetMs = 120 + Math.pow( r, 4 ) * 1800;
+
+	const spikes = [];
+	let elapsed = 0;
+
+	while ( elapsed < targetMs ) {
+
+		const duration = 25 + Math.random() * 110;
+		const gap      = Math.pow( Math.random(), 2 ) * 100;
+		const amp      = 0.3 + Math.pow( Math.random(), 0.7 ) * 2.0;
+		spikes.push( { amp, duration, gap } );
+		elapsed += duration + gap;
 
 	}
 
-	syncCanvasSize();
+	return spikes;
 
-	// r184 monkey patch for Chrome 150+ texElementImage2D signature change
-	const gl = renderer.getContext();
-	if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
+}
 
-		const _orig = gl.texElementImage2D.bind( gl );
-		gl.texElementImage2D = function () {
+function startBurst() {
 
-			const args = Array.from( arguments );
-			if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
+	const spikes = buildSpikesForBurst();
+	const total  = spikes.reduce( ( s, sp ) => s + sp.duration + sp.gap, 0 );
 
-				_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
+	burst = {
+		startTime: performance.now(),
+		spikes,
+		seeds: spikes.map( () => Math.random() * 1000 ),
+		total,
+	};
 
-			} else {
+}
 
-				_orig.apply( gl, args );
+function updateGlitchUniforms( now ) {
 
-			}
+	if ( ! burst ) {
 
-		};
+		material.uniforms.uAmount.value = 0;
+		return;
 
 	}
 
-	const camera = new THREE.OrthographicCamera( -1, 1, 1, -1, -1, 1 );
-	const scene = new THREE.Scene();
+	const t = now - burst.startTime;
 
-	const material = new THREE.ShaderMaterial( {
+	if ( t >= burst.total ) {
 
-		uniforms: {
-			uFrom: { value: null },
-			uProgress: { value: 0 },
-		},
-		vertexShader: /* glsl */`
-			varying vec2 vUv;
-
-			void main() {
-
-				vUv = uv;
-				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-
-			}
-		`,
-		// InvertedPageCurl (Hewlett-Packard / BSD-3) を Three.js + HTML in Canvas 用に改変。
-		// - getToColor() の戻り値 (本来の to ページ) を alpha=0 に置き換え、背面 DOM を透過させる
-		// - to ページに落ちる影は rgb 減算ではなく alpha 出力に振り替えて real DOM を darken させる
-		fragmentShader: /* glsl */`
-			uniform sampler2D uFrom;
-			uniform float uProgress;
-			varying vec2 vUv;
-
-			const float MIN_AMOUNT = -0.16;
-			const float MAX_AMOUNT = 1.5;
-			const float PI = 3.141592653589793;
-			const float scaleAA = 512.0;
-			const float sharpness = 3.0;
-			const float cylinderRadius = 1.0 / PI / 2.0;
-
-			float amount;
-			float cylinderCenter;
-			float cylinderAngle;
-
-			vec4 getFromColor( vec2 uv ) {
-
-				return texture2D( uFrom, uv );
-
-			}
-
-			vec3 hitPoint( float hitAngle, float yc, vec3 point, mat3 rrotation ) {
-
-				float hp = hitAngle / ( 2.0 * PI );
-				point.y = hp;
-				return rrotation * point;
-
-			}
-
-			vec4 antiAlias( vec4 color1, vec4 color2, float distanc ) {
-
-				distanc *= scaleAA;
-				if ( distanc < 0.0 ) return color2;
-				if ( distanc > 2.0 ) return color1;
-				float dd = pow( 1.0 - distanc / 2.0, sharpness );
-				return ( ( color2 - color1 ) * dd ) + color1;
-
-			}
-
-			float distanceToEdge( vec3 point ) {
-
-				float dx = abs( point.x > 0.5 ? 1.0 - point.x : point.x );
-				float dy = abs( point.y > 0.5 ? 1.0 - point.y : point.y );
-				if ( point.x < 0.0 ) dx = -point.x;
-				if ( point.x > 1.0 ) dx = point.x - 1.0;
-				if ( point.y < 0.0 ) dy = -point.y;
-				if ( point.y > 1.0 ) dy = point.y - 1.0;
-				if ( ( point.x < 0.0 || point.x > 1.0 ) && ( point.y < 0.0 || point.y > 1.0 ) ) return sqrt( dx * dx + dy * dy );
-				return min( dx, dy );
-
-			}
-
-			// めくり領域の "外側" — to ページが見えるべき場所。alpha=0 で背面 DOM 透過。
-			vec4 seeThrough( float yc, vec2 p, mat3 rotation, mat3 rrotation ) {
-
-				float hitAngle = PI - ( acos( clamp( yc / cylinderRadius, -1.0, 1.0 ) ) - cylinderAngle );
-				vec3 point = hitPoint( hitAngle, yc, rotation * vec3( p, 1.0 ), rrotation );
-				if ( yc <= 0.0 && ( point.x < 0.0 || point.y < 0.0 || point.x > 1.0 || point.y > 1.0 ) ) {
-
-					return vec4( 0.0 );
-
-				}
-				if ( yc > 0.0 ) return getFromColor( p );
-				vec4 color = getFromColor( point.xy );
-				return antiAlias( color, vec4( 0.0 ), distanceToEdge( point ) );
-
-			}
-
-			// ページ端の影。本来は to の rgb から減算するが、alpha 出力に振り替えて real DOM を darken。
-			vec4 seeThroughWithShadow( float yc, vec2 p, vec3 point, mat3 rotation, mat3 rrotation ) {
-
-				float shadow = distanceToEdge( point ) * 30.0;
-				shadow = ( 1.0 - shadow ) / 3.0;
-				if ( shadow < 0.0 ) shadow = 0.0; else shadow *= amount;
-
-				vec4 base = seeThrough( yc, p, rotation, rrotation );
-				if ( base.a < 0.01 ) {
-
-					return vec4( 0.0, 0.0, 0.0, shadow );
-
-				}
-				base.rgb -= shadow;
-				return base;
-
-			}
-
-			// 紙の裏面: from を反転サンプル + グレースケール + シリンダーライティング
-			vec4 backside( float yc, vec3 point ) {
-
-				vec4 color = getFromColor( point.xy );
-				float gray = ( color.r + color.b + color.g ) / 15.0;
-				gray += ( 8.0 / 10.0 ) * ( pow( max( 0.0, 1.0 - abs( yc / cylinderRadius ) ), 2.0 / 10.0 ) / 2.0 + ( 5.0 / 10.0 ) );
-				color.rgb = vec3( gray );
-				return color;
-
-			}
-
-			// 紙が完全にめくれて消えた領域に落ちる影。alpha 出力で背面 DOM を darken。
-			vec4 behindSurface( vec2 p, float yc, vec3 point, mat3 rrotation ) {
-
-				float safeAmount = amount >= 0.0 ? max( amount, 1e-4 ) : min( amount, -1e-4 );
-				float shado = ( 1.0 - ( ( -cylinderRadius - yc ) / safeAmount * 7.0 ) ) / 6.0;
-				shado *= 1.0 - abs( point.x - 0.5 );
-				yc = ( -cylinderRadius - cylinderRadius - yc );
-				float hitAngle = ( acos( clamp( yc / cylinderRadius, -1.0, 1.0 ) ) + cylinderAngle ) - PI;
-				point = hitPoint( hitAngle, yc, point, rrotation );
-				if ( yc < 0.0 && point.x >= 0.0 && point.y >= 0.0 && point.x <= 1.0 && point.y <= 1.0 && ( hitAngle < PI || amount > 0.5 ) ) {
-
-					float dx = point.x - 0.5;
-					float dy = point.y - 0.5;
-					shado = 1.0 - ( sqrt( dx * dx + dy * dy ) / ( 71.0 / 100.0 ) );
-					float nyc = -yc / cylinderRadius;
-					shado *= nyc * nyc * nyc;
-					shado *= 0.5;
-
-				} else {
-
-					shado = 0.0;
-
-				}
-				return vec4( 0.0, 0.0, 0.0, shado );
-
-			}
-
-			vec4 transition( vec2 p ) {
-
-				amount = uProgress * ( MAX_AMOUNT - MIN_AMOUNT ) + MIN_AMOUNT;
-				cylinderCenter = amount;
-				cylinderAngle = 2.0 * PI * amount;
-
-				const float angle = 100.0 * PI / 180.0;
-				float c = cos( -angle );
-				float s = sin( -angle );
-				mat3 rotation = mat3(
-					c, s, 0,
-					-s, c, 0,
-					-0.801, 0.8900, 1
-				);
-				c = cos( angle );
-				s = sin( angle );
-				mat3 rrotation = mat3(
-					c, s, 0,
-					-s, c, 0,
-					0.98500, 0.985, 1
-				);
-
-				vec3 point = rotation * vec3( p, 1.0 );
-				float yc = point.y - cylinderCenter;
-
-				if ( yc < -cylinderRadius ) {
-
-					return behindSurface( p, yc, point, rrotation );
-
-				}
-				if ( yc > cylinderRadius ) {
-
-					return getFromColor( p );
-
-				}
-
-				float hitAngle = ( acos( clamp( yc / cylinderRadius, -1.0, 1.0 ) ) + cylinderAngle ) - PI;
-				float hitAngleMod = mod( hitAngle, 2.0 * PI );
-				if ( ( hitAngleMod > PI && amount < 0.5 ) || ( hitAngleMod > PI / 2.0 && amount < 0.0 ) ) {
-
-					return seeThrough( yc, p, rotation, rrotation );
-
-				}
-
-				point = hitPoint( hitAngle, yc, point, rrotation );
-
-				if ( point.x < 0.0 || point.y < 0.0 || point.x > 1.0 || point.y > 1.0 ) {
-
-					return seeThroughWithShadow( yc, p, point, rotation, rrotation );
-
-				}
-
-				vec4 color = backside( yc, point );
-
-				vec4 otherColor;
-				if ( yc < 0.0 ) {
-
-					float dx2 = point.x - 0.5;
-					float dy2 = point.y - 0.5;
-					float shado = 1.0 - ( sqrt( dx2 * dx2 + dy2 * dy2 ) / 0.71 );
-					float nyc2 = -yc / cylinderRadius;
-					shado *= nyc2 * nyc2 * nyc2;
-					shado *= 0.5;
-					otherColor = vec4( 0.0, 0.0, 0.0, shado );
-
-				} else {
-
-					otherColor = getFromColor( p );
-
-				}
-
-				color = antiAlias( color, otherColor, cylinderRadius - abs( yc ) );
-
-				vec4 cl = seeThroughWithShadow( yc, p, point, rotation, rrotation );
-				float dist = distanceToEdge( point );
-
-				return antiAlias( color, cl, dist );
-
-			}
-
-			void main() {
-
-				gl_FragColor = transition( vUv );
-
-			}
-		`,
-		transparent: true,
-
-	} );
-
-	const plane = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), material );
-	scene.add( plane );
-
-	window.addEventListener( 'resize', syncCanvasSize );
-
-	// --- 初回ロード / hashchange: curl なしで即表示 ---
-	function showSectionImmediate( targetHash ) {
-
-		const activeHash = sections[ targetHash ] ? targetHash : '#hero-section';
-
-		Object.entries( sections ).forEach( ( [ hash, element ] ) => {
-
-			if ( hash === activeHash ) {
-
-				element.classList.add( '-active' );
-				element.scrollTop = 0;
-
-			} else {
-
-				element.classList.remove( '-active' );
-
-			}
-
-		} );
+		material.uniforms.uAmount.value = 0;
+		burst = null;
+		scheduleNextBurst();
+		return;
 
 	}
 
-	showSectionImmediate( window.location.hash || '#hero-section' );
+	let cursor = 0;
+	let activeAmp  = 0;
+	let activeSeed = 0;
 
-	window.addEventListener( 'hashchange', () => {
+	for ( let i = 0; i < burst.spikes.length; i ++ ) {
 
-		showSectionImmediate( window.location.hash );
+		const spike = burst.spikes[ i ];
+		if ( t >= cursor && t < cursor + spike.duration ) {
 
-	} );
+			activeAmp  = spike.amp;
+			activeSeed = burst.seeds[ i ];
+			break;
 
-	// --- ボタンクリックで curl 遷移 ---
-	const easeOutCubic = ( x ) => 1 - Math.pow(1 - x, 3);
-	const DURATION = 2000;
-	const VISUAL_END = 0.85;
-
-	let transitioning = false;
-
-	function startCurl( leaveSection, enterSection, targetHash ) {
-
-		if ( transitioning ) return;
-		transitioning = true;
-		document.body.classList.add( '-transitioning' );
-
-		// 1. leave をクローン (cloneNode はスクロール位置を複製しないので別途取得しておく)
-		const leaveScrollTop = leaveSection.scrollTop;
-		const clone = leaveSection.cloneNode( true );
-
-		// 2. canvas を表示し、クローンを child に挿入してからスクロール位置を反映
-		//    (offsetHeight を読んで layout を強制してから scrollTop を設定しないと反映されない)
-		fxCanvas.style.display = 'block';
-		fxCanvas.appendChild( clone );
-		void clone.offsetHeight;
-		clone.scrollTop = leaveScrollTop;
-
-		// 3. HTMLTexture 生成 — constructor が canvas の onpaint を自動登録する
-		const texture = new THREE.HTMLTexture( clone );
-		texture.colorSpace = THREE.SRGBColorSpace;
-		material.uniforms.uFrom.value = texture;
-		material.uniforms.uProgress.value = 0;
-
-		// 4. onpaint を wrap して初回 paint を検知
-		let firstPaintFired = false;
-		const _htmlTexturePaint = fxCanvas.onpaint;
-
-		const handleFirstPaint = () => {
-
-			// 先に 1 フレーム描いて canvas を leave で埋める (.active swap 中の素抜け防止)
-			renderer.render( scene, camera );
-
-			// main DOM の active を入れ替え (背面に enter が現れる)
-			leaveSection.classList.remove( '-active' );
-			enterSection.classList.add( '-active' );
-			enterSection.scrollTop = 0;
-			history.pushState( null, '', targetHash );
-
-			// rAF で curl を進行
-			const startTime = performance.now();
-
-			function tick( now ) {
-
-				const t = Math.min( ( now - startTime ) / DURATION, 1 );
-				const progress = easeOutCubic( t );
-				material.uniforms.uProgress.value = progress;
-				renderer.render( scene, camera );
-
-				if ( t < 1 && progress < VISUAL_END ) {
-
-					requestAnimationFrame( tick );
-
-				} else {
-
-					fxCanvas.style.display = 'none';
-					clone.remove();
-					texture.dispose();
-					material.uniforms.uFrom.value = null;
-					transitioning = false;
-					document.body.classList.remove( '-transitioning' );
-
-				}
-
-			}
-
-			requestAnimationFrame( tick );
-
-		};
-
-		fxCanvas.onpaint = ( e ) => {
-
-			if ( _htmlTexturePaint ) _htmlTexturePaint.call( fxCanvas, e );
-			if ( ! firstPaintFired ) {
-
-				firstPaintFired = true;
-				handleFirstPaint();
-
-			}
-
-		};
+		}
+		cursor += spike.duration + spike.gap;
 
 	}
 
-	document.querySelectorAll( '.NextButton' ).forEach( ( button ) => {
+	material.uniforms.uAmount.value = activeAmp;
+	material.uniforms.uSeed.value   = activeSeed;
 
-		button.addEventListener( 'click', ( e ) => {
+}
 
-			e.preventDefault();
-			if ( transitioning ) return;
+scheduleNextBurst();
 
-			const nextHash = button.getAttribute( 'data-next' );
-			if ( ! nextHash || ! sections[ nextHash ] ) return;
+renderer.setAnimationLoop( () => {
 
-			let leaveSection = null;
-			for ( const el of Object.values( sections ) ) {
+	if ( ! painted ) return;
 
-				if ( el.classList.contains( '-active' ) ) {
+	updateGlitchUniforms( performance.now() );
+	renderer.render( scene, camera );
 
-					leaveSection = el;
-					break;
-
-				}
-
-			}
-			if ( ! leaveSection ) return;
-
-			const enterSection = sections[ nextHash ];
-			startCurl( leaveSection, enterSection, nextHash );
-
-		} );
-
-	} );
+} );
 </script>
-
 </body>
 </html>

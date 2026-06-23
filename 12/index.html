@@ -4,61 +4,165 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
-<title>HTML in Canvas — CTA Zoom Blur Demo</title>
-<link rel="stylesheet" href="./style.css" />
+<title>HTML in Canvas — 3D Objects in HTML Demo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200..900&display=swap');
+
+body {
+	margin: 0;
+}
+
+.StoryCanvas {
+	position: fixed;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.Story {
+	width: 100%;
+	height: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+
+.Story__Inner {
+	background: url( "./bg.jpg" ) 0 0 / 256px 256px;
+}
+
+.Story__Contents {
+	max-width: 800px;
+	padding: 32px;
+	font-size: 18px;
+	font-weight: 500;
+	line-height: 2;
+	margin: 0 auto;
+	font-family: "Noto Serif JP", serif;
+
+	h2 {
+		text-align: center;
+	}
+
+	img {
+		float: left;
+		margin: 0 16px 16px 0;
+		width: 128px;
+	}
+}
+
+.Story__Pillars {
+	display: flex;
+	justify-content: space-between;
+	height: 128px;
+}
+
+.Story__Pillar {
+	width: 128px;
+	height: 128px;
+}
+
+.Story__Dragon {
+	max-width: 800px;
+	aspect-ratio: 1;
+	margin: -100px auto;
+}
+</style>
 </head>
 <body>
 
-<canvas class="CTA__Canvas" layoutsubtree>
-	<div class="Page">
-		<div class="Page__Inner">
-			<div class="CTA">
-				<h1>
-					よも茶を定期購入しませんか？
-				</h1>
-				<p>
-					最近話題のよも茶。量販店では売り切れが続出しており、めったに手に入らない状況です。<br />
-					そこで、よも茶を定期購入できるサービスをご用意しました。
-				</p>
-				<div class="CTA__Features">
-					<div class="CTA__Image">
-						<img src="./img.webp" alt="" />
-					</div>
-					<h2>
-						定期購入のメリット
-					</h2>
-					<ul>
-						<li>
-							毎月お届けするので、売り切れの心配がありません。
-						</li>
-						<li>
-							定期購入は、いつでも解約可能です。お客様のライフスタイルに合わせて、柔軟にご利用いただけます。
-						</li>
-						<li>
-							年払いでお支払いいただくと、毎月払いよりも2か月分お得です。
-						</li>
-					</ul>
+<p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
+
+<canvas class="StoryCanvas" layoutsubtree>
+	<div class="Story">
+		<div class="Story__Inner">
+			<div class="Story__Contents">
+
+				<div class="Story__Pillars">
+					<div class="Story__Pillar"></div>
+					<div class="Story__Pillar"></div>
 				</div>
-				<a href="#">
-					今すぐ定期購入する
-				</a>
+
+				<h2>第一章　伝説の神殿</h2>
+				<p><img src="./img_01.svg" alt="" />カッパードラゴンは古代から語り継がれてきた伝説のドラゴンである。その身体は赤褐色の金属のような鱗に覆われ、山にも匹敵する巨体を持つとされていた。しかし、その姿を実際に見たという確かな記録は存在せず、多くの研究者は神話や寓話の一種に過ぎないと考えていた。</p>
+				<p>それでも数多くの古文書には共通した記述が残されていた。北方のどこかに存在する巨大な神殿。その最奥で、銅の王と呼ばれるドラゴンが永遠の眠りについているというのである。だが神殿の位置を示す記録は存在せず、長い年月の中で伝説は半ば忘れ去られていった。</p>
+				<p>状況が変化したのは、失われた古代資料群である「コードグリッド文献」が発見されたことによる。この文献は地図、天体観測記録、建築図面、祭祀文書が複雑に組み合わされた特殊な記録群であり、長年その意味を解読できる者はいなかった。しかし研究が進むにつれ、それぞれの記録を重ね合わせることで隠された情報が浮かび上がることが判明した。</p>
+				<p>文献の断片には何度も同じ文章が記されていた。</p>
+				<p>「銅の王は眠る。」</p>
+				<p>「世界が忘れても神殿は忘れない。」</p>
+				<p>「最奥に至る者は守護者を見る。」</p>
+				<p>研究院はこれらの記述をもとに大規模な調査隊を編成し、コードグリッド文献が示す座標を追跡した。そして数年にわたる探索の末、北方山脈の地下深くで巨大な神殿を発見したのである。神殿の外壁には古代文字が刻まれ、その内容はすべて一頭のドラゴンについて語っていた。調査隊は、この場所こそ伝説に語られる神殿であると確信した。</p>
+
+				<div class="Story__Pillars">
+					<div class="Story__Pillar"></div>
+					<div class="Story__Pillar"></div>
+				</div>
+
+				<h2>第二章　最奥への道</h2>
+				<p>神殿内部は想像を超える規模だった。巨大な回廊が地下深くまで続き、天井を支える柱は森の木々のように並び立っていた。壁面には無数の碑文や彫刻が残されており、そのほとんどが赤褐色の鱗を持つ巨大なドラゴンを描いていた。</p>
+				<p>調査が進むにつれて、通常では説明できない痕跡も発見された。岩盤には幅数メートルに及ぶ爪痕が刻まれ、建物ほどの大きさを持つ鱗の欠片が複数見つかった。さらに神殿の深部では大量の銅鉱石が不自然な形で集積しており、まるで何者かが意図的に運び込んだかのような状態になっていた。</p>
+				<p>神殿の構造にも特徴があった。複雑に見える通路や広間は最終的にすべて同じ場所へ収束するよう設計されていたのである。まるで神殿全体が、一つの存在のもとへ訪問者を導くために造られた巨大な道標のようだった。</p>
+				<p>調査開始から三年後、ついに最深部へ続く封印扉が発見された。高さ百メートルを超えるその扉には、翼を広げた巨大なドラゴンの姿が刻まれていた。封印解除には半年を要したが、最終的に古代機構は作動を停止し、重々しい音とともに扉が開かれた。</p>
+				<p>その先には地下空洞とは思えないほど広大な空間が広がっていた。中央には巨大な祭壇が築かれ、その奥には小山のような巨大な影が横たわっている。最初は岩山だと思われたが、近づくにつれて奇妙な違和感が生まれた。表面は岩ではなく、無数の鱗で覆われていたのである。さらに空間全体には一定の振動が響いていた。それは地鳴りではなかった。ゆっくりと繰り返される呼吸だった。</p>
+
+				<div class="Story__Pillars">
+					<div class="Story__Pillar"></div>
+					<div class="Story__Pillar"></div>
+				</div>
+
+				<h2>第三章　カッパードラゴン</h2>
+				<p>調査隊が祭壇の前で立ち尽くしていたとき、広間の奥で何かが動いた。次の瞬間、暗闇の中に二つの黄金色の光が現れる。それは瞳だった。山だと思われていた存在が、ゆっくりと目を開いたのである。</p>
+				<p>巨大な首が持ち上がる。塔のような角が闇の中から姿を現し、赤褐色の鱗が鈍い光を反射する。その一枚一枚は建物ほどの大きさを持ち、わずかに身体を動かしただけで神殿全体が震えた。</p>
+				<p>調査隊は言葉を失った。伝説の中でしか語られてこなかった存在が、今まさに目の前にいたからである。神殿の最奥で眠る銅の王。コードグリッド文献が示し続けてきた守護者。カッパードラゴンは確かに実在していた。</p>
+				<p>その巨体はあまりにも巨大だった。神殿がドラゴンを収めているのではない。むしろ神殿そのものが、この一頭を守るために築かれたように見えた。数千年の時を眠りながら過ごしていたにもかかわらず、その存在感は圧倒的だった。</p>
+				<p>やがてカッパードラゴンは静かに視線を巡らせ、調査隊を見下ろした。その瞳には敵意も怒りもなかった。ただ、世界の歴史そのものを見続けてきたかのような深い知性が宿っていた。</p>
+				<p>そして神殿全体を震わせる低い声が響いた。</p>
+				<p>「……コードグリッドは、役目を果たしたのだな。」</p>
+				<p>その言葉を聞いた瞬間、調査隊は理解した。コードグリッド文献は単なる歴史資料ではなかったのである。それは未来の誰かをこの場所へ導くために残された道標であり、神殿への招待状だった。</p>
+				<p>カッパードラゴンは再びゆっくりと目を閉じた。しかし調査隊は知っていた。目の前で起きた出来事は幻ではない。伝説は真実であり、神話は現実だったのだ。</p>
+				<p>こうして歴史上初めて、カッパードラゴンの存在は確認された。北方山脈の地下深く、コードグリッド文献が示した神殿の最奥で、世界最古のドラゴンは今も静かに眠り続けているのである。</p>
+
+				<div class="Story__Dragon"></div>
+				<p>
+					<small>
+						<a href="https://sketchfab.com/3d-models/dragon-flying-cycle-ae0831702eac462a9969ff4f8bd57710">
+							Dragon Flying Cycle by RedCoreTimber (CC BY 4.0)
+						</a>
+					</small>
+				</p>
 			</div>
 		</div>
 	</div>
 </canvas>
 
-<script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
 
-const canvas   = document.querySelector( '.CTA__Canvas' );
-const pageEl   = document.querySelector( '.Page' );
-const buttonEl = document.querySelector( '.CTA > a' );
+<script type="importmap">
+{
+	"imports": {
+		"three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+	}
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
+
+const canvas     = document.querySelector( '.StoryCanvas' );
+const story      = document.querySelector( '.Story' );
+const dragonDiv  = document.querySelector( '.Story__Dragon' );
+const pillarDivs = document.querySelectorAll( '.Story__Pillar' );
 
 const renderer = new THREE.WebGLRenderer( { canvas, antialias: true } );
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-// r184 + Chrome 150+: texElementImage2D シグネチャ変更への monkey patch
+// r184 monkey patch for Chrome 150+
 const gl = renderer.getContext();
 if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
 
@@ -80,258 +184,215 @@ if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
 
 }
 
-const scene  = new THREE.Scene();
-const camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, - 1, 1 );
+const fov = 50;
+const camera = new THREE.PerspectiveCamera( fov, 1, 0.1, 100000 );
 
-const pageTexture = new THREE.HTMLTexture( pageEl );
-pageTexture.colorSpace = THREE.SRGBColorSpace;
-pageTexture.minFilter = THREE.LinearFilter;
-pageTexture.magFilter = THREE.LinearFilter;
-pageTexture.wrapS = THREE.ClampToEdgeWrapping;
-pageTexture.wrapT = THREE.ClampToEdgeWrapping;
+const scene = new THREE.Scene();
 
-const material = new THREE.ShaderMaterial( {
+// Lights for the dragon / pillars
+// outputColorSpace = LinearSRGBColorSpace のため gamma encode が切られており、
+// 通常の sRGB 出力に比べて見た目が暗くなる。光量を強めに振って補正する。
+scene.add( new THREE.HemisphereLight( 0xffffff, 0x404040, 3.0 ) );
+const keyLight = new THREE.DirectionalLight( 0xffffff, 5.0 );
+keyLight.position.set( 200, 400, 800 );
+keyLight.castShadow = true;
+// 広い frustum + 小さい mapSize でテクセルは粗くなるが、shadow.radius のブラーで
+// エッジが目立たない範囲に丸まる
+keyLight.shadow.mapSize.set( 1024, 1024 ).multiplyScalar( window.devicePixelRatio );
+keyLight.shadow.radius = 4;
+keyLight.shadow.bias = - 0.0005;
+// ストーリーは縦に長く、ライトの view 方向で原点より遠い caster でも near を割り込まないよう
+// near を小さく、far を広めに取る。
+keyLight.shadow.camera.near = 1;
+keyLight.shadow.camera.far = 3000;
+scene.add( keyLight );
+const fillLight = new THREE.DirectionalLight( 0xccddff, 2.0 );
+fillLight.position.set( - 1, 0.5, 1 );
+scene.add( fillLight );
 
-	uniforms: {
-		uMap: { value: pageTexture },
-		uCenter: { value: new THREE.Vector2( 0.5, 0.5 ) },
-		uIntensity: { value: 0 },
-		uBboxMin: { value: new THREE.Vector2( 0, 0 ) },
-		uBboxMax: { value: new THREE.Vector2( 0, 0 ) },
-		uResolution: { value: new THREE.Vector2( 1, 1 ) },
-		uFeatherPx: { value: 8 },
-		uBboxPaddingPx: { value: 2 },
-		uStrength: { value: 0.25 },
-	},
-	vertexShader: /* glsl */`
-		varying vec2 vUv;
-
-		void main() {
-
-			vUv = uv;
-			gl_Position = vec4( position.xy, 0.0, 1.0 );
-
-		}
-	`,
-	fragmentShader: /* glsl */`
-		uniform sampler2D uMap;
-		uniform vec2 uCenter;
-		uniform float uIntensity;
-		uniform vec2 uBboxMin;
-		uniform vec2 uBboxMax;
-		uniform vec2 uResolution;
-		uniform float uFeatherPx;
-		uniform float uBboxPaddingPx;
-		uniform float uStrength;
-		varying vec2 vUv;
-
-		const int N = 32;
-
-		// dithering 用の hash (banding を破壊)
-		float hash( vec2 p ) {
-
-			return fract( sin( dot( p, vec2( 127.1, 311.7 ) ) ) * 43758.5453 );
-
-		}
-
-		void main() {
-
-			vec2 uv = vUv;
-			vec4 sharp = texture2D( uMap, uv );
-
-			// idle: シェーダのほぼ全コストをスキップ
-			if ( uIntensity < 0.001 ) {
-
-				gl_FragColor = sharp;
-				return;
-
-			}
-
-			// bbox を outward に拡張 -> button interior を完全に sharp area の中に押し込む
-			vec2 padUv = vec2( uBboxPaddingPx ) / uResolution;
-			vec2 minE = uBboxMin - padUv;
-			vec2 maxE = uBboxMax + padUv;
-
-			vec2 below = minE - uv;
-			vec2 above = uv - maxE;
-			vec2 outsideUv = max( max( below, above ), vec2( 0.0 ) );
-			float distPx = length( outsideUv * uResolution );
-
-			// mask: 1 = (拡張後) bbox 内 (sharp), 0 = feather 外 (blur)
-			float mask = 1.0 - smoothstep( 0.0, uFeatherPx, distPx );
-
-			if ( mask > 0.999 ) {
-
-				gl_FragColor = sharp;
-				return;
-
-			}
-
-			// Evan Wallace 風 zoom blur:
-			//   t = (i + offset) / N  ∈ (0, 1]
-			//   weight = 4t(1-t)   (中央重み、両端で 0)
-			//   sample = uv + toCenter * t * strength
-			// sample が padded bbox の内側に落ちた場合は weight 0
-			// (button 本体の色を blur に巻き込まない)
-			vec2 toCenter = uCenter - uv;
-			float strength = uStrength * uIntensity;
-			float offset = hash( uv );
-
-			vec4 color = vec4( 0.0 );
-			float total = 0.0;
-			for ( int i = 0; i < N; i ++ ) {
-
-				float t = ( float( i ) + offset ) / float( N );
-				vec2 p = uv + toCenter * t * strength;
-
-				// sample が padded bbox 外なら 1, 内側なら 0
-				vec2 ge = step( minE, p );
-				vec2 le = step( p, maxE );
-				float outsideBtn = 1.0 - ge.x * ge.y * le.x * le.y;
-
-				float w = 4.0 * t * ( 1.0 - t ) * outsideBtn;
-				color += texture2D( uMap, p ) * w;
-				total += w;
-
-			}
-
-			// 全 sample が button 内側に着地したケース (button のすぐ脇で全方位 button 向き) は sharp に fallback
-			vec4 blurred = total > 0.0001 ? color / total : sharp;
-
-			// bbox 内 (拡張後) は sharp, 外側は blurred
-			gl_FragColor = mix( blurred, sharp, mask );
-
-		}
-	`,
-} );
-
-const plane = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), material );
+// --- Story plane (text + bg via HTMLTexture) ---
+const texture = new THREE.HTMLTexture( story );
+texture.colorSpace = THREE.SRGBColorSpace;
+const planeMat = new THREE.MeshBasicMaterial( { map: texture } );
+const plane    = new THREE.Mesh( new THREE.PlaneGeometry( 1, 1 ), planeMat );
+plane.position.z = - 1;
 scene.add( plane );
 
-// canvas を viewport サイズに同期 (100vw x 100vh)
-let canvasCssW = 0;
-let canvasCssH = 0;
+// --- Shadow overlay plane (受影専用、HTML プレーン上に影を落とす) ---
+const shadowMat   = new THREE.ShadowMaterial( { opacity: 0.4 } );
+const shadowPlane = new THREE.Mesh( new THREE.PlaneGeometry( 1, 1 ), shadowMat );
+shadowPlane.receiveShadow = true;
+shadowPlane.position.z    = - 0.5;
+scene.add( shadowPlane );
 
-function syncCanvasSize() {
+// --- Dragon ---
+let dragon = null;
+let mixer  = null;
+
+new GLTFLoader().load( './dragon.glb', ( gltf ) => {
+
+	const inner = gltf.scene;
+
+	const box    = new THREE.Box3().setFromObject( inner );
+	const size   = new THREE.Vector3();
+	const center = new THREE.Vector3();
+	box.getSize( size );
+	box.getCenter( center );
+
+	// rotation.x = PI/2 で original Y は奥行きになるため、画面上のサイズは X と Z で決まる
+	const targetSize = 800;
+	const scale = targetSize / Math.max( size.x, size.z );
+	inner.scale.setScalar( scale );
+	inner.position.sub( center.multiplyScalar( scale ) );
+
+	inner.traverse( ( obj ) => {
+
+		if ( obj.isMesh ) obj.castShadow = true;
+
+	} );
+
+	dragon = new THREE.Group();
+	dragon.add( inner );
+	dragon.rotation.x = Math.PI / 2;
+	dragon.rotation.y = Math.PI;
+	// rotation.x = PI/2 で original Y は world Z 方向になる。
+	// 平面 (z = -1) へのめり込み防止に、その半分ぶんカメラ側へ押し出す。
+	dragon.position.z = size.y * scale / 2;
+	scene.add( dragon );
+
+	if ( gltf.animations && gltf.animations.length ) {
+
+		mixer = new THREE.AnimationMixer( inner );
+		mixer.clipAction( gltf.animations[ 0 ] ).play();
+
+	}
+
+	updateOverlayPositions();
+
+} );
+
+// --- Pillars ---
+const pillars = [];
+
+new GLTFLoader().load( './pillar.glb', ( gltf ) => {
+
+	const proto      = gltf.scene;
+	const protoBox   = new THREE.Box3().setFromObject( proto );
+	const pSize      = new THREE.Vector3();
+	const pCenter    = new THREE.Vector3();
+	protoBox.getSize( pSize );
+	protoBox.getCenter( pCenter );
+
+	// rotation.x = PI/2 で original Y は奥行きになるため、画面上のサイズは X と Z で決まる
+	const targetSize = 128;
+	const scale      = targetSize / Math.max( pSize.x, pSize.z );
+
+	pillarDivs.forEach( ( div ) => {
+
+		const inner = proto.clone();
+		inner.scale.setScalar( scale );
+		inner.position.sub( pCenter.clone().multiplyScalar( scale ) );
+
+		inner.traverse( ( obj ) => {
+
+			if ( obj.isMesh ) obj.castShadow = true;
+
+		} );
+
+		const group = new THREE.Group();
+		group.add( inner );
+		group.rotation.x = Math.PI / 2;
+		group.rotation.y = Math.PI;
+		// rotation.x = PI/2 で original Y は world Z 方向になる。平面へのめり込み防止
+		group.position.z = pSize.y * scale / 2;
+		scene.add( group );
+
+		pillars.push( { group, div } );
+
+	} );
+
+	updateOverlayPositions();
+
+} );
+
+function updateOverlayPositions() {
 
 	const w = window.innerWidth;
 	const h = window.innerHeight;
-	if ( w === canvasCssW && h === canvasCssH ) return false;
 
-	canvasCssW = w;
-	canvasCssH = h;
-	renderer.setSize( w, h, false );
-	const dpr = window.devicePixelRatio;
-	material.uniforms.uResolution.value.set( w * dpr, h * dpr );
+	if ( dragon ) {
 
-	return true;
+		const rect = dragonDiv.getBoundingClientRect();
+		dragon.position.x = rect.left + rect.width  / 2 - w / 2;
+		dragon.position.y = - ( rect.top + rect.height / 2 - h / 2 );
 
-}
+	}
 
-syncCanvasSize();
-window.addEventListener( 'resize', syncCanvasSize );
+	for ( const { group, div } of pillars ) {
 
-// bbox 計測 (毎 paint, 安価)
-function updateBbox() {
+		const rect = div.getBoundingClientRect();
+		group.position.x = rect.left + rect.width  / 2 - w / 2;
+		group.position.y = - ( rect.top + rect.height / 2 - h / 2 );
 
-	const cRect = canvas.getBoundingClientRect();
-	const bRect = buttonEl.getBoundingClientRect();
-	if ( cRect.width === 0 || cRect.height === 0 ) return;
-
-	const x0 = ( bRect.left  - cRect.left ) / cRect.width;
-	const x1 = ( bRect.right - cRect.left ) / cRect.width;
-	const y0 = ( bRect.top    - cRect.top ) / cRect.height;
-	const y1 = ( bRect.bottom - cRect.top ) / cRect.height;
-
-	// DOM y (top->down) を GL UV y (bottom->up) に flip
-	material.uniforms.uBboxMin.value.set( x0, 1.0 - y1 );
-	material.uniforms.uBboxMax.value.set( x1, 1.0 - y0 );
+	}
 
 }
 
-// hover 状態
-let targetIntensity = 0;
-let intensity = 0;
-let lastTime = 0;
-
-function setCenterFromClient( clientX, clientY ) {
-
-	const r = canvas.getBoundingClientRect();
-	if ( r.width === 0 || r.height === 0 ) return;
-	const uvX = ( clientX - r.left ) / r.width;
-	const uvY = 1.0 - ( clientY - r.top ) / r.height;
-	material.uniforms.uCenter.value.set( uvX, uvY );
-
-}
-
-// マウス hover: enter/leave で blur on/off。center は move で追従。
-buttonEl.addEventListener( 'pointerenter', ( e ) => {
-
-	if ( e.pointerType === 'touch' ) return;
-	targetIntensity = 1;
-
-} );
-
-buttonEl.addEventListener( 'pointerleave', ( e ) => {
-
-	if ( e.pointerType === 'touch' ) return;
-	targetIntensity = 0;
-
-} );
-
-window.addEventListener( 'pointermove', ( e ) => {
-
-	if ( e.pointerType === 'touch' ) return;
-	setCenterFromClient( e.clientX, e.clientY );
-
-} );
-
-// タッチ: touchstart で blur on, touchend / touchcancel で off。touchmove で center 追従。
-buttonEl.addEventListener( 'touchstart', ( e ) => {
-
-	if ( e.touches.length === 0 ) return;
-	const t = e.touches[ 0 ];
-	setCenterFromClient( t.clientX, t.clientY );
-	targetIntensity = 1;
-
-}, { passive: true } );
-
-window.addEventListener( 'touchmove', ( e ) => {
-
-	if ( e.touches.length === 0 ) return;
-	const t = e.touches[ 0 ];
-	setCenterFromClient( t.clientX, t.clientY );
-
-}, { passive: true } );
-
-window.addEventListener( 'touchend', () => { targetIntensity = 0; }, { passive: true } );
-window.addEventListener( 'touchcancel', () => { targetIntensity = 0; }, { passive: true } );
-
-// 初回 paint ガード
+// --- onpaint wrap: first-render gate + sync overlay positions to texture cache ---
 let painted = false;
 const _htmlTexturePaint = canvas.onpaint;
 canvas.onpaint = ( e ) => {
 
-	if ( _htmlTexturePaint ) _htmlTexturePaint.call( canvas, e );
-	syncCanvasSize();
-	updateBbox();
 	painted = true;
+	updateOverlayPositions();
+	if ( _htmlTexturePaint ) _htmlTexturePaint.call( canvas, e );
 
 };
 
-renderer.setAnimationLoop( ( now ) => {
+function setSize() {
+
+	const w = window.innerWidth;
+	const h = window.innerHeight;
+
+	renderer.setSize( w, h, false );
+
+	const z = h / ( 2 * Math.tan( THREE.MathUtils.degToRad( fov / 2 ) ) );
+	camera.aspect = w / h;
+	camera.near   = z / 100;
+	camera.far    = z * 100;
+	camera.position.z = z;
+	camera.updateProjectionMatrix();
+
+	plane.geometry.dispose();
+	const planeGeo = new THREE.PlaneGeometry( w, h );
+	plane.geometry       = planeGeo;
+	shadowPlane.geometry = planeGeo;
+
+	// 影カメラの ortho 範囲。ライトは右上手前から差すため、shadow camera 座標系の
+	// "up" 軸はおおむね world +Y に対応する。ストーリーが縦に長いとスクロールアウトした
+	// caster がこの軸方向にどんどん離れるため、top を特に大きく取らないと
+	// 影が途中で切れる（caster が shadow map の外 → shadow map に焼かれない）。
+	const d = Math.hypot( w, h );
+	keyLight.shadow.camera.left   = - d * 2;
+	keyLight.shadow.camera.right  =   d * 2;
+	keyLight.shadow.camera.top    =   d * 16;
+	keyLight.shadow.camera.bottom = - d * 2;
+	keyLight.shadow.camera.updateProjectionMatrix();
+
+}
+
+setSize();
+window.addEventListener( 'resize', setSize );
+
+const clock = new THREE.Clock();
+
+renderer.setAnimationLoop( () => {
 
 	if ( ! painted ) return;
 
-	const dt = lastTime ? Math.min( 0.05, ( now - lastTime ) / 1000 ) : 0;
-	lastTime = now;
+	const dt = clock.getDelta();
+	if ( mixer ) mixer.update( dt );
 
-	// ease toward target intensity (tau = 80ms で ~200ms フェード)
-	const k = 1.0 - Math.exp( - dt / 0.08 );
-	intensity += ( targetIntensity - intensity ) * k;
-	material.uniforms.uIntensity.value = intensity;
-
-	updateBbox();
 	renderer.render( scene, camera );
 
 } );

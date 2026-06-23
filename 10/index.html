@@ -4,165 +4,232 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
-<title>HTML in Canvas — Glitch Effect Demo</title>
-<link rel="stylesheet" href="./style.css" />
+<title>HTML in Canvas — Retro Game Effect Demo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
+
+body {
+	margin: 0;
+	background: url( "./bg.png" );
+	font-family: 'DotGothic16', monospace;
+}
+
+.OpenButton {
+	display: block;
+	width: fit-content;
+	padding: 16px 24px;
+	margin: 64px auto 0;
+	border: none;
+	font-family: inherit;
+	font-size: 16px;
+	color: #fff;
+	background: #d23f5b;
+	cursor: pointer;
+	box-shadow:
+		0 0 0 4px #1a1a3e,
+		0 0 0 8px #fff,
+		0 0 0 12px #1a1a3e;
+}
+
+.OpenButton:hover {
+	background: #ec5c79;
+}
+
+.OpenButton:active {
+	transform: translate( 2px, 2px );
+}
+
+/* ===== Retro 8-bit dialog ===== */
+
+.RetroDialog {
+	position: fixed;
+	inset: 0;
+	z-index: 100;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	font-family: inherit;
+	opacity: 0;
+	transition:
+		opacity .5s .5s,
+		display 1s allow-discrete;
+}
+
+.RetroDialog.-open {
+	display: flex;
+	opacity: 1;
+	/* transition: opacity .5s .5s; */
+	transition:
+		opacity .5s,
+		display 1s allow-discrete;
+}
+
+.RetroDialog__Canvas {
+	display: block;
+}
+
+.RetroDialog__Frame {
+	width: min( 480px, 90vw );
+	padding: 0 64px;
+}
+
+.RetroDialog__FrameInner {
+	position: relative;
+	box-sizing: border-box;
+	padding: 32px;
+	background: #1a1a3e;
+
+}
+
+.RetroDialog__Icon {
+	display: flex;
+	justify-content: center;
+}
+
+.RetroDialog__Body {
+	margin: 0 0 16px;
+	padding: 16px;
+	font-size: 16px;
+	line-height: 1.9;
+	letter-spacing: 0.04em;
+	background: #0c0c24;
+	box-shadow: inset 0 0 0 2px #5a5a8e;
+}
+
+@keyframes blink {
+
+	0%, 50%   { opacity: 1; }
+	51%, 100% { opacity: 0; }
+
+}
+
+.RetroDialog__Cursor {
+	display: inline-block;
+	margin-left: 4px;
+	color: #ffe14a;
+	animation: blink 0.8s steps( 1 ) infinite;
+}
+
+.RetroDialog__Actions {
+	display: flex;
+	gap: 16px;
+	justify-content: center;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.RetroDialog__Actions li {
+	flex: 1;
+	max-width: 160px;
+}
+
+.RetroButton {
+	display: block;
+	width: 100%;
+	padding: 12px 20px;
+	border: none;
+	font-family: inherit;
+	font-size: 16px;
+	letter-spacing: 0.08em;
+	color: #1a1a3e;
+	background: #fff;
+	cursor: pointer;
+	box-shadow:
+		0 0 0 3px #1a1a3e,
+		0 0 0 6px #fff;
+}
+
+.RetroButton:hover {
+	color: #1a1a3e;
+	background: #ffe14a;
+}
+
+.RetroButton:active {
+	transform: translate( 2px, 2px );
+}
+
+.RetroButton.-ghost {
+	color: #fff;
+	background: #1a1a3e;
+	box-shadow:
+		0 0 0 3px #fff,
+		0 0 0 6px #1a1a3e;
+}
+
+.RetroButton.-ghost:hover {
+	color: #1a1a3e;
+	background: #fff;
+}
+</style>
 </head>
 <body>
 
-<canvas class="PageEffect" layoutsubtree>
-
-<div class="Page">
-
-	<header class="PageHeader">
-		<div class="PageHeader__Logo">
-			<img src="./img/img_001.svg" alt="Script." />
-			AI-Powered Fountain Pen
-		</div>
-		<nav>
-			<a href="#">特徴</a>
-			<a href="#">使い方</a>
-			<a href="#">仕様</a>
-			<a href="#">FAQ</a>
-		</nav>
-		<a
-			class="PageHeader__BuyButton"
-			href="#"
-		>
-			購入する
-		</a>
-	</header>
+<p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
 
 
-	<div class="Hero">
-		<div class="Hero__Inner">
-			<p class="Hero__Catchphrase">
-				美しい文字は、<br />
-				才能じゃない。
-			</p>
-			<p class="Hero__Lead">
-				AIがあなたの筆跡とリズムを学習し、<br />
-				読みやすく、美しい文字へと導く万年筆。
-			</p>
-			<div class="Hero__Image">
-				<img src="./img/img_002.webp" alt="" />
-			</div>
-			<a
-				href="#"
-				class="Hero__MoreButton"
-			>
-				詳しく見る
-			</a>
-			<div class="Hero__Award">
-				<img src="./img/img_003.svg" alt="Great Design Products 受賞プロダクト" />
-			</div>
-		</div>
-	</div>
+<button type="button" class="OpenButton">
+	dialog を ひらく
+</button>
 
-	<div class="Experience">
-		<div class="Experience__Inner">
-			<div class="Experience__Text">
-				<h2 class="Experience__Title">
-					書くたびに、<br />
-					上手くなる。
-				</h2>
-				<p>
-					筆圧・速度・感覚を解析し、<br />
-					AIが最適なバランスを導き出し、<br />
-					あなたの「伝わる文字」をサポート。<br />
-					あなたが書く文字を認識し、<br />
-					自動で配色もサポートします。
-				</p>
-			</div>
-			<div class="Experience__Compare">
-				<div class="Experience__Before">
-					<p class="Experience__Label">Before</p>
-					<img src="./img/img_004.webp" alt="" />
-					<p>本製品使用前（筆跡の癖が強い例）</p>
+<div class="RetroDialog" role="dialog" aria-modal="true">
+	<canvas class="RetroDialog__Canvas" layoutsubtree>
+		<div class="RetroDialog__Frame">
+			<div class="RetroDialog__FrameInner">
+				<div class="RetroDialog__Icon">
+					<img src="./img.png" alt="" />
 				</div>
-				<div class="Experience__After">
-					<p class="Experience__Label">After</p>
-					<img src="./img/img_005.webp" alt="" />
-					<p>本製品使用後</p>
-				</div>
+				<p class="RetroDialog__Body">
+					コードグリッド を しっていますか？<span class="RetroDialog__Cursor">▼</span>
+				</p>
+				<menu class="RetroDialog__Actions">
+					<li>
+						<button type="button" class="RetroButton">
+							はい
+						</button>
+					</li>
+					<li>
+						<button type="button" class="RetroButton -ghost">
+							いいえ
+						</button>
+					</li>
+				</menu>
 			</div>
 		</div>
-	</div>
-
-
-	<div class="Features">
-		<h2 class="Features__Title">
-			AIが、あなたの書く体験を進化させる。
-		</h2>
-		<ul class="Features__List">
-			<li>
-				<img src="./img/img_006.svg" alt="" />
-				<h3>
-					書き方を解析
-				</h3>
-				<p>
-					筆圧・速度・角度を高精度に計算。<br />
-					AIがあなたの癖を数値化します。
-				</p>
-			</li>
-			<li>
-				<img src="./img/img_007.svg" alt="" />
-				<h3>
-					座標誘導
-				</h3>
-				<p>
-					指先への電気刺激により、<br />
-					最適な書き方へ誘導します。
-				</p>
-			</li>
-			<li>
-				<img src="./img/img_008.svg" alt="" />
-				<h3>
-					配色サポート
-				</h3>
-				<p>
-					AIが言語の種類を認識し、<br />
-					自動で最適な配色を提案します。
-				</p>
-			</li>
-		</ul>
-	</div>
-
-
-	<footer class="PageFooter">
-		<div class="PageFooter__Inner">
-			<div class="PageFooter__Image">
-				<img src="./img/img_009.webp" alt="" />
-			</div>
-			<p class="PageFooter__Catchphrase">
-				<em>The future of writing.</em>
-				テクノロジーが、書くことをもっと自由にする。
-			</p>
-			<a
-				class="PageFooter__BuyButton"
-				href="#"
-			>
-				購入する
-			</a>
-		</div>
-	</footer>
-
+	</canvas>
 </div>
-
-</canvas>
-
 
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
 
-const canvas      = document.querySelector( '.PageEffect' );
-const pageElement = canvas.querySelector( '.Page' );
+if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
+
+const openButton   = document.querySelector( '.OpenButton' );
+const modal        = document.querySelector( '.RetroDialog' );
+const canvas       = document.querySelector( '.RetroDialog__Canvas' );
+const frame        = document.querySelector( '.RetroDialog__Frame' );
+const closeButtons = modal.querySelectorAll( '.RetroButton' );
+
+openButton.addEventListener( 'click', () => {
+
+	modal.classList.add( '-open' );
+
+} );
+
+closeButtons.forEach( ( button ) => {
+
+	button.addEventListener( 'click', () => modal.classList.remove( '-open' ) );
+
+} );
+
+// ===== Three.js + HTML in Canvas =====
 
 const renderer = new THREE.WebGLRenderer( { canvas, antialias: true, alpha: true } );
-renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
-renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setPixelRatio( window.devicePixelRatio );
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 
-// r184 + Chrome 150+ の texElementImage2D シグネチャ差を吸収
+// r184 monkey patch for Chrome 150+
 const gl = renderer.getContext();
 if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
 
@@ -184,219 +251,151 @@ if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
 
 }
 
+const camera = new THREE.OrthographicCamera();
+camera.position.z = 1;
 const scene  = new THREE.Scene();
-const camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
 
-const pageTexture = new THREE.HTMLTexture( pageElement );
-pageTexture.minFilter = THREE.LinearFilter;
-pageTexture.magFilter = THREE.LinearFilter;
-pageTexture.flipY = false;
+const texture = new THREE.HTMLTexture( frame );
+texture.colorSpace = THREE.SRGBColorSpace;
 
+// uProgress: 0 = 完全に渦巻いた状態 (旅の扉)、1 = 通常表示
 const material = new THREE.ShaderMaterial( {
+
 	uniforms: {
-		tMap: { value: pageTexture },
-		uAmount: { value: 0 },
-		uSeed: { value: 0 },
-		uResolution: { value: new THREE.Vector2( window.innerWidth, window.innerHeight ) },
+		uMap:      { value: texture },
+		uProgress: { value: 0 },
+		uTexSize:  { value: new THREE.Vector2( 1, 1 ) },
 	},
+
 	vertexShader: /* glsl */`
 		varying vec2 vUv;
-
 		void main() {
-
 			vUv = uv;
-			gl_Position = vec4( position, 1.0 );
-
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 		}
 	`,
+
 	fragmentShader: /* glsl */`
-		precision highp float;
-
-		uniform sampler2D tMap;
-		uniform float uAmount;
-		uniform float uSeed;
-		uniform vec2 uResolution;
-
-		varying vec2 vUv;
-
-		float hash11( float x ) {
-
-			return fract( sin( x * 78.233 ) * 43758.5453 );
-
-		}
+		uniform sampler2D uMap;
+		uniform float     uProgress;
+		uniform vec2      uTexSize;
+		varying vec2      vUv;
 
 		void main() {
 
-			// flipY=false にしているので、HTML の top が v=0。NDC quad の vUv は下が 0 なので反転して渡す。
-			vec2 uv = vec2( vUv.x, 1.0 - vUv.y );
-			float amount = uAmount;
+			float p     = uProgress;
+			float invP  = 1.0 - p;
+			float invP2 = invP * invP;
 
-			if ( amount <= 0.0 ) {
+			// 8-bit ドット: CSS 4px を 1 ドットとして量子化
+			const float DOT = 4.0;
+			vec2 dots = uTexSize / DOT;
 
-				gl_FragColor = texture2D( tMap, uv );
-				return;
+			// 横揺れ: y を dot 単位で量子化し、x の変位も dot 単位に丸める
+			// 波の数 (freq) は p=0 で多く、p=1 に向けて減る
+			float yq = floor( vUv.y * dots.y ) / dots.y;
+			float freq = mix( 4.0, 80.0, invP );
+			float displacement = sin( yq * freq ) * invP2 * 0.15;
+			displacement = floor( displacement * dots.x + 0.5 ) / dots.x;
 
-			}
+			vec2 uv = vUv;
+			uv.x += displacement;
 
-			// 画面サイズによらず px あたりの密度を一定に保つ（粗 1 本/15px, 細 1 本/2.25px）
-			float cRows = max( 1.0, floor( uResolution.y / 15.0 ) );
-			float fRows = max( 1.0, floor( uResolution.y / 2.25 ) );
+			// 範囲外は透過
+			if ( uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 ) discard;
 
-			float cBand = floor( uv.y * cRows );
-			float fBand = floor( uv.y * fRows );
+			vec4 col = texture2D( uMap, uv );
 
-			float cAct = pow( hash11( cBand + uSeed * 13.0 ), 2.0 );
-			float fAct = pow( hash11( fBand + uSeed * 91.0 ), 4.0 );
+			// ピーク時のシアン寄りフラッシュ (旅の扉感)
+			col.rgb += vec3( 0.3, 0.6, 1.0 ) * invP2 * 0.7;
 
-			float cDir = hash11( cBand + uSeed * 71.0 ) < 0.5 ? - 1.0 : 1.0;
-			float fDir = hash11( fBand + uSeed * 17.0 ) < 0.5 ? - 1.0 : 1.0;
-
-			float maxShiftPx = uResolution.x * 0.05;
-			float shiftPx = ( cAct * 0.7 * cDir + fAct * 0.3 * fDir ) * maxShiftPx * amount;
-			float shiftU = shiftPx / uResolution.x;
-
-			vec2 shiftedUv = vec2( uv.x + shiftU, uv.y );
-
-			float rgbShiftPx = 5.0 * amount;
-			float rgbShiftU = rgbShiftPx / uResolution.x;
-
-			float r = texture2D( tMap, shiftedUv + vec2( rgbShiftU, 0.0 ) ).r;
-			float g = texture2D( tMap, shiftedUv ).g;
-			float b = texture2D( tMap, shiftedUv - vec2( rgbShiftU, 0.0 ) ).b;
-			float a = texture2D( tMap, shiftedUv ).a;
-
-			gl_FragColor = vec4( r, g, b, a );
+			gl_FragColor = col;
 
 		}
 	`,
-} );
 
-const quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), material );
-scene.add( quad );
-
-window.addEventListener( 'resize', () => {
-
-	const width  = window.innerWidth;
-	const height = window.innerHeight;
-	renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
-	renderer.setSize( width, height );
-	material.uniforms.uResolution.value.set( width, height );
+	transparent: true,
 
 } );
+
+const plane = new THREE.Mesh( new THREE.PlaneGeometry( 1, 1 ), material );
+scene.add( plane );
 
 let painted = false;
 const _htmlTexturePaint = canvas.onpaint;
 canvas.onpaint = ( e ) => {
 
-	painted = true;
+	// frame に実寸がある時だけ painted を立てる。
+	// modal が display:none の状態で requestPaint() が空打ちされても
+	// painted が立たないように防御。
+	if ( frame.offsetWidth > 0 && frame.offsetHeight > 0 ) painted = true;
 	if ( _htmlTexturePaint ) _htmlTexturePaint.call( canvas, e );
 
 };
 
-// プロシージャル生成: 毎バーストごとに total / spike 数 / 各 spike の duration / amp / gap を独立にランダム決定。
-// 固定の opener は持たない。総時間は heavy-tailed 分布で、多くは短く稀に長い。
+function setSize() {
 
-let burst    = null;
-let firstRun = true;
+	const w = frame.offsetWidth;
+	const h = frame.offsetHeight;
+	if ( w === 0 || h === 0 ) return;
 
-function scheduleNextBurst() {
+	canvas.style.width  = `${ w }px`;
+	canvas.style.height = `${ h }px`;
+	renderer.setSize( w, h, false );
 
-	const minDelay = firstRun ? 667 : 1000;
-	const maxDelay = firstRun ? 1333 : 2333;
-	firstRun = false;
+	material.uniforms.uTexSize.value.set( w, h );
 
-	const delay = minDelay + Math.random() * ( maxDelay - minDelay );
-	setTimeout( startBurst, delay );
+	camera.left   = - w / 2;
+	camera.right  =   w / 2;
+	camera.top    =   h / 2;
+	camera.bottom = - h / 2;
+	camera.updateProjectionMatrix();
 
-}
-
-function buildSpikesForBurst() {
-
-	const r = Math.random();
-	const targetMs = 120 + Math.pow( r, 4 ) * 1800;
-
-	const spikes = [];
-	let elapsed = 0;
-
-	while ( elapsed < targetMs ) {
-
-		const duration = 25 + Math.random() * 110;
-		const gap      = Math.pow( Math.random(), 2 ) * 100;
-		const amp      = 0.3 + Math.pow( Math.random(), 0.7 ) * 2.0;
-		spikes.push( { amp, duration, gap } );
-		elapsed += duration + gap;
-
-	}
-
-	return spikes;
+	plane.geometry.dispose();
+	plane.geometry = new THREE.PlaneGeometry( w, h );
 
 }
 
-function startBurst() {
+new ResizeObserver( setSize ).observe( frame );
 
-	const spikes = buildSpikesForBurst();
-	const total  = spikes.reduce( ( s, sp ) => s + sp.duration + sp.gap, 0 );
-
-	burst = {
-		startTime: performance.now(),
-		spikes,
-		seeds: spikes.map( () => Math.random() * 1000 ),
-		total,
-	};
-
-}
-
-function updateGlitchUniforms( now ) {
-
-	if ( ! burst ) {
-
-		material.uniforms.uAmount.value = 0;
-		return;
-
-	}
-
-	const t = now - burst.startTime;
-
-	if ( t >= burst.total ) {
-
-		material.uniforms.uAmount.value = 0;
-		burst = null;
-		scheduleNextBurst();
-		return;
-
-	}
-
-	let cursor = 0;
-	let activeAmp  = 0;
-	let activeSeed = 0;
-
-	for ( let i = 0; i < burst.spikes.length; i ++ ) {
-
-		const spike = burst.spikes[ i ];
-		if ( t >= cursor && t < cursor + spike.duration ) {
-
-			activeAmp  = spike.amp;
-			activeSeed = burst.seeds[ i ];
-			break;
-
-		}
-		cursor += spike.duration + spike.gap;
-
-	}
-
-	material.uniforms.uAmount.value = activeAmp;
-	material.uniforms.uSeed.value   = activeSeed;
-
-}
-
-scheduleNextBurst();
+const timer       = new THREE.Timer();
+const TWIST_SPEED = 1.0; // 1 / 秒 — 1秒で 0 ⇄ 1 を遷移
 
 renderer.setAnimationLoop( () => {
 
-	if ( ! painted ) return;
+	timer.update();
+	const dt      = timer.getDelta();
+	const target  = modal.classList.contains( '-open' ) ? 1 : 0;
+	const current = material.uniforms.uProgress.value;
 
-	updateGlitchUniforms( performance.now() );
-	renderer.render( scene, camera );
+	if ( current !== target ) {
+
+		const step = Math.min( Math.abs( target - current ), dt * TWIST_SPEED );
+		material.uniforms.uProgress.value = current + Math.sign( target - current ) * step;
+
+	}
+
+	if ( ! painted ) return;
+	if ( frame.offsetWidth === 0 || frame.offsetHeight === 0 ) return;
+
+	try {
+
+		renderer.render( scene, camera );
+
+	} catch ( e ) {
+
+		// modal が閉じている間に paint record が無効化されたケース。
+		// 次の onpaint まで render を止めて自己修復。
+		if ( e.name === 'InvalidStateError' ) {
+
+			painted = false;
+			return;
+
+		}
+
+		throw e;
+
+	}
 
 } );
 </script>
