@@ -6,7 +6,7 @@
 <meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
 <title>HTML in Canvas — Pollen Text Demo</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=New+Tegomin&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200..900&display=swap');
 
 html, body {
 	height: 100%;
@@ -41,15 +41,11 @@ body {
 	width: 100%;
 	padding: clamp(64px, 25vh, 256px) 32px;
 	font-weight: 900;
-	font-size: 24px;
-	font-family: "New Tegomin", serif;
+	font-size: clamp(24px, 6vw, 96px);
+	letter-spacing: 0.1em;
+	font-family: "Noto Serif JP", serif;
 	text-align: center;
 }
-
-.PollenText p {
-	margin: 2em 0;
-}
-
 </style>
 </head>
 <body>
@@ -58,8 +54,7 @@ body {
 
 <canvas class="PollenCanvas" layoutsubtree>
 	<div class="PollenText">
-		<p>私は花粉症ではない。</p>
-		<p>しかし、花粉がどこから来るのかは気になる。</p>
+		<p>花粉症で、お悩みの方へ</p>
 	</div>
 </canvas>
 

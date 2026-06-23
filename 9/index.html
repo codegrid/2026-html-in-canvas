@@ -184,47 +184,29 @@ body {
 }
 
 .ProfileList {
-	display: flex;
-	flex-direction: column;
+	border-collapse: collapse;
 	border: 1px solid #808080;
 	font-size: 12px;
 	margin-top: 10px;
+	width: 100%;
 }
-.ProfileList__Row {
-	display: flex;
+.ProfileList tbody tr {
 	border-bottom: 1px solid #808080;
 }
-.ProfileList__Row:last-child {
+.ProfileList tbody tr:last-child {
 	border-bottom: none;
 }
-.ProfileList__RowHeader {
-	display: flex;
-	font-weight: bold;
-	color: #000080;
-	background-color: #d4d0c8;
-	border-bottom: 1px solid #808080;
-}
-.ProfileList__HeaderCol {
-	padding: 6px;
-	flex: 1;
-}
-.ProfileList__HeaderCol.-left {
-	max-width: 120px;
-	border-right: 1px solid #808080;
-}
-.ProfileList__Label {
+.ProfileList tbody th {
 	background-color: #e0e0e0;
 	padding: 6px;
 	font-weight: bold;
 	width: 120px;
-	flex-shrink: 0;
 	border-right: 1px solid #808080;
 }
-.ProfileList__Value {
+.ProfileList tbody td {
 	padding: 6px;
 	background-color: #ffffff;
 	color: #000000;
-	flex-grow: 1;
 }
 
 /* 日記 */
@@ -372,7 +354,7 @@ body {
 
 <canvas class="PC" layoutsubtree>
 	<div class="PC__Screen">
-		
+
 		<div class="Page">
 			<header class="Header">
 				<h1 class="Header__Title">★★★ グリオ's Homepage ★★★</h1>
@@ -428,44 +410,38 @@ body {
 						<h4 class="Section__Title">■ 自己紹介のコーナー</h4>
 						<div class="Section__Content">
 							私のプロフィールです。
-							
-							<div class="ProfileList">
-								<div class="ProfileList__RowHeader">
-									<div class="ProfileList__HeaderCol -left">項目</div>
-									<div class="ProfileList__HeaderCol">内容</div>
-								</div>
-								<div class="ProfileList__Row">
-									<div class="ProfileList__Label">【お名前】</div>
-									<div class="ProfileList__Value">グリオ (GRIO)</div>
-								</div>
-								<div class="ProfileList__Row">
-									<div class="ProfileList__Label">【所在地】</div>
-									<div class="ProfileList__Value">モニタの光に照らされる作業部屋</div>
-								</div>
-								<div class="ProfileList__Row">
-									<div class="ProfileList__Label">【趣味】</div>
-									<div class="ProfileList__Value">HTML/XHTML タグ手打ち、仕様書の音読、Web 深夜回遊</div>
-								</div>
-								<div class="ProfileList__Row">
-									<div class="ProfileList__Label">【好きな言葉】</div>
-									<div class="ProfileList__Value">「XHTML によるセマンティック・ウェブ」</div>
-								</div>
-							</div>
+
+							<table class="ProfileList">
+								<tbody>
+									<tr>
+										<th>名前</th>
+										<td>グリオ (GRIO)</td>
+									</tr>
+									<tr>
+										<th>趣味</th>
+										<td>HTML/XHTML タグ手打ち、仕様書の音読、Web 深夜回遊</td>
+									</tr>
+									<tr>
+										<th>好きな言葉</th>
+										<td>「XHTML によるセマンティック・ウェブ」</td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
 					</article>
 
 					<article class="Section" id="diary">
 						<h4 class="Section__Title">■ 日記アーカイブ</h4>
 						<div class="Section__Content Diary">
-							
+
 							<div class="Diary__Item">
 								<span class="Diary__Meta">1: 技術情報サイト コードグリッド準備中</span>
 								<p class="Diary__Content">現在、新しいウェブの知識を共有するための本格的な技術情報サイト「コードグリッド」の開設に向けて、地道にレイアウトやシステム面を調査している。マークアップの美しさと実践的なノウハウを凝縮したサイトにしたいと考えている。</p>
 							</div>
-							
+
 							<div class="Diary__Item">
 								<span class="Diary__Meta">2: Internet Explorer 20 が対応する注目の XHTML 6.0 の新仕様</span>
-								<p class="Diary__Content">いよいよ Internet Explorer 20 に関する噂が聞こえてきた。注目は何と言っても次世代のマークアップ言語、XHTML 6.0 のフルネイティブサポートだ。RDF との完全統合により、「リンク」は単なる遷移手段から、知識同士の関係性をたどるナビゲーションへと変化する。</p>
+								<p class="Diary__Content">いよいよ Internet Explorer 20 に関する噂が聞こえてきた。注目は何と言っても次世代のマークアップ言語、XHTML 6.0 のフルネイティブサポートだ。同時に、RDF も完全サポートを意味する。「リンク」は単なる遷移手段から、知識同士の関係性をたどるナビゲーションへと変化するはずだ。</p>
 							</div>
 
 						</div>
@@ -534,6 +510,8 @@ const renderer = new THREE.WebGLRenderer( { canvas, stencil: false, antialias: t
 renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
 
 const backgroundCanvas = document.createElement( 'canvas' );
 backgroundCanvas.width = 2;
@@ -584,29 +562,32 @@ window.addEventListener( 'resize', () => {
 
 } );
 
-const keyLight = new THREE.DirectionalLight( 0xffffff, 1.5 );
+const keyLight = new THREE.DirectionalLight( 0xffffff, 1.0 );
 keyLight.position.set( 1.5, 3, 2.5 );
+scene.add( keyLight );
 
-scene.add(
-	new THREE.HemisphereLight( 0xf6f8ff, 0xcfc6bc, 1 ),
-	new THREE.AmbientLight( 0xffffff, .75 ),
-	keyLight,
-);
+const pmremGenerator = new THREE.PMREMGenerator( renderer );
+pmremGenerator.compileEquirectangularShader();
+
+new THREE.TextureLoader().load( './env.webp', ( texture ) => {
+
+	texture.colorSpace = THREE.SRGBColorSpace;
+	scene.environment = pmremGenerator.fromEquirectangular( texture ).texture;
+	texture.dispose();
+	pmremGenerator.dispose();
+
+} );
 
 scene.add( new THREE.GridHelper( 10, 10 ) );
 
-const glassCylinder = new THREE.Mesh(
-	new THREE.CylinderGeometry( .2, .2, .8, 32 ),
-	new THREE.MeshPhysicalMaterial( {
-		color: 0xffffff,
-		transmission: .9,
-		thickness: 0.2,
-		ior: 1.5,
-		roughness: 0,
-	} )
-);
-glassCylinder.position.set( .75, .4, .5 );
-scene.add( glassCylinder );
+new GLTFLoader().load( './pen-holder.glb', ( { scene: penHolder } ) => {
+
+	penHolder.position.set( .6, 0, .5 );
+	penHolder.rotation.set( 0, Math.PI * -0.2, 0 );
+	penHolder.scale.multiplyScalar( 3 );
+	scene.add( penHolder );
+
+} );
 
 
 let painted = false;
@@ -622,6 +603,10 @@ new GLTFLoader().load( './pc.glb', ( { scene: pc } ) => {
 	screenTexture.flipY = false;
 	screenMesh.material.map = screenTexture;
 	screenMesh.material.color.setHex( 0xffffff );
+	screenMesh.material.metalness = 0;
+	screenMesh.material.roughness = 0;
+	screenMesh.material.envMapIntensity = 1;
+	screenMesh.material.toneMapped = false;
 	screenMesh.material.needsUpdate = true;
 
 	// 画面 mesh の 4 隅を、UV (0,0)-(1,1) に最も近い頂点として local space で取得
