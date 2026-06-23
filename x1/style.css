@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=New+Tegomin&family=Yuji+Syuku&display=swap');
+
+body {
+	margin: 0;
+	overflow: hidden;
+	background: #1a1a1a;
+}
+
+.Slab {
+	display: block;
+}
+
+.StoneTextarea {
+	width: 1024px;
+	height: 1024px;
+	box-sizing: border-box;
+	padding: 80px;
+	background: #ffffff;
+	color: #000000;
+	font-family: "New Tegomin", serif;
+	font-weight: 900;
+	font-size: 96px;
+	line-height: 1.2;
+	text-align: center;
+	border: none;
+	outline: none;
+	resize: none;
+	overflow: hidden;
+}
+
+.StoneTextarea::selection {
+	background: #ffffff;
+	color: #000000;
+}

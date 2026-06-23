@@ -1,0 +1,351 @@
+body {
+	margin: 0;
+	background: #2a2a2a;
+}
+
+.PageNote {
+	position: absolute;
+}
+
+.PC {
+	display: block;
+}
+
+.PC__Screen {
+	width: 814px;
+	height: 700px;
+	overflow: auto;
+	font-family: 'MS PGothic', 'Osaka', sans-serif;
+	color: #000000;
+	background-color: #c0c0c0;
+}
+
+.Page {
+	width: 100%;
+	margin: 0 auto;
+	padding: 20px;
+	box-sizing: border-box;
+}
+
+.Separator {
+	border-top: 2px inset #ffffff;
+	border-bottom: 2px outset #ffffff;
+	border-left: 0;
+	border-right: 0;
+	height: 0;
+	margin: 20px 0;
+}
+
+.Blink {
+	animation: BlinkAnim 1s steps(2, start) infinite;
+}
+@keyframes BlinkAnim {
+	to { visibility: hidden; }
+}
+
+.Header {
+	text-align: center;
+	padding-top: 10px;
+}
+.Header__Title {
+	margin: 0;
+	font-size: 24px;
+	color: #000080;
+	letter-spacing: 2px;
+}
+.Header__Sub {
+	margin: 8px 0 12px 0;
+	font-size: 12px;
+	font-weight: bold;
+	color: #555555;
+}
+
+.Counter {
+	font-size: 13px;
+	font-weight: bold;
+	text-align: center;
+	background-color: #000000;
+	border: 2px inset #ffffff;
+	padding: 6px 12px;
+	margin: 15px 0;
+	display: inline-block;
+	color: #00ff00;
+}
+.Counter__Label {
+	margin-right: 5px;
+	color: #ffffff;
+}
+.Counter__Digit {
+	background-color: #111111;
+	color: #00ff00;
+	border: 1px solid #00ff00;
+	font-family: monospace;
+	font-weight: bold;
+	font-size: 18px;
+	padding: 1px 4px;
+	margin: 0 1px;
+}
+.Counter__Alert {
+	font-size: 11px;
+	margin-left: 8px;
+	color: #ff0000;
+}
+
+.Marquee {
+	background-color: #000000;
+	color: #ffff00;
+	border: 2px inset #ffffff;
+	padding: 6px;
+	margin: 15px 0;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.MainLayout {
+	display: flex;
+	gap: 20px;
+	margin-top: 20px;
+}
+
+.Sidebar {
+	width: 180px;
+	flex-shrink: 0;
+	padding: 12px;
+	background-color: #d4d0c8;
+	border: 2px inset #ffffff;
+	box-sizing: border-box;
+}
+
+.Menu {
+	margin: 0;
+	padding: 0;
+}
+.Menu__Title {
+	margin-top: 0;
+	margin-bottom: 12px;
+	font-size: 13px;
+	color: #000080;
+	text-align: center;
+	border-bottom: 2px solid #000080;
+	padding-bottom: 3px;
+}
+.Menu__Item {
+	display: block;
+	margin: 12px 0;
+	font-size: 13px;
+	font-weight: bold;
+
+	&::before {
+		content: "・";
+	}
+}
+
+.Contact {
+	margin-top: 40px;
+	text-align: center;
+	border: 2px inset #ffffff;
+	background-color: #e0e0e0;
+	padding: 10px;
+	font-size: 11px;
+}
+.Contact__Title {
+	margin: 0 0 5px 0;
+}
+.Contact__Link {
+	display: inline-block;
+}
+
+.ContentPane {
+	flex-grow: 1;
+}
+
+.Section {
+	background-color: #e0e0e0;
+	border: 2px inset #ffffff;
+	padding: 15px;
+	margin-bottom: 25px;
+}
+.Section__Title {
+	color: #000080;
+	font-size: 16px;
+	font-weight: bold;
+	margin-top: 0;
+	margin-bottom: 12px;
+	border-bottom: 2px solid #000080;
+	padding-bottom: 4px;
+}
+.Section__Content {
+	font-size: 12px;
+	margin: 0;
+}
+
+.Section__Text {
+	margin: 0;
+	font-size: 13px;
+}
+
+.ProfileList {
+	border-collapse: collapse;
+	border: 1px solid #808080;
+	font-size: 12px;
+	margin-top: 10px;
+	width: 100%;
+}
+.ProfileList tbody tr {
+	border-bottom: 1px solid #808080;
+}
+.ProfileList tbody tr:last-child {
+	border-bottom: none;
+}
+.ProfileList tbody th {
+	background-color: #e0e0e0;
+	padding: 6px;
+	font-weight: bold;
+	width: 120px;
+	border-right: 1px solid #808080;
+}
+.ProfileList tbody td {
+	padding: 6px;
+	background-color: #ffffff;
+	color: #000000;
+}
+
+/* 日記 */
+.Diary {
+	font-size: 12px;
+}
+.Diary__Item {
+	padding-bottom: 15px;
+	margin-bottom: 15px;
+	border-bottom: 1px dotted #808080;
+}
+.Diary__Item:last-child {
+	border-bottom: none;
+	padding-bottom: 0;
+	margin-bottom: 0;
+}
+.Diary__Meta {
+	color: #000080;
+	font-size: 100%;
+	font-weight: bold;
+	margin-bottom: 5px;
+	display: block;
+	margin: 0;
+}
+.Diary__Content {
+	margin: 0;
+	white-space: pre-wrap;
+}
+
+/* 伝言板 フォーム */
+.BbsForm {
+	border: 1px solid #808080;
+	padding: 12px;
+	background-color: #d4d0c8;
+	font-size: 12px;
+}
+.BbsForm__Row {
+	display: flex;
+	margin-bottom: 10px;
+	align-items: flex-start;
+}
+.BbsForm__Label {
+	width: 80px;
+	color: #000080;
+	font-weight: bold;
+	padding-top: 4px;
+	flex-shrink: 0;
+}
+.BbsForm__Field {
+	flex-grow: 1;
+}
+.BbsForm__Input {
+	background-color: #ffffff;
+	color: #000000;
+	border-top: 2px solid #808080;
+	border-left: 2px solid #808080;
+	border-bottom: 2px solid #ffffff;
+	border-right: 2px solid #ffffff;
+	padding: 4px;
+	font-family: inherit;
+	font-size: 12px;
+	width: 220px;
+	box-sizing: border-box;
+}
+.BbsForm__Textarea {
+	background-color: #ffffff;
+	color: #000000;
+	border-top: 2px solid #808080;
+	border-left: 2px solid #808080;
+	border-bottom: 2px solid #ffffff;
+	border-right: 2px solid #ffffff;
+	padding: 4px;
+	font-family: inherit;
+	font-size: 12px;
+	width: 95%;
+	height: 70px;
+	box-sizing: border-box;
+}
+.BbsForm__Actions {
+	padding-left: 80px;
+}
+.BbsForm__Btn {
+	background-color: #d4d0c8;
+	color: #000000;
+	border-top: 2px solid #ffffff;
+	border-left: 2px solid #ffffff;
+	border-bottom: 2px solid #808080;
+	border-right: 2px solid #808080;
+	cursor: pointer;
+	padding: 4px 12px;
+	font-size: 12px;
+	font-weight: bold;
+}
+.BbsForm__Btn:active {
+	border-top: 2px solid #808080;
+	border-left: 2px solid #808080;
+	border-bottom: 2px solid #ffffff;
+	border-right: 2px solid #ffffff;
+}
+.BbsForm__Btn.-reset {
+	background-color: #e0e0e0;
+	margin-left: 5px;
+}
+
+/* 伝言板 リスト */
+.BbsSubTitle {
+	font-weight: bold;
+	color: #000080;
+	font-size: 13px;
+	margin-top: 20px;
+	display: block;
+}
+.BbsList {
+	margin: 0;
+	padding: 0;
+}
+.BbsList__Item {
+	border: 1px dotted #808080;
+	margin-top: 15px;
+	padding: 10px;
+	background-color: #ffffff;
+	color: #000000;
+}
+.BbsList__Meta {
+	font-size: 11px;
+	color: #555555;
+	border-bottom: 1px dashed #e0e0e0;
+	padding-bottom: 4px;
+	margin-bottom: 6px;
+	display: flex;
+	justify-content: space-between;
+}
+.BbsList__Author {
+	color: #000080;
+}
+.BbsList__Message {
+	font-size: 12px;
+	white-space: pre-wrap;
+	color: #000000;
+	font-family: inherit;
+}

@@ -1,0 +1,204 @@
+@import url('https://fonts.googleapis.com/css2?family=Klee+One&display=swap');
+
+@font-face {
+	font-family: 'SourceIcons';
+	src: url('source-icons.woff2') format('woff2');
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 20px;
+	box-sizing: border-box;
+	min-height: 100vh;
+	margin: 0;
+	padding: 48px 24px;
+	background: #0d0d14;
+}
+
+.PageNote {
+	margin: 0;
+	font-family: monospace;
+	font-size: 12px;
+	letter-spacing: 0.06em;
+	color: #999;
+}
+
+.CardCanvas {
+	display: block;
+	border-radius: 16px;
+	box-shadow:
+		0 30px 80px rgba(0, 0, 0, 0.85),
+		0 0 0 1px rgba(180, 145, 45, 0.2);
+}
+
+.SaveButton {
+	padding: 10px 32px;
+	border: 1px solid rgba(180, 145, 45, 0.4);
+	border-radius: 6px;
+	font-family: 'Klee One', serif;
+	font-size: 14px;
+	letter-spacing: 0.1em;
+	color: #c9a84c;
+	background: rgba(28, 42, 70, 0.9);
+	cursor: pointer;
+	transition: background 0.15s, border-color 0.15s;
+}
+
+.SaveButton:hover {
+	border-color: rgba(200, 165, 65, 0.7);
+	background: rgba(40, 60, 100, 0.95);
+}
+
+.Card {
+	position: relative;
+	width: 480px;
+	height: 670px;
+	border-radius: 16px;
+	overflow: hidden;
+	background: linear-gradient(165deg, #7a8492 0%, #4e5462 48%, #252830 100%);
+}
+
+.Card::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	border-radius: 16px;
+	background: url('bg.png') center / cover no-repeat;
+	mix-blend-mode: multiply;
+	pointer-events: none;
+}
+
+.Card__Inner {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	gap: 7px;
+	height: 100%;
+	padding: 12px;
+}
+
+.Card__Header {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	gap: 8px;
+	box-sizing: border-box;
+	height: 36px;
+	padding: 0 10px;
+	border: 1px solid rgba(180, 185, 200, 0.8);
+	border-radius: 6px;
+	background: linear-gradient(90deg,
+		rgba(80, 88, 104, 0.95) 0%,
+		rgba(50, 55, 68, 0.95) 100%
+	);
+}
+
+.Card__Name {
+	flex: 1;
+	min-width: 0;
+	padding: 0;
+	border: none;
+	font-family: 'Klee One', serif;
+	font-size: 17px;
+	color: #e8e8f0;
+	background: transparent;
+}
+
+.Card__Cost {
+	flex-shrink: 0;
+	width: 58px;
+	padding: 0;
+	border: none;
+	font-family: 'SourceIcons', serif;
+	font-size: 22px;
+	letter-spacing: 4px;
+	text-align: right;
+	color: #ffffff;
+	background: transparent;
+}
+
+.Card__ArtFrame {
+	flex-shrink: 0;
+	box-sizing: border-box;
+	height: 268px;
+	border: 2px solid rgba(180, 185, 200, 0.8);
+	border-radius: 3px;
+	overflow: hidden;
+}
+
+.Card__ArtFrame img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.Card__TypeBar {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	box-sizing: border-box;
+	height: 28px;
+	padding: 0 10px;
+	border: 1px solid rgba(180, 185, 200, 0.8);
+	border-radius: 6px;
+	background: linear-gradient(90deg,
+		rgba(80, 88, 104, 0.95) 0%,
+		rgba(50, 55, 68, 0.95) 100%
+	);
+}
+
+.Card__Type {
+	width: 100%;
+	padding: 0;
+	border: none;
+	font-family: 'Klee One', serif;
+	font-size: 16px;
+	color: #d0d0e0;
+	background: transparent;
+}
+
+.Card__TextBox {
+	flex: 1;
+	min-height: 0;
+	padding: 10px;
+	border: 1px solid rgba(130, 138, 158, 0.5);
+	border-radius: 4px;
+	background: rgba(18, 20, 28, 0.78);
+}
+
+.Card__Text {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	border: none;
+	font-family: 'SourceIcons', 'Klee One', serif;
+	font-size: 16px;
+	line-height: 1.5;
+	color: #d8d8e0;
+	background: transparent;
+	resize: none;
+}
+
+.Card__Bottom {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: space-between;
+	height: 16px;
+}
+
+.Card__Bottom span {
+	font-family: 'Klee One', serif;
+	font-size: 9px;
+	letter-spacing: 0.04em;
+	color: #7a8898;
+}

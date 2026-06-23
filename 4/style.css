@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&display=swap');
+
+body {
+	margin: 0;
+}
+
+.Hero {
+	container-type: inline-size;
+	position: relative;
+
+	img {
+		width: 100%;
+	}
+}
+
+.Hero__Text {
+	--shadow: 0 0 calc( 4 / 1400 * 100cqw ) #fff, 0 0 calc( 8 / 1400 * 100cqw ) #fff, 0 0 calc( 12 / 1400 * 100cqw ) #fff;
+
+	position: absolute;
+	inset: 0 auto 0 calc( 128 / 1400 * 100cqw );
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.Hero__TextInner {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: calc( 16 / 1400 * 100cqw );
+	width: max-content;
+	padding: calc( 32 / 1400 * 100cqw ) calc( 128 / 1400 * 100cqw ) calc( 64 / 1400 * 100cqw );
+	font-family: "Shippori Mincho B1", serif;
+	color: #0c633c;
+}
+
+.Hero__Title {
+	margin: 0;
+	font-size: calc( 64 / 1400 * 100cqw );
+	line-height: 1.2;
+	text-shadow: var(--shadow);
+
+	em {
+		font-style: normal;
+		font-size: 120%;
+		letter-spacing: .2em;
+	}
+}
+
+.Hero__Lead {
+	margin: 0;
+	font-size: calc( 32 / 1400 * 100cqw );
+	text-shadow: var(--shadow);
+}
+
+.Hero__Description {
+	margin: 0;
+	font-size: calc( 18 / 1400 * 100cqw );
+	line-height: 2;
+	text-shadow: var(--shadow);
+
+	a {
+		color: #31aa23;
+		text-decoration: underline;
+	}
+}
+
+.Hero__TextCanvas {
+	display: block;
+	width: 100%;
+}
+
+.Hero__Link {
+	width: fit-content;
+	padding: calc( 12 / 1400 * 100cqw ) calc( 24 / 1400 * 100cqw );
+	border-radius: 999px;
+	font-size: calc( 18 / 1400 * 100cqw );
+	text-decoration: none;
+	color: #fff;
+	background: url( "./bg.png" );
+	transition: filter 0.3s;
+
+	&:hover {
+		filter: brightness( 1.5 );
+	}
+}

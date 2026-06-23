@@ -5,70 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="origin-trial" content="Ag6XizavbGAcezjRvVW9P+3TSU+SjSIlYLBHSxZIpVmgvCscx5DZLY4w2iiyVZQrWsrYux6r86yZsAqBS4boMw4AAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxNzkyNDU0NDAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
 <title>HTML in Canvas — 3D Objects in HTML Demo</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200..900&display=swap');
-
-body {
-	margin: 0;
-}
-
-.StoryCanvas {
-	position: fixed;
-	inset: 0;
-	display: block;
-	width: 100%;
-	height: 100%;
-}
-
-.Story {
-	width: 100%;
-	height: 100%;
-	overflow-x: hidden;
-	overflow-y: auto;
-}
-
-
-.Story__Inner {
-	background: url( "./bg.jpg" ) 0 0 / 256px 256px;
-}
-
-.Story__Contents {
-	max-width: 800px;
-	padding: 32px;
-	font-size: 18px;
-	font-weight: 500;
-	line-height: 2;
-	margin: 0 auto;
-	font-family: "Noto Serif JP", serif;
-
-	h2 {
-		text-align: center;
-	}
-
-	img {
-		float: left;
-		margin: 0 16px 16px 0;
-		width: 128px;
-	}
-}
-
-.Story__Pillars {
-	display: flex;
-	justify-content: space-between;
-	height: 128px;
-}
-
-.Story__Pillar {
-	width: 128px;
-	height: 128px;
-}
-
-.Story__Dragon {
-	max-width: 800px;
-	aspect-ratio: 1;
-	margin: -100px auto;
-}
-</style>
+<link rel="stylesheet" href="./style.css" />
 </head>
 <body>
 
