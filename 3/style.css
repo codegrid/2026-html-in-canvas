@@ -95,10 +95,6 @@ body {
 	animation: title-gradient 4s linear infinite;
 }
 
-.Panel__Title span {
-	color: transparent;
-}
-
 .Panel__Divider {
 	height: 1px;
 	background: linear-gradient(90deg, transparent, #0ff5, #0ff, #0ff5, transparent);
