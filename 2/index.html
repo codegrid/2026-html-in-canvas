@@ -405,36 +405,40 @@ document.querySelectorAll( 'input[name="effect"]' ).forEach( ( input ) => {
 } );
 
 // ---- DOM 同期 ----
-// WebGL で描画している mesh の位置・回転に合わせて .card に CSS matrix3d を適用する。
+// WebGL で描画している mesh の位置・回転に合わせて .Card に CSS matrix3d を適用する。
 // これにより DOM のヒットテスト位置が WebGL の見た目と一致する。
 // https://github.com/WICG/html-in-canvas — getElementTransform()
+//
+// 仕様によれば getElementTransform に渡す drawTransform は「canvas grid (= バックバッファ)
+// 座標系」での placement transform。grid → grid の写像にする必要があり、CSS pixel と
+// device pixel が混ざると DOM のヒットエリアと canvas 表示がズレる (DPR 倍ズレる)。
 const planeWidth  = elWidth / elHeight * 2.0;
 const planeHeight = 2.0;
-
-// element 座標 (top-left 原点, y-down, px) → mesh ローカル座標 (中心原点, y-up)
-const elementToLocal = new DOMMatrix( [
-	planeWidth / elWidth,  0,                       0, 0,
-	0,                    -planeHeight / elHeight,  0, 0,
-	0,                     0,                       1, 0,
-	-planeWidth / 2,       planeHeight / 2,         0, 1,
-] );
 
 card.style.transformOrigin = '0 0';
 
 function syncCardTransform() {
 
-	const cssW = canvas.clientWidth;
-	const cssH = canvas.clientHeight;
+	const gridW = canvas.width;
+	const gridH = canvas.height;
 
-	// NDC → canvas CSS-pixel (top-left, y-down)
-	const ndcToCanvas = new DOMMatrix( [
-		cssW / 2, 0,         0, 0,
-		0,       -cssH / 2,  0, 0,
-		0,        0,         1, 0,
-		cssW / 2, cssH / 2,  0, 1,
+	// element grid 座標 (top-left 原点, y-down) → mesh ローカル座標 (中心原点, y-up)
+	const elementToLocal = new DOMMatrix( [
+		planeWidth / gridW,  0,                     0, 0,
+		0,                  -planeHeight / gridH,   0, 0,
+		0,                   0,                     1, 0,
+		-planeWidth / 2,     planeHeight / 2,       0, 1,
 	] );
 
-	// drawTransform = NDC→pixel · projection · view · model · element→local
+	// NDC → canvas grid pixel (top-left, y-down)
+	const ndcToCanvas = new DOMMatrix( [
+		gridW / 2, 0,          0, 0,
+		0,        -gridH / 2,  0, 0,
+		0,         0,          1, 0,
+		gridW / 2, gridH / 2,  0, 1,
+	] );
+
+	// drawTransform = NDC→grid · projection · view · model · element→local
 	const drawTransform = ndcToCanvas
 		.multiply( new DOMMatrix( [ ...camera.projectionMatrix.elements ] ) )
 		.multiply( new DOMMatrix( [ ...camera.matrixWorldInverse.elements ] ) )

@@ -91,6 +91,49 @@ const transform = canvas.getElementTransform( element, drawTransform );
 element.style.transform = transform.toString();
 ```
 
+#### `drawTransform` は canvas grid (バックバッファ) 座標系で構築する
+
+[WICG 仕様](https://github.com/WICG/html-in-canvas) の CSS transform 算出式:
+
+> $T_{\text{origin}}^{-1} \cdot S_{\text{css} \to \text{grid}}^{-1} \cdot T_{\text{draw}} \cdot S_{\text{css} \to \text{grid}} \cdot T_{\text{origin}}$
+
+ここでの $T_{\text{draw}}$ は **canvas grid 座標系における placement transform**。CSS→grid の dpr 変換は両側の $S$ が担当するため、$T_{\text{draw}}$ 自体は grid → grid の写像でなければならない。
+
+具体的には WebGL/WebGPU で 3D を描く場合:
+
+- **element → mesh ローカル**変換の元になる要素サイズは、CSS pixel ではなく **`canvas.width` / `canvas.height` (= grid pixel)** を使う。
+- **NDC → canvas pixel** 変換も `canvas.width` / `canvas.height` で組む。`canvas.clientWidth` / `clientHeight` (CSS pixel) を使うと dpr 倍ズレる。
+
+```js
+const gridW = canvas.width;   // backing buffer (= elWidth * dpr)
+const gridH = canvas.height;
+
+const elementToLocal = new DOMMatrix( [
+	planeWidth / gridW,  0,                     0, 0,
+	0,                  -planeHeight / gridH,   0, 0,
+	0,                   0,                     1, 0,
+	-planeWidth / 2,     planeHeight / 2,       0, 1,
+] );
+
+const ndcToCanvas = new DOMMatrix( [
+	gridW / 2, 0,          0, 0,
+	0,        -gridH / 2,  0, 0,
+	0,         0,          1, 0,
+	gridW / 2, gridH / 2,  0, 1,
+] );
+
+const drawTransform = ndcToCanvas
+	.multiply( new DOMMatrix( [ ...camera.projectionMatrix.elements ] ) )
+	.multiply( new DOMMatrix( [ ...camera.matrixWorldInverse.elements ] ) )
+	.multiply( new DOMMatrix( [ ...mesh.matrixWorld.elements ] ) )
+	.multiply( elementToLocal );
+
+element.style.transformOrigin = '0 0';
+element.style.transform = canvas.getElementTransform( element, drawTransform ).toString();
+```
+
+CSS pixel と grid pixel を混在させると dpr 倍 (デスクトップだと 2 倍程度) ヒットエリアがズレる。デモ 2 でこの罠を踏んだ実例あり。
+
 ### `captureElementImage()`
 `HTMLCanvasElement` のメソッド。子要素のスナップショットを取得し、転送可能な `ElementImage` として返す。
 Worker スレッドへ転送し、WebGL / WebGPU の各メソッドに `Element` の代わりに渡すことでオフスレッド描画ができる。
