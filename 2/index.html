@@ -54,7 +54,7 @@
 </canvas>
 
 <script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js';
 
 if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
 
@@ -69,37 +69,6 @@ const renderer = new THREE.WebGLRenderer( { canvas, antialias: true } );
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( elWidth, elHeight );
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-
-// texElementImage2D の API シグネチャは Chrome 150 で変更された:
-//   Chrome 138 - 149: ( target, level, internalformat, srcformat, srctype, element )  ← 旧 (texImage2D 互換)
-//   Chrome 150+:      ( target, internalformat, element )                              ← 新 (WICG 仕様)
-// three.js r184 は旧シグネチャでしか呼ばないため Chrome 150+ でエラーになる。
-// PR #33788 (2026-06-12 マージ) で両対応済み。r185 以降では不要。
-// https://github.com/mrdoob/three.js/pull/33788
-//
-// `gl.texElementImage2D.length === 3` でシグネチャを判定し、新仕様の
-// Chrome 150+ のときだけ 6 → 3 引数に変換。旧仕様の Chrome 148/149 では
-// r184 の 6 引数呼び出しがそのまま通るのでパッチ不要。
-const gl = renderer.getContext();
-if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
-
-	const _orig = gl.texElementImage2D.bind( gl );
-	gl.texElementImage2D = function () {
-
-		const args = Array.from( arguments );
-		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
-
-			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
-
-		} else {
-
-			_orig.apply( gl, args );
-
-		}
-
-	};
-
-}
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color( 0x0d0d14 );

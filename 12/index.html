@@ -77,8 +77,8 @@
 <script type="importmap">
 {
 	"imports": {
-		"three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
-		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+		"three": "https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js",
+		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.0/examples/jsm/"
 	}
 }
 </script>
@@ -98,28 +98,6 @@ renderer.setPixelRatio( window.devicePixelRatio );
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-// r184 monkey patch for Chrome 150+
-const gl = renderer.getContext();
-if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
-
-	const _orig = gl.texElementImage2D.bind( gl );
-	gl.texElementImage2D = function () {
-
-		const args = Array.from( arguments );
-		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
-
-			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
-
-		} else {
-
-			_orig.apply( gl, args );
-
-		}
-
-	};
-
-}
 
 const fov = 50;
 const camera = new THREE.PerspectiveCamera( fov, 1, 0.1, 100000 );

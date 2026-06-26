@@ -44,7 +44,7 @@
 </div>
 
 <script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js';
 
 if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
 
@@ -71,28 +71,6 @@ closeButtons.forEach( ( button ) => {
 const renderer = new THREE.WebGLRenderer( { canvas, antialias: true, alpha: true } );
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
-
-// r184 monkey patch for Chrome 150+
-const gl = renderer.getContext();
-if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
-
-	const _orig = gl.texElementImage2D.bind( gl );
-	gl.texElementImage2D = function () {
-
-		const args = Array.from( arguments );
-		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
-
-			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
-
-		} else {
-
-			_orig.apply( gl, args );
-
-		}
-
-	};
-
-}
 
 const camera = new THREE.OrthographicCamera();
 camera.position.z = 1;

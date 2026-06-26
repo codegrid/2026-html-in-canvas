@@ -15,8 +15,8 @@
 <script type="importmap">
 {
 	"imports": {
-		"three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
-		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+		"three": "https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js",
+		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.0/examples/jsm/"
 	}
 }
 </script>
@@ -51,28 +51,6 @@ backgroundContext.fillRect( 0, 0, backgroundCanvas.width, backgroundCanvas.heigh
 const backgroundTexture = new THREE.CanvasTexture( backgroundCanvas );
 backgroundTexture.colorSpace = THREE.SRGBColorSpace;
 scene.background = backgroundTexture;
-
-// r184 + Chrome 150+ の texElementImage2D シグネチャ差を吸収
-const gl = renderer.getContext();
-if ( 'texElementImage2D' in gl && gl.texElementImage2D.length === 3 ) {
-
-	const _orig = gl.texElementImage2D.bind( gl );
-	gl.texElementImage2D = function () {
-
-		const args = Array.from( arguments );
-		if ( args.length >= 6 && args[ 5 ] instanceof Element ) {
-
-			_orig( args[ 0 ], gl.RGBA8, args[ 5 ] );
-
-		} else {
-
-			_orig.apply( gl, args );
-
-		}
-
-	};
-
-}
 
 window.addEventListener( 'resize', () => {
 
