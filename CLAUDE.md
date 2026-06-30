@@ -344,6 +344,71 @@ const resizeObserver = new ResizeObserver( ( [ entry ] ) => {
 resizeObserver.observe( canvas, { box: 'device-pixel-content-box' } );
 ```
 
+### Canvas サイズ設定（WebGL / Three.js, DPR 変化追従）
+
+`WebGLRenderer` は `setPixelRatio(dpr)` + `setSize(cssW, cssH)` で device px のバックバッファを管理する。CSS サイズと **dpr** の両方を追跡し、変化があれば両方を再適用する。
+
+#### `window.addEventListener('resize')` だけでは取り逃す
+
+dpr-only の変化 (異 dpr ディスプレイへの window 移動、`zoom` 操作の一部) では window の `resize` が発火しないケースがある。`ResizeObserver(box: 'device-pixel-content-box')` で canvas を監視すれば、CSS サイズ変化と dpr 変化の両方を 1 つの observer で拾える (dpr が変われば同じ CSS サイズでも device px が変わるので発火する)。
+
+#### パターン
+
+```js
+let canvasCssW = 0;
+let canvasCssH = 0;
+let canvasDpr  = 0;
+
+function syncCanvasSize() {
+
+	const w = element.offsetWidth;
+	const h = element.offsetHeight;
+	const dpr = window.devicePixelRatio;
+	if ( w === 0 || h === 0 ) return false;
+	if ( w === canvasCssW && h === canvasCssH && dpr === canvasDpr ) return false;
+
+	canvasCssW = w;
+	canvasCssH = h;
+	canvasDpr  = dpr;
+	renderer.setPixelRatio( dpr );
+	renderer.setSize( w, h, false );
+	// dpr 依存の uniform (e.g. uPointSize = 1.0 * dpr, blob RT サイズ等) もここで更新する
+	pointMaterial.uniforms.uPointSize.value = 1.0 * dpr;
+
+	return true;
+
+}
+
+const resizeObserver = new ResizeObserver( () => {
+
+	if ( syncCanvasSize() ) {
+		// resample / RT resize / 派生 uniform 更新などのトリガ
+	}
+
+} );
+resizeObserver.observe( canvas, { box: 'device-pixel-content-box' } );
+```
+
+`canvasDpr` を比較対象に入れずに `w, h` だけで早期 return すると、ディスプレイ間移動で dpr だけ変わったときに `setPixelRatio` と派生 uniform が古いままになる (バックバッファの解像度がズレ、`uPointSize` 等が前 dpr のサイズで残る)。
+
+### 粒子数を CSS 単位で計算する (DPR 不変な見かけ密度)
+
+HTMLTexture を device 解像度 (`rect * dpr`) の RT に焼いて `readPixels` で opaque pixel を集め、その pool サイズに比例して粒子数を決めるパターン (`drawElementImage` / `texElementImage2D` どれでも同じ) では、pool サイズが dpr² でスケールする。
+
+「不透明 1 device px あたり N 粒子」で count を決めると Retina (dpr=2) では非 Retina の **4 倍** の粒子になり、見かけの密度が dpr で変わってしまう。
+
+#### 対策
+
+pool サイズを CSS 単位に換算 (`/ (dpr * dpr)`) してから density を掛ける:
+
+```js
+const dpr = window.devicePixelRatio;
+const count = Math.round( opaquePoolSize * PARTICLE_DENSITY / ( dpr * dpr ) );
+particleGeometry.setDrawRange( 0, count );
+```
+
+`PARTICLE_DENSITY` の意味づけは「不透明 1 CSS px あたりの粒子数」になる。同様に、粒子サイズを比例させる場合 (e.g. blob を em の font サイズに合わせる) も、source が CSS px ベースか device / RT px ベースかを明示しないと dpr 倍ズレる。
+
 ### ブラウザ判定
 ```js
 if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) {

@@ -48,7 +48,7 @@ const slime = {
 	// 粘度: 落下スピードと横揺れだけに作用する (凹凸とは独立)
 	viscosity: { value: .75 },
 	// 凹凸: density 場のスクリーン勾配を法線にどれだけ反映するか。0 で完全フラット、 1 で標準。
-	bumpiness:      { value: 0.3 },  // 大スケール (周辺サンプリング)
+	bumpiness:      { value: 0.2 },  // 大スケール (周辺サンプリング)
 	microBumpiness: { value: 0.1 },  // 微細スケール (1px の dFdx/dFdy)
 	// スライム色 uniform (水色寄りの透明鼻水: クリアで爽やかな水色)
 	thinColor:  { value: new THREE.Color( 0xcee2ec ).convertLinearToSRGB() },  // 縁: 透明感のある淡い水色
@@ -66,11 +66,17 @@ const textTexture = new THREE.HTMLTexture( textEl );
 textTexture.colorSpace = THREE.SRGBColorSpace;
 
 // --- 粒子定数 ---
+// 粒子数は固定。viewport 変化への追従は blob 自体の大きさを em の font サイズに比例させて行う
+// (syncCanvasSize で uPointSize を更新)。これにより em 相対の blob/粒子密度が一定になり、
+// 画面幅が変わっても画像全体がそのまま縮小される見た目になる。
 const PARTICLE_COUNT = 5000;
 const LIFETIME = 7.0;
-const MAX_FALL = 1.7;        // NDC 単位での落下総距離 (生涯)
+const MAX_FALL = 1.7; // NDC 単位での落下総距離 (生涯)
 const ALPHA_THRESHOLD = 128;
-const POINT_SIZE = 24.0;     // blob sprite サイズ (low-res RT 上の device px)
+// blob RT (canvas device の half-res) における基準 blob サイズと、その基準 font サイズ。
+// 実 blob サイズは syncCanvasSize で `currentFontPx / FONT_PX_REF * POINT_SIZE_REF` として計算する。
+const POINT_SIZE_REF = 24.0;
+const FONT_PX_REF = 96.0;
 
 // --- 粒子バッファ ---
 const particleGeometry = new THREE.BufferGeometry();
@@ -102,7 +108,7 @@ const blobMaterial = new THREE.ShaderMaterial( {
 		uTime,
 		uLifetime: { value: LIFETIME },
 		uMaxFall:  { value: MAX_FALL },
-		uPointSize:{ value: POINT_SIZE },
+		uPointSize:{ value: POINT_SIZE_REF },  // syncCanvasSize で em の font サイズに連動して更新
 		uHomeReady:{ value: 0 },
 		uViscosity: slime.viscosity,
 	},
@@ -335,18 +341,23 @@ const mainScene = new THREE.Scene();
 mainScene.add( fullscreenQuad );
 
 // --- canvas サイズ同期 ---
+// dpr も合わせて追跡し、異 dpr ディスプレイへの移動でも setPixelRatio / blob RT / uPointSize を再適用する。
 let canvasCssW = 0;
 let canvasCssH = 0;
+let canvasDpr  = 0;
 
 function syncCanvasSize() {
 
 	const w = textEl.offsetWidth;
 	const h = textEl.offsetHeight;
+	const dpr = window.devicePixelRatio;
 	if ( w === 0 || h === 0 ) return false;
-	if ( w === canvasCssW && h === canvasCssH ) return false;
+	if ( w === canvasCssW && h === canvasCssH && dpr === canvasDpr ) return false;
 
 	canvasCssW = w;
 	canvasCssH = h;
+	canvasDpr  = dpr;
+	renderer.setPixelRatio( dpr );
 	renderer.setSize( w, h, false );
 	canvas.style.height = `${ h }px`;
 
@@ -357,6 +368,14 @@ function syncCanvasSize() {
 	const bh = Math.max( 2, Math.floor( py / 2 ) );
 	blobRT.setSize( bw, bh );
 	thresholdMaterial.uniforms.uTexelSize.value.set( 1 / bw, 1 / bh );
+
+	// blob サイズを em の font サイズに比例させる。これで viewport が縮んでも blob/em の
+	// 見かけ比率が一定になり、画像全体がそのまま縮小される形になる。
+	// 単位: POINT_SIZE は blob RT (canvas device の half-res) の px なので、font_css * dpr / 2 が
+	// font の RT px 単位サイズになる。基準値で割って POINT_SIZE_REF にスケールを掛ける。
+	const fontCssPx = parseFloat( getComputedStyle( emEl ).fontSize );
+	const fontRtPx = fontCssPx * dpr / 2;
+	blobMaterial.uniforms.uPointSize.value = POINT_SIZE_REF * ( fontRtPx / FONT_PX_REF );
 
 	return true;
 
@@ -514,12 +533,14 @@ canvas.onpaint = ( e ) => {
 
 };
 
-window.addEventListener( 'resize', () => {
+// canvas を device-pixel-content-box で監視。CSS サイズ変化と、異 dpr ディスプレイへの移動
+// (CSS 同じでも device px 変化) の両方を 1 つの observer で検知する。
+const resizeObserver = new ResizeObserver( () => {
 
-	blobMaterial.uniforms.uPointSize.value = POINT_SIZE;
 	if ( syncCanvasSize() && firstPainted ) needHomeResample = true;
 
 } );
+resizeObserver.observe( canvas, { box: 'device-pixel-content-box' } );
 
 // --- メインループ ---
 renderer.setAnimationLoop( ( now ) => {

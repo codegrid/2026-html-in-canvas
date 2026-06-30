@@ -74,20 +74,27 @@ textPlane.renderOrder = 1;
 scene.add( textPlane );
 
 // --- パーティクル ---
-const PARTICLE_COUNT = 100000;
+// 粒子は CSS 上 1 px のドット (uPointSize = 1 * dpr)。「粒子数 / 領域面積」がそのまま見かけ密度になる。
+// viewport が変わっても em 領域あたりの密度を一定に保つため、sampleHomes 内で
+// 不透明 CSS px 数 (= text の opaque pool / dpr²) に比例した粒子数を setDrawRange で描画する。
+// dpr で割らないと Retina (dpr=2) で device pool が 4 倍になり、結果として粒子数も 4 倍になる。
+// MAX は BufferAttribute の確保上限、DENSITY は「opaque 1 CSS px あたりの粒子数」。
+// 典型的なデスクトップ (font≈86px, 10 字, dpr=2) で 400k 粒子前後になるよう調整。
+const MAX_PARTICLE_COUNT = 1000000;
+const PARTICLE_DENSITY = 13.6;
 const LIFETIME = 5.0;
 const RISE = 0.55;
 const ALPHA_THRESHOLD = 128;
 
 const particleGeometry = new THREE.BufferGeometry();
-const aHome = new Float32Array( PARTICLE_COUNT * 2 );
-const aSeed = new Float32Array( PARTICLE_COUNT * 2 );
-const aPhase = new Float32Array( PARTICLE_COUNT );
-const aDepth = new Float32Array( PARTICLE_COUNT );
+const aHome = new Float32Array( MAX_PARTICLE_COUNT * 2 );
+const aSeed = new Float32Array( MAX_PARTICLE_COUNT * 2 );
+const aPhase = new Float32Array( MAX_PARTICLE_COUNT );
+const aDepth = new Float32Array( MAX_PARTICLE_COUNT );
 
 const Z_RANGE = 1.0; // world units, particles spread in z by ±Z_RANGE/2 from text plane
 
-for ( let i = 0; i < PARTICLE_COUNT; i ++ ) {
+for ( let i = 0; i < MAX_PARTICLE_COUNT; i ++ ) {
 
 	aSeed[ i * 2     ] = Math.random();
 	aSeed[ i * 2 + 1 ] = Math.random();
@@ -101,11 +108,12 @@ const seedAttr  = new THREE.BufferAttribute( aSeed,  2 );
 const phaseAttr = new THREE.BufferAttribute( aPhase, 1 );
 const depthAttr = new THREE.BufferAttribute( aDepth, 1 );
 
-particleGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( PARTICLE_COUNT * 3 ), 3 ) );
+particleGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( MAX_PARTICLE_COUNT * 3 ), 3 ) );
 particleGeometry.setAttribute( 'aHome',  homeAttr  );
 particleGeometry.setAttribute( 'aSeed',  seedAttr  );
 particleGeometry.setAttribute( 'aPhase', phaseAttr );
 particleGeometry.setAttribute( 'aDepth', depthAttr );
+particleGeometry.setDrawRange( 0, 0 );
 
 const particleMaterial = new THREE.ShaderMaterial( {
 
@@ -233,20 +241,27 @@ scene.add( particles );
 // --- canvas サイズを PollenText のサイズに同期 ---
 // width は CSS (100vw) でレスポンシブに、height は text の offsetHeight に追従させる。
 // renderer.setSize( ..., false ) で style.width には触れない (CSS rule をそのまま生かす)。
+// dpr も合わせて追跡し、異 dpr ディスプレイへの移動でも setPixelRatio / uPointSize を再適用する。
 let canvasCssW = 0;
 let canvasCssH = 0;
+let canvasDpr  = 0;
 
 function syncCanvasSize() {
 
 	const w = textEl.offsetWidth;
 	const h = textEl.offsetHeight;
+	const dpr = window.devicePixelRatio;
 	if ( w === 0 || h === 0 ) return false;
-	if ( w === canvasCssW && h === canvasCssH ) return false;
+	if ( w === canvasCssW && h === canvasCssH && dpr === canvasDpr ) return false;
 
 	canvasCssW = w;
 	canvasCssH = h;
+	canvasDpr  = dpr;
+	renderer.setPixelRatio( dpr );
 	renderer.setSize( w, h, false );
 	canvas.style.height = `${ h }px`;
+	// uPointSize は device px 単位。dpr に追従させて screen 上は常に 1 CSS px 相当の dot にする。
+	particleMaterial.uniforms.uPointSize.value = 1.0 * dpr;
 
 	return true;
 
@@ -318,7 +333,11 @@ function sampleHomes() {
 	if ( opaque.length === 0 ) return false;
 
 	const n = opaque.length / 2;
-	for ( let i = 0; i < PARTICLE_COUNT; i ++ ) {
+	// opaque pool サイズに比例した粒子数。viewport が変わっても領域あたりの密度を一定に保つ。
+	// pool は device px で集めているので dpr² で割って CSS 単位に換算し、dpr に依らず見かけが一致するようにする。
+	const desiredCount = Math.min( MAX_PARTICLE_COUNT, Math.max( 500, Math.round( n * PARTICLE_DENSITY / ( dpr * dpr ) ) ) );
+
+	for ( let i = 0; i < desiredCount; i ++ ) {
 
 		const idx = ( Math.random() * n ) | 0;
 		const px = opaque[ idx * 2     ];
@@ -329,6 +348,7 @@ function sampleHomes() {
 	}
 
 	homeAttr.needsUpdate = true;
+	particleGeometry.setDrawRange( 0, desiredCount );
 	return true;
 
 }
@@ -372,13 +392,15 @@ canvas.onpaint = ( e ) => {
 
 };
 
-// --- window resize: DPR 変化に追随しつつ、サイズ変化があれば resample ---
-window.addEventListener( 'resize', () => {
+// --- canvas を device-pixel-content-box で監視 ---
+// window resize (CSS サイズ変化) と、異 dpr ディスプレイへの移動 (CSS 同じでも device px 変化) の
+// 両方を同じ observer で検知する。syncCanvasSize 側で dpr 変化も込みで反映する。
+const resizeObserver = new ResizeObserver( () => {
 
-	particleMaterial.uniforms.uPointSize.value = 1.0 * window.devicePixelRatio;
 	if ( syncCanvasSize() && firstPainted ) needHomeResample = true;
 
 } );
+resizeObserver.observe( canvas, { box: 'device-pixel-content-box' } );
 
 // --- メインループ ---
 renderer.setAnimationLoop( ( now ) => {
