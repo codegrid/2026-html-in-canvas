@@ -181,7 +181,8 @@ const planeMat = new THREE.ShaderMaterial( {
 const plane = new THREE.Mesh( new THREE.PlaneGeometry( 1, 1 ), planeMat );
 scene.add( plane );
 
-const clock = new THREE.Clock();
+const timer = new THREE.Timer();
+timer.connect( document );
 
 // --- onpaint wrap ---
 let painted = false;
@@ -218,7 +219,8 @@ new ResizeObserver( setSize ).observe( content );
 renderer.setAnimationLoop( () => {
 
 	if ( ! painted ) return;
-	planeMat.uniforms.uTime.value = clock.getElapsedTime();
+	timer.update();
+	planeMat.uniforms.uTime.value = timer.getElapsed();
 	renderer.render( scene, camera );
 
 } );

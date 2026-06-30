@@ -415,13 +415,15 @@ function gaussSolve( A, b ) {
 
 }
 
-const clock = new THREE.Clock();
+const timer = new THREE.Timer();
+timer.connect( document );
 
 renderer.setAnimationLoop( () => {
 
 	if ( ! painted ) return;
 
-	const elapsedTime = clock.getElapsedTime();
+	timer.update();
+	const elapsedTime = timer.getElapsed();
 	// -30度から30度の範囲で往復する
 	const yaw = 30 * THREE.MathUtils.DEG2RAD * Math.sin( elapsedTime * .25 );
 	const distance = 2;

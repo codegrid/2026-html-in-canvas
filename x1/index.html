@@ -158,7 +158,8 @@ canvas.onpaint = ( e ) => {
 
 };
 
-const clock = new THREE.Clock();
+const timer = new THREE.Timer();
+timer.connect( document );
 const orbitPeriod = 8;
 const orbitRadius = 1;
 const orbitZ = 1.0;
@@ -167,7 +168,8 @@ renderer.setAnimationLoop( () => {
 
 	if ( ! painted ) return;
 
-	const t = clock.getElapsedTime();
+	timer.update();
+	const t = timer.getElapsed();
 	const angle = t * Math.PI * 2 / orbitPeriod;
 	pointLight.position.set(
 		Math.sin( angle ) * orbitRadius,

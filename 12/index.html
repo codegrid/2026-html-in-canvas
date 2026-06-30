@@ -97,7 +97,7 @@ const renderer = new THREE.WebGLRenderer( { canvas, antialias: true } );
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = THREE.PCFShadowMap;
 
 const fov = 50;
 const camera = new THREE.PerspectiveCamera( fov, 1, 0.1, 100000 );
@@ -299,13 +299,15 @@ function setSize() {
 setSize();
 window.addEventListener( 'resize', setSize );
 
-const clock = new THREE.Clock();
+const timer = new THREE.Timer();
+timer.connect( document );
 
 renderer.setAnimationLoop( () => {
 
 	if ( ! painted ) return;
 
-	const dt = clock.getDelta();
+	timer.update();
+	const dt = timer.getDelta();
 	if ( mixer ) mixer.update( dt );
 
 	renderer.render( scene, camera );
