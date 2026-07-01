@@ -1,18 +1,41 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HTML in Canvas — Demos</title>
+<style>
+ul {
+	width: fit-content;
+}
+
+li {
+	padding: .5em;
+
+	&:nth-child( 2n + 1 ) {
+		background: #eee;
+	}
+}
+</style>
 </head>
 <body>
 
 <h1>HTML in Canvas — Demos</h1>
 
 <ul>
-	<li><a href="./1/">Card Demo (All text is editable)</a></li>
-	<li><a href="./2/">3D Foil Card Demo (All text is editable)</a></li>
-	<li><a href="./3/">Cyber UI Demo (Emits an impulse on buttons click)</a></li>
+	<li><a href="./1/">Editable Card</a> — A trading card whose every field is editable; you type right on the canvas-rendered card and can save it as an image.</li>
+	<li><a href="./2/">3D Foil Card</a> — A 3D card with an iridescent foil (thin-film) shader that shifts color by angle; the text stays editable.</li>
+	<li><a href="./3/">Cyber UI</a> — A cyberpunk-style UI; clicking a button sends a shockwave distortion and particles across it.</li>
+	<li><a href="./4/">Text Sunk Underwater</a> — Text rippling as if submerged, distorted by a shader; selection, copy, and translation all keep working.</li>
+	<li><a href="./5/">Particles Rising from Text</a> — Particles drift gently upward, tracing the shapes of the letters.</li>
+	<li><a href="./6/">Liquid Dripping from Text</a> — A viscous liquid drips down from part of the text, rendered as metaballs.</li>
+	<li><a href="./7/">Glitch Across the Whole Page</a> — Intermittent glitch over the entire page; it keeps covering everything as you scroll, and links stay functional.</li>
+	<li><a href="./8/">Zoom Blur Focused on a Button</a> — Move the pointer near the CTA button and only the background blurs while the button stays sharp.</li>
+	<li><a href="./9/">Page-Curl Transition</a> — Click a button and the screen switches with a paper page-curl transition.</li>
+	<li><a href="./10/">Retro-Game-Style Dialog</a> — Open the dialog with a button and it appears with a retro-game-style horizontal distortion.</li>
+	<li><a href="./11/">Page Behind Cracking Glass</a> — Click the modal backdrop to crack the glass; the cracks accumulate until it shatters and closes.</li>
+	<li><a href="./12/">3D Objects Within Prose</a> — 3D models follow along scrolling prose and cast shadows onto the text.</li>
+	<li><a href="./13/">HTML Page on a Monitor in a 3D Scene</a> — A 90s homepage shown on an old PC monitor in a 3D scene; even the BBS form stays interactive.</li>
 </ul>
 
 </body>
