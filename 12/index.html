@@ -99,8 +99,34 @@ renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 
-const fov = 50;
-const camera = new THREE.PerspectiveCamera( fov, 1, 0.1, 100000 );
+// 平面は fov に関わらず常に画面を満たす（1 world unit ≈ 1 CSS px）。一方ドラゴンは
+// カメラ寄り (z ≈ dragonZ) にあるため遠近で拡大され、画面が低いほどカメラが近づいて
+// 拡大率が跳ね上がり見切れる。画面高さに応じて fov を狭める（= カメラを後退させる）
+// ことで拡大率を抑える。FOV_MAX は通常〜縦長画面での基準値、DRAGON_FILL はドラゴンの
+// 見かけ高さが画面高さに占めてよい割合。
+const FOV_MAX = 60;          // 通常〜縦長画面での基準 fov（従来の見た目を保つ）
+const FOV_MIN = 30;          // 低い画面での下限。これ以上狭めるとほぼ正射影で不自然
+const DRAGON_FILL = 1.1;     // ドラゴンの見かけ高さが画面高さに占めてよい割合
+const dragonWorldSize = 800; // = targetSize（ドラゴンの world 上の一辺）
+let dragonZ = 400;           // dragon.position.z（ロード後に確定、既定は近似値）
+
+const camera = new THREE.PerspectiveCamera( FOV_MAX, 1, 0.1, 1000 );
+
+function fovForHeight( h ) {
+
+	// ドラゴンの見かけ倍率 M = camZ / ( camZ - dragonZ )。M を DRAGON_FILL 以内に
+	// 収める camZ を逆算し、その camZ で平面が画面を満たす fov を求める。M は正射影
+	// (M = 1) より下げられないため、画面が低くて targetM が 1 以下になる領域では
+	// fov を FOV_MIN に張り付かせる。fov は [FOV_MIN, FOV_MAX] にクランプするので、
+	// 十分高い画面では従来の見た目を保ち、低い画面へは連続的に狭まる。
+	const targetM = ( h * DRAGON_FILL ) / dragonWorldSize;
+	if ( targetM <= 1 ) return FOV_MIN;
+
+	const camZ = targetM * dragonZ / ( targetM - 1 );
+	const fov  = 2 * Math.atan( h / ( 2 * camZ ) ) * THREE.MathUtils.RAD2DEG;
+	return THREE.MathUtils.clamp( fov, FOV_MIN, FOV_MAX );
+
+}
 
 const scene = new THREE.Scene();
 
@@ -174,6 +200,10 @@ new GLTFLoader().load( './dragon.glb', ( gltf ) => {
 	// 平面 (z = -1) へのめり込み防止に、その半分ぶんカメラ側へ押し出す。
 	dragon.position.z = size.y * scale / 2;
 	scene.add( dragon );
+
+	// 実際の z が確定したので fov 計算に反映し、カメラを組み直す
+	dragonZ = dragon.position.z;
+	setSize();
 
 	if ( gltf.animations && gltf.animations.length ) {
 
@@ -271,7 +301,9 @@ function setSize() {
 
 	renderer.setSize( w, h, false );
 
-	const z = h / ( 2 * Math.tan( THREE.MathUtils.degToRad( fov / 2 ) ) );
+	const fov = fovForHeight( h );
+	const z = h / ( 2 * Math.tan( fov / 2 * THREE.MathUtils.DEG2RAD ) );
+	camera.fov    = fov;
 	camera.aspect = w / h;
 	camera.near   = z / 100;
 	camera.far    = z * 100;
