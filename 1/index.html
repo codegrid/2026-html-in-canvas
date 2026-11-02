@@ -11,8 +11,8 @@
 
 <p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
 
-<canvas class="CardCanvas" layoutsubtree>
-	<div class="Card">
+<canvas class="CardCanvas" content="drawable">
+	<div class="Card" drawable>
 		<div class="Card__Inner">
 
 			<div class="Card__Header">
@@ -50,7 +50,7 @@
 <button class="SaveButton">カードを保存</button>
 
 <script type="module">
-if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
+if ( ! ( 'content' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
 
 const canvas = document.querySelector( '.CardCanvas' );
 const ctx    = canvas.getContext( '2d' );
@@ -75,8 +75,7 @@ resizeObserver.observe( canvas, { box: 'device-pixel-content-box' } );
 canvas.onpaint = () => {
 
 	ctx.reset();
-	const transform = ctx.drawElementImage( card, 0, 0 );
-	card.style.transform = transform.toString();
+	ctx.drawElementImage( card, 0, 0 );
 
 };
 

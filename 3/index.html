@@ -11,8 +11,8 @@
 
 <p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
 
-<canvas class="PanelCanvas" layoutsubtree>
-	<div class="Panel">
+<canvas class="PanelCanvas" content="drawable">
+	<div class="Panel" drawable>
 		<h1 class="Panel__Title">CODE GRID EXAMPLE</h1>
 		<div class="Panel__Divider"></div>
 		<p>
@@ -32,8 +32,9 @@
 
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js';
+import { syncElementGeometry } from '../html-in-canvas.js';
 
-if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
+if ( ! ( 'content' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
 
 const panel  = document.querySelector( '.Panel' );
 const canvas = document.querySelector( '.PanelCanvas' );
@@ -122,6 +123,9 @@ const panelMat = new THREE.ShaderMaterial( {
 } );
 
 panelMat.uniforms.uMap.value = new THREE.HTMLTexture( panel );
+
+// panel は canvas いっぱいに等倍で描くので、レイアウトどおりの位置をヒットテスト用に登録する
+syncElementGeometry( canvas, panel );
 
 const panelMesh = new THREE.Mesh(
 	new THREE.PlaneGeometry( elWidth / elHeight * 2.0, 2.0 ),

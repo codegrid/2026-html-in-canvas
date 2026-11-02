@@ -11,8 +11,8 @@
 
 <p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
 
-<canvas class="PC" layoutsubtree>
-	<div class="PC__Screen">
+<canvas class="PC" content="drawable">
+	<div class="PC__Screen" drawable>
 
 		<div class="Page">
 			<header class="Header">
@@ -161,6 +161,7 @@
 <script type="module">
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import '../html-in-canvas.js';
 
 const canvas        = document.querySelector( '.PC' );
 const screenElement = canvas.querySelector( '.PC__Screen' );
@@ -296,8 +297,6 @@ new GLTFLoader().load( './pc.glb', ( { scene: pc } ) => {
 		bl: projectToCenterPlane( blOrig ),
 	};
 
-	screenElement.style.transformOrigin = '0 0';
-
 	// HTMLTexture が登録した onpaint を包んで、初回 paint を検知する
 	const _htmlTexturePaint = canvas.onpaint;
 	canvas.onpaint = ( e ) => {
@@ -311,7 +310,7 @@ new GLTFLoader().load( './pc.glb', ( { scene: pc } ) => {
 
 } );
 
-function updateScreenElementTransform() {
+function updateScreenElementGeometry() {
 
 	if ( ! screenMesh || ! screenCornersLocal ) return;
 
@@ -321,8 +320,8 @@ function updateScreenElementTransform() {
 
 		const p = vLocal.clone().applyMatrix4( screenMesh.matrixWorld ).project( camera );
 		return {
-			x: ( p.x + 1 ) * 0.5 * window.innerWidth,
-			y: ( 1 - ( p.y + 1 ) * 0.5 ) * window.innerHeight,
+			x: ( p.x + 1 ) * 0.5 * canvas.clientWidth,
+			y: ( 1 - ( p.y + 1 ) * 0.5 ) * canvas.clientHeight,
 		};
 
 	};
@@ -345,7 +344,14 @@ function updateScreenElementTransform() {
 
 	const H = computeHomography( src, dst );
 
-	screenElement.style.transform = `matrix3d(${ H[ 0 ] },${ H[ 3 ] },0,${ H[ 6 ] },${ H[ 1 ] },${ H[ 4 ] },0,${ H[ 7 ] },0,0,1,0,${ H[ 2 ] },${ H[ 5 ] },0,${ H[ 8 ] })`;
+	// 要素（CSS px）→ canvas（CSS px）のホモグラフィを、ヒットテスト用の位置として登録する
+	const canvasTransform = new DOMMatrix( [
+		H[ 0 ], H[ 3 ], 0, H[ 6 ],
+		H[ 1 ], H[ 4 ], 0, H[ 7 ],
+		0,      0,      1, 0,
+		H[ 2 ], H[ 5 ], 0, H[ 8 ],
+	] );
+	canvas.updateElementGeometry( screenElement, { canvasTransform } );
 
 }
 
@@ -435,7 +441,7 @@ renderer.setAnimationLoop( () => {
 
 	camera.lookAt( 0, .8, 0 );
 	renderer.render( scene, camera );
-	updateScreenElementTransform();
+	updateScreenElementGeometry();
 
 } );
 </script>

@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<canvas class="Slab" layoutsubtree><textarea class="StoneTextarea" autofocus>CODEGRID</textarea></canvas>
+<canvas class="Slab" content="drawable"><textarea class="StoneTextarea" drawable autofocus>CODEGRID</textarea></canvas>
 
 
 <script type="importmap">
@@ -22,6 +22,7 @@
 </script>
 <script type="module">
 import * as THREE from 'three';
+import '../html-in-canvas.js';
 
 const canvas   = document.querySelector( '.Slab' );
 const textarea = canvas.querySelector( '.StoneTextarea' );

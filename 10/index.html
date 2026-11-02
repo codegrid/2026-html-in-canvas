@@ -17,8 +17,8 @@
 </button>
 
 <div class="RetroDialog" role="dialog" aria-modal="true">
-	<canvas class="RetroDialog__Canvas" layoutsubtree>
-		<div class="RetroDialog__Frame">
+	<canvas class="RetroDialog__Canvas" content="drawable">
+		<div class="RetroDialog__Frame" drawable>
 			<div class="RetroDialog__FrameInner">
 				<div class="RetroDialog__Icon">
 					<img src="./img.png" alt="" />
@@ -45,8 +45,9 @@
 
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js';
+import { syncElementGeometry } from '../html-in-canvas.js';
 
-if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
+if ( ! ( 'content' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
 
 const openButton   = document.querySelector( '.OpenButton' );
 const modal        = document.querySelector( '.RetroDialog' );
@@ -174,6 +175,9 @@ function setSize() {
 
 	plane.geometry.dispose();
 	plane.geometry = new THREE.PlaneGeometry( w, h );
+
+	// ダイアログは canvas いっぱいに等倍で描くので、レイアウトどおりの位置をヒットテスト用に登録する
+	syncElementGeometry( canvas, frame );
 
 }
 

@@ -14,8 +14,8 @@
 <div class="Hero">
 	<img src="./img.webp" alt="" />
 	<div class="Hero__Text">
-		<canvas class="Hero__TextCanvas" layoutsubtree>
-				<div class="Hero__TextInner">
+		<canvas class="Hero__TextCanvas" content="drawable">
+				<div class="Hero__TextInner" drawable>
 					<p class="Hero__Title">
 						ひとくちで、<br />
 						<em>潤う緑茶。</em>
@@ -39,6 +39,7 @@
 
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js';
+import { syncElementGeometry } from '../html-in-canvas.js';
 
 const canvas  = document.querySelector( '.Hero__TextCanvas' );
 const content = document.querySelector( '.Hero__TextInner' );
@@ -211,6 +212,9 @@ function setSize() {
 
 	plane.geometry.dispose();
 	plane.geometry = new THREE.PlaneGeometry( w, h );
+
+	// テキストは canvas いっぱいに等倍で描くので、レイアウトどおりの位置をヒットテスト用に登録する
+	syncElementGeometry( canvas, content );
 
 }
 

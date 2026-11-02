@@ -9,8 +9,8 @@
 </head>
 <body>
 
-<canvas class="CTA__Canvas" layoutsubtree>
-	<div class="Page">
+<canvas class="CTA__Canvas" content="drawable">
+	<div class="Page" drawable>
 		<div class="Page__Inner">
 			<div class="CTA">
 				<h1>
@@ -39,7 +39,7 @@
 						</li>
 					</ul>
 				</div>
-				<a href="#">
+				<a href="#" drawable>
 					今すぐ定期購入する
 				</a>
 			</div>
@@ -49,6 +49,7 @@
 
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js';
+import { getOffsetInCanvas, syncElementGeometry } from '../html-in-canvas.js';
 
 const canvas   = document.querySelector( '.CTA__Canvas' );
 const pageEl   = document.querySelector( '.Page' );
@@ -74,11 +75,6 @@ const material = new THREE.ShaderMaterial( {
 		uMap: { value: pageTexture },
 		uCenter: { value: new THREE.Vector2( 0.5, 0.5 ) },
 		uIntensity: { value: 0 },
-		uBboxMin: { value: new THREE.Vector2( 0, 0 ) },
-		uBboxMax: { value: new THREE.Vector2( 0, 0 ) },
-		uResolution: { value: new THREE.Vector2( 1, 1 ) },
-		uFeatherPx: { value: 8 },
-		uBboxPaddingPx: { value: 2 },
 		uStrength: { value: 0.25 },
 	},
 	vertexShader: /* glsl */`
@@ -95,11 +91,6 @@ const material = new THREE.ShaderMaterial( {
 		uniform sampler2D uMap;
 		uniform vec2 uCenter;
 		uniform float uIntensity;
-		uniform vec2 uBboxMin;
-		uniform vec2 uBboxMax;
-		uniform vec2 uResolution;
-		uniform float uFeatherPx;
-		uniform float uBboxPaddingPx;
 		uniform float uStrength;
 		varying vec2 vUv;
 
@@ -125,32 +116,11 @@ const material = new THREE.ShaderMaterial( {
 
 			}
 
-			// bbox を outward に拡張 -> button interior を完全に sharp area の中に押し込む
-			vec2 padUv = vec2( uBboxPaddingPx ) / uResolution;
-			vec2 minE = uBboxMin - padUv;
-			vec2 maxE = uBboxMax + padUv;
-
-			vec2 below = minE - uv;
-			vec2 above = uv - maxE;
-			vec2 outsideUv = max( max( below, above ), vec2( 0.0 ) );
-			float distPx = length( outsideUv * uResolution );
-
-			// mask: 1 = (拡張後) bbox 内 (sharp), 0 = feather 外 (blur)
-			float mask = 1.0 - smoothstep( 0.0, uFeatherPx, distPx );
-
-			if ( mask > 0.999 ) {
-
-				gl_FragColor = sharp;
-				return;
-
-			}
-
 			// Evan Wallace 風 zoom blur:
 			//   t = (i + offset) / N  ∈ (0, 1]
 			//   weight = 4t(1-t)   (中央重み、両端で 0)
 			//   sample = uv + toCenter * t * strength
-			// sample が padded bbox の内側に落ちた場合は weight 0
-			// (button 本体の色を blur に巻き込まない)
+			// ボタンは入れ子の drawable なので uMap に含まれず、ぼかしに巻き込まれない
 			vec2 toCenter = uCenter - uv;
 			float strength = uStrength * uIntensity;
 			float offset = hash( uv );
@@ -162,22 +132,13 @@ const material = new THREE.ShaderMaterial( {
 				float t = ( float( i ) + offset ) / float( N );
 				vec2 p = uv + toCenter * t * strength;
 
-				// sample が padded bbox 外なら 1, 内側なら 0
-				vec2 ge = step( minE, p );
-				vec2 le = step( p, maxE );
-				float outsideBtn = 1.0 - ge.x * ge.y * le.x * le.y;
-
-				float w = 4.0 * t * ( 1.0 - t ) * outsideBtn;
+				float w = 4.0 * t * ( 1.0 - t );
 				color += texture2D( uMap, p ) * w;
 				total += w;
 
 			}
 
-			// 全 sample が button 内側に着地したケース (button のすぐ脇で全方位 button 向き) は sharp に fallback
-			vec4 blurred = total > 0.0001 ? color / total : sharp;
-
-			// bbox 内 (拡張後) は sharp, 外側は blurred
-			gl_FragColor = mix( blurred, sharp, mask );
+			gl_FragColor = color / total;
 
 		}
 	`,
@@ -185,6 +146,57 @@ const material = new THREE.ShaderMaterial( {
 
 const plane = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), material );
 scene.add( plane );
+
+// --- ボタン ---
+// ボタンには drawable を付けて入れ子にしてあるので、pageTexture (.Page) にはボタンが含まれない。
+// ページだけをぼかし、その上にボタンをくっきり重ねる。
+// Three.js の HTMLTexture は、canvas の直接の子要素でない要素を canvas 直下へ移動してしまうので、
+// ボタンのテクスチャは WebGL の API で直接書き込み、ExternalTexture として Three.js に渡す。
+const gl = renderer.getContext();
+const buttonGlTexture = gl.createTexture();
+const buttonTexture = new THREE.ExternalTexture( buttonGlTexture );
+
+const buttonPlane = new THREE.Mesh(
+	new THREE.PlaneGeometry( 1, 1 ),
+	new THREE.MeshBasicMaterial( { map: buttonTexture, transparent: true } ),
+);
+scene.add( buttonPlane );
+
+let needButtonUpdate = true;
+
+function updateButton() {
+
+	const size = canvas.getElementImageDefaultSize( buttonEl );
+	const width  = Math.ceil( size.width );
+	const height = Math.ceil( size.height );
+	if ( width === 0 || height === 0 ) return false;
+
+	// Three.js の WebGLState がバインドと pixelStorei をキャッシュしているので、state 経由で設定する
+	renderer.state.bindTexture( gl.TEXTURE_2D, buttonGlTexture );
+	renderer.state.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, true );
+	renderer.state.pixelStorei( gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false );
+	gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA8, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null );
+	gl.texElementSubImage2D( gl.TEXTURE_2D, 0, 0, 0, buttonEl );
+	gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR );
+	gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR );
+	gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE );
+	gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE );
+
+	// ボタンのレイアウト上の位置に板を置く (canvas の CSS px → NDC)
+	const { x, y } = getOffsetInCanvas( canvas, buttonEl );
+	const w = buttonEl.offsetWidth;
+	const h = buttonEl.offsetHeight;
+	const canvasW = canvas.clientWidth;
+	const canvasH = canvas.clientHeight;
+	buttonPlane.scale.set( w / canvasW * 2, h / canvasH * 2, 1 );
+	buttonPlane.position.set( ( x + w / 2 ) / canvasW * 2 - 1, 1 - ( y + h / 2 ) / canvasH * 2, 0 );
+
+	// 入れ子の drawable も、位置を登録しないとヒットテスト (hover) の対象にならない
+	syncElementGeometry( canvas, buttonEl );
+
+	return true;
+
+}
 
 // canvas を viewport サイズに同期 (100vw x 100vh)
 let canvasCssW = 0;
@@ -199,8 +211,10 @@ function syncCanvasSize() {
 	canvasCssW = w;
 	canvasCssH = h;
 	renderer.setSize( w, h, false );
-	const dpr = window.devicePixelRatio;
-	material.uniforms.uResolution.value.set( w * dpr, h * dpr );
+	needButtonUpdate = true;
+
+	// ページは canvas いっぱいに等倍で描くので、レイアウトどおりの位置をヒットテスト用に登録する
+	syncElementGeometry( canvas, pageEl );
 
 	return true;
 
@@ -208,24 +222,6 @@ function syncCanvasSize() {
 
 syncCanvasSize();
 window.addEventListener( 'resize', syncCanvasSize );
-
-// bbox 計測 (毎 paint, 安価)
-function updateBbox() {
-
-	const cRect = canvas.getBoundingClientRect();
-	const bRect = buttonEl.getBoundingClientRect();
-	if ( cRect.width === 0 || cRect.height === 0 ) return;
-
-	const x0 = ( bRect.left  - cRect.left ) / cRect.width;
-	const x1 = ( bRect.right - cRect.left ) / cRect.width;
-	const y0 = ( bRect.top    - cRect.top ) / cRect.height;
-	const y1 = ( bRect.bottom - cRect.top ) / cRect.height;
-
-	// DOM y (top->down) を GL UV y (bottom->up) に flip
-	material.uniforms.uBboxMin.value.set( x0, 1.0 - y1 );
-	material.uniforms.uBboxMax.value.set( x1, 1.0 - y0 );
-
-}
 
 // hover 状態
 let targetIntensity = 0;
@@ -292,7 +288,7 @@ canvas.onpaint = ( e ) => {
 
 	if ( _htmlTexturePaint ) _htmlTexturePaint.call( canvas, e );
 	syncCanvasSize();
-	updateBbox();
+	needButtonUpdate = true;
 	painted = true;
 
 };
@@ -309,7 +305,7 @@ renderer.setAnimationLoop( ( now ) => {
 	intensity += ( targetIntensity - intensity ) * k;
 	material.uniforms.uIntensity.value = intensity;
 
-	updateBbox();
+	if ( needButtonUpdate && updateButton() ) needButtonUpdate = false;
 	renderer.render( scene, camera );
 
 } );
