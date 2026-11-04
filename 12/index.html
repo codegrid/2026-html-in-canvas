@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="origin-trial" content="Aoz/FbDm6uw51DTkyO4Ge5eTSwHw4xho6RjdHmKyGz2m5Hks5RgYHZjAB+X0X7asKiLI5lHMWnWQWka+kmT9UAQAAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxODAzOTQ1NjAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>HTML in Canvas — 3D Objects in HTML Demo</title>
 <link rel="stylesheet" href="./style.css" />
 </head>
@@ -11,8 +10,8 @@
 
 <p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
 
-<canvas class="StoryCanvas" layoutsubtree>
-	<div class="Story">
+<canvas class="StoryCanvas" content="drawable">
+	<div class="Story" drawable>
 		<div class="Story__Inner">
 			<div class="Story__Contents">
 
@@ -85,8 +84,9 @@
 <script type="module">
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { syncElementGeometry } from '../html-in-canvas.js';
 
-if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
+if ( ! ( 'content' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
 
 const canvas     = document.querySelector( '.StoryCanvas' );
 const story      = document.querySelector( '.Story' );
@@ -325,6 +325,9 @@ function setSize() {
 	keyLight.shadow.camera.top    =   d * 16;
 	keyLight.shadow.camera.bottom = - d * 2;
 	keyLight.shadow.camera.updateProjectionMatrix();
+
+	// ストーリーは canvas いっぱいに等倍で描くので、レイアウトどおりの位置をヒットテスト用に登録する
+	syncElementGeometry( canvas, story );
 
 }
 
