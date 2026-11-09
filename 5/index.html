@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="origin-trial" content="Aoz/FbDm6uw51DTkyO4Ge5eTSwHw4xho6RjdHmKyGz2m5Hks5RgYHZjAB+X0X7asKiLI5lHMWnWQWka+kmT9UAQAAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxODAzOTQ1NjAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>HTML in Canvas — Pollen Text Demo</title>
 <link rel="stylesheet" href="./style.css" />
 </head>
@@ -11,14 +10,15 @@
 
 <p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
 
-<canvas class="PollenCanvas" layoutsubtree>
-	<div class="PollenText">
+<canvas class="PollenCanvas" content="drawable">
+	<div class="PollenText" drawable>
 		<p>花粉症で、お悩みの方へ</p>
 	</div>
 </canvas>
 
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js';
+import { syncElementGeometry } from '../html-in-canvas.js';
 
 const canvas = document.querySelector( '.PollenCanvas' );
 const textEl = document.querySelector( '.PollenText' );
@@ -260,6 +260,9 @@ function syncCanvasSize() {
 	renderer.setPixelRatio( dpr );
 	renderer.setSize( w, h, false );
 	canvas.style.height = `${ h }px`;
+
+	// テキストは canvas いっぱいに等倍で描くので、レイアウトどおりの位置をヒットテスト用に登録する
+	syncElementGeometry( canvas, textEl );
 	// uPointSize は device px 単位。dpr に追従させて screen 上は常に 1 CSS px 相当の dot にする。
 	particleMaterial.uniforms.uPointSize.value = 1.0 * dpr;
 

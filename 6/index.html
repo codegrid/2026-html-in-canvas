@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="origin-trial" content="Aoz/FbDm6uw51DTkyO4Ge5eTSwHw4xho6RjdHmKyGz2m5Hks5RgYHZjAB+X0X7asKiLI5lHMWnWQWka+kmT9UAQAAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxODAzOTQ1NjAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>HTML in Canvas — Slime Drip Demo</title>
 <link rel="stylesheet" href="./style.css" />
 </head>
@@ -11,14 +10,15 @@
 
 <p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
 
-<canvas class="SlimeCanvas" layoutsubtree>
-	<div class="SlimeText">
-		<p>つらい<em>鼻水</em>、鼻詰まり</p>
+<canvas class="SlimeCanvas" content="drawable">
+	<div class="SlimeText" drawable>
+		<p>つらい<em drawable>鼻水</em>、鼻詰まり</p>
 	</div>
 </canvas>
 
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js';
+import { getOffsetInCanvas, syncElementGeometry } from '../html-in-canvas.js';
 
 const canvas = document.querySelector( '.SlimeCanvas' );
 const textEl = document.querySelector( '.SlimeText' );
@@ -62,8 +62,56 @@ const slime = {
 window.slime = slime;
 
 // --- HTMLTexture (テキスト下地) ---
+// em には drawable を付けて入れ子にしてあるので、このテクスチャ (.SlimeText) には em が含まれない。
 const textTexture = new THREE.HTMLTexture( textEl );
 textTexture.colorSpace = THREE.SRGBColorSpace;
+
+// --- em のテクスチャ (blob の発生源) ---
+// em だけを別のテクスチャに描き、blob はそこから発生させる。
+// Three.js の HTMLTexture は、canvas の直接の子要素でない要素を canvas 直下へ移動してしまうので、
+// em のテクスチャは WebGL の API で直接書き込み、ExternalTexture として Three.js に渡す。
+const gl = renderer.getContext();
+const emGlTexture = gl.createTexture();
+const emTexture = new THREE.ExternalTexture( emGlTexture );
+// canvas 内での em の位置 (UV、左下原点): x, y, width, height
+const emRect = new THREE.Vector4();
+let needEmUpdate = false;
+
+function updateEm() {
+
+	const size = canvas.getElementImageDefaultSize( emEl );
+	const width  = Math.ceil( size.width );
+	const height = Math.ceil( size.height );
+	if ( width === 0 || height === 0 ) return false;
+
+	// Three.js の WebGLState がバインドと pixelStorei をキャッシュしているので、state 経由で設定する
+	renderer.state.bindTexture( gl.TEXTURE_2D, emGlTexture );
+	renderer.state.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, true );
+	renderer.state.pixelStorei( gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false );
+	gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA8, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null );
+	gl.texElementSubImage2D( gl.TEXTURE_2D, 0, 0, 0, emEl );
+	gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR );
+	gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR );
+	gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE );
+	gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE );
+
+	// em の getBoundingClientRect() はレイアウト上の位置を返さないので、offsetLeft / offsetTop から求める
+	const { x, y } = getOffsetInCanvas( canvas, emEl );
+	const canvasW = canvas.clientWidth;
+	const canvasH = canvas.clientHeight;
+	emRect.set(
+		x / canvasW,
+		1 - ( y + emEl.offsetHeight ) / canvasH,
+		emEl.offsetWidth  / canvasW,
+		emEl.offsetHeight / canvasH,
+	);
+
+	// 入れ子の drawable も、位置を登録しないとヒットテストの対象にならない
+	syncElementGeometry( canvas, emEl );
+
+	return true;
+
+}
 
 // --- 粒子定数 ---
 // 粒子数は固定。viewport 変化への追従は blob 自体の大きさを em の font サイズに比例させて行う
@@ -223,6 +271,8 @@ const thresholdMaterial = new THREE.ShaderMaterial( {
 	uniforms: {
 		uDensityMap:   { value: blobRT.texture },
 		uTextMap:      { value: textTexture },
+		uEmMap:        { value: emTexture },
+		uEmRect:       { value: emRect },
 		uThreshold:    { value: 0.35 },
 		uThicknessRange: { value: 1.6 },
 		// 蛍光緑のスライム。outputColorSpace=LinearSRGB で fb にそのまま書くので
@@ -252,6 +302,8 @@ const thresholdMaterial = new THREE.ShaderMaterial( {
 
 		uniform sampler2D uDensityMap;
 		uniform sampler2D uTextMap;
+		uniform sampler2D uEmMap;
+		uniform vec4 uEmRect;
 		uniform float uThreshold;
 		uniform float uThicknessRange;
 		uniform vec3 uThinColor;
@@ -268,9 +320,14 @@ const thresholdMaterial = new THREE.ShaderMaterial( {
 
 		void main() {
 
-			// 下地: 透明な部分は背景色、不透明な部分はテキスト色を pre-multiplied で合成
+			// 下地: 透明な部分は背景色、不透明な部分はテキスト色を合成し、その上に em を重ねる
 			vec4 textTex = texture2D( uTextMap, vUv );
+			vec2 emUv = ( vUv - uEmRect.xy ) / uEmRect.zw;
+			float inEm = step( 0.0, emUv.x ) * step( emUv.x, 1.0 ) * step( 0.0, emUv.y ) * step( emUv.y, 1.0 );
+			vec4 emTex = texture2D( uEmMap, clamp( emUv, 0.0, 1.0 ) ) * inEm;
 			vec3 baseColor = mix( uBgColor, textTex.rgb, textTex.a );
+			baseColor = mix( baseColor, emTex.rgb, emTex.a );
+			float textAlpha = 1.0 - ( 1.0 - textTex.a ) * ( 1.0 - emTex.a );
 
 			float density = texture2D( uDensityMap, vUv ).r;
 
@@ -317,7 +374,7 @@ const thresholdMaterial = new THREE.ShaderMaterial( {
 			vec3 edgeBlended = mix( uBgColor, shaded, smoothstep( 0.05, 0.7, thickness ) );
 
 			float slimeAlpha = uSlimeAlpha * smoothstep( 0.0, 0.85, thickness );
-			slimeAlpha *= mix( 1.0, 0.55, textTex.a );
+			slimeAlpha *= mix( 1.0, 0.55, textAlpha );
 
 			// 画面下方向の alpha 減衰: 上から 70% 地点 (ndc.y = -0.4) で 1、画面下端 (ndc.y = -1.0) で 0
 			float screenY = vUv.y * 2.0 - 1.0;
@@ -361,6 +418,9 @@ function syncCanvasSize() {
 	renderer.setSize( w, h, false );
 	canvas.style.height = `${ h }px`;
 
+	// テキストは canvas いっぱいに等倍で描くので、レイアウトどおりの位置をヒットテスト用に登録する
+	syncElementGeometry( canvas, textEl );
+
 	// blob RT は half-res (DPR を加味した物理ピクセルの半分)
 	const px = renderer.domElement.width;
 	const py = renderer.domElement.height;
@@ -381,11 +441,14 @@ function syncCanvasSize() {
 
 }
 
-// --- home サンプリング: HTMLTexture を RT に焼いて readPixels で opaque pixel を集める ---
+// --- home サンプリング: em のテクスチャを canvas 内の位置に RT に焼いて readPixels で opaque pixel を集める ---
 const sampleScene = new THREE.Scene();
 const sampleMaterial = new THREE.ShaderMaterial( {
 
-	uniforms: { uMap: { value: textTexture } },
+	uniforms: {
+		uMap:  { value: emTexture },
+		uRect: { value: emRect },
+	},
 	vertexShader: /* glsl */`
 		varying vec2 vUv;
 		void main() {
@@ -396,7 +459,12 @@ const sampleMaterial = new THREE.ShaderMaterial( {
 	fragmentShader: /* glsl */`
 		varying vec2 vUv;
 		uniform sampler2D uMap;
-		void main() { gl_FragColor = texture2D( uMap, vUv ); }
+		uniform vec4 uRect;
+		void main() {
+			vec2 uv = ( vUv - uRect.xy ) / uRect.zw;
+			float inside = step( 0.0, uv.x ) * step( uv.x, 1.0 ) * step( 0.0, uv.y ) * step( uv.y, 1.0 );
+			gl_FragColor = texture2D( uMap, clamp( uv, 0.0, 1.0 ) ) * inside;
+		}
 	`,
 	transparent: true,
 
@@ -450,36 +518,8 @@ function sampleHomes() {
 
 	if ( opaque.length === 0 ) return false;
 
-	// <em> 要素がある場合、その bounding box 内に絞って sampling する。
-	// textEl 全体の rect と em の rect から RT 内の em 領域 (readPixels y は下から数えるので変換) を計算。
-	let pool = opaque;
-	if ( emEl ) {
-
-		const textRect = textEl.getBoundingClientRect();
-		const emRect   = emEl.getBoundingClientRect();
-		const emL  = ( emRect.left   - textRect.left ) * dpr;
-		const emR  = ( emRect.right  - textRect.left ) * dpr;
-		const emT  = ( emRect.top    - textRect.top  ) * dpr;
-		const emB  = ( emRect.bottom - textRect.top  ) * dpr;
-		// readPixels の y は下から → 画像 y=emT は readPixels y=h-emT、emB は h-emB
-		const emRPBot = h - emB;
-		const emRPTop = h - emT;
-
-		const filtered = [];
-		for ( let i = 0; i < opaque.length; i += 2 ) {
-
-			const px = opaque[ i     ];
-			const py = opaque[ i + 1 ];
-			if ( px >= emL && px <= emR && py >= emRPBot && py <= emRPTop ) {
-
-				filtered.push( px, py );
-
-			}
-
-		}
-		if ( filtered.length > 0 ) pool = filtered;
-
-	}
+	// em だけを焼いているので、不透明 pixel がそのまま em の字形になる
+	const pool = opaque;
 
 	const n = pool.length / 2;
 	for ( let i = 0; i < PARTICLE_COUNT; i ++ ) {
@@ -510,6 +550,8 @@ canvas.onpaint = ( e ) => {
 	const sizeChanged = syncCanvasSize();
 	if ( canvasCssW === 0 || canvasCssH === 0 ) return;
 
+	needEmUpdate = true;
+
 	if ( ! firstPainted ) {
 
 		firstPainted = true;
@@ -537,7 +579,12 @@ canvas.onpaint = ( e ) => {
 // (CSS 同じでも device px 変化) の両方を 1 つの observer で検知する。
 const resizeObserver = new ResizeObserver( () => {
 
-	if ( syncCanvasSize() && firstPainted ) needHomeResample = true;
+	if ( syncCanvasSize() && firstPainted ) {
+
+		needEmUpdate = true;
+		needHomeResample = true;
+
+	}
 
 } );
 resizeObserver.observe( canvas, { box: 'device-pixel-content-box' } );
@@ -546,6 +593,9 @@ resizeObserver.observe( canvas, { box: 'device-pixel-content-box' } );
 renderer.setAnimationLoop( ( now ) => {
 
 	if ( ! firstPainted ) return;
+
+	if ( needEmUpdate && updateEm() ) needEmUpdate = false;
+	if ( needEmUpdate ) return;
 
 	if ( needHomeResample ) {
 

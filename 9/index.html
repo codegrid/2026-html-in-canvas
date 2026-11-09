@@ -199,10 +199,11 @@
 	</div>
 </section>
 
-<canvas class="FxCanvas" layoutsubtree></canvas>
+<canvas class="FxCanvas" content="drawable"></canvas>
 
 <script type="module">
 	import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js';
+	import '../html-in-canvas.js';
 
 	const sections = {
 		'#hero-section': document.getElementById( 'hero-section' ),
@@ -514,6 +515,7 @@
 		// 1. leave をクローン (cloneNode はスクロール位置を複製しないので別途取得しておく)
 		const leaveScrollTop = leaveSection.scrollTop;
 		const clone = leaveSection.cloneNode( true );
+		clone.setAttribute( 'drawable', '' );
 
 		// 2. canvas を表示し、クローンを child に挿入してからスクロール位置を反映
 		//    (offsetHeight を読んで layout を強制してから scrollTop を設定しないと反映されない)
@@ -522,8 +524,8 @@
 		void clone.offsetHeight;
 		clone.scrollTop = leaveScrollTop;
 
-		// クローン内の <img> のデコード完了を待つ。layoutsubtree の初回 onpaint より前に
-		// ビットマップを揃えておかないと、texElementImage2D が画像未デコードの snapshot を
+		// クローン内の <img> のデコード完了を待つ。初回 onpaint より前に
+		// ビットマップを揃えておかないと、texElementSubImage2D が画像未デコードの snapshot を
 		// 焼いてしまい、curl 開始直前の 1〜2 フレーム間だけ画像が抜けて見える。
 		const cloneImgs = clone.querySelectorAll( 'img' );
 		await Promise.all( Array.from( cloneImgs ).map( ( img ) => img.decode().catch( () => {} ) ) );

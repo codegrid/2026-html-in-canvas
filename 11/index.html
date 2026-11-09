@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="origin-trial" content="Aoz/FbDm6uw51DTkyO4Ge5eTSwHw4xho6RjdHmKyGz2m5Hks5RgYHZjAB+X0X7asKiLI5lHMWnWQWka+kmT9UAQAAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxODAzOTQ1NjAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>HTML in Canvas — Glass Crack Effect Demo</title>
 <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
 
-<canvas class="PageEffect" layoutsubtree>
+<canvas class="PageEffect" content="drawable">
 
-<div class="Page">
+<div class="Page" drawable>
 
 	<div class="Layout">
 		<header class="BlogHeader">
@@ -247,6 +246,7 @@
 
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js';
+import { syncElementGeometry } from '../html-in-canvas.js';
 
 const canvas      = document.querySelector( '.PageEffect' );
 const pageElement = canvas.querySelector( '.Page' );
@@ -263,6 +263,9 @@ const pageTexture = new THREE.HTMLTexture( pageElement );
 pageTexture.minFilter = THREE.LinearFilter;
 pageTexture.magFilter = THREE.LinearFilter;
 pageTexture.flipY = false;
+
+// ページは canvas いっぱいに等倍で描くので、レイアウトどおりの位置をヒットテスト用に登録する
+syncElementGeometry( canvas, pageElement );
 
 const MAX_CLICKS    = 10;
 const VORONOI_COUNT = 64;
@@ -782,6 +785,7 @@ window.addEventListener( 'resize', () => {
 	renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
 	renderer.setSize( width, height );
 	material.uniforms.uResolution.value.set( width, height );
+	syncElementGeometry( canvas, pageElement );
 
 	if ( state === 'glass' ) {
 

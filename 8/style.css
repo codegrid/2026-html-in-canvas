@@ -19,7 +19,7 @@ body {
 	height: 100vh;
 }
 
-/* layoutsubtree 配下の page wrapper. canvas 内の "コンテンツエリア" 役。
+/* content="drawable" の canvas 配下の page wrapper. canvas 内の "コンテンツエリア" 役。
    100vh 固定 + overflow: auto。short viewport で内容がはみ出してもアスペクト比は維持。 */
 .Page {
 	box-sizing: border-box;

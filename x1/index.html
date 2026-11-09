@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="origin-trial" content="Aoz/FbDm6uw51DTkyO4Ge5eTSwHw4xho6RjdHmKyGz2m5Hks5RgYHZjAB+X0X7asKiLI5lHMWnWQWka+kmT9UAQAAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxODAzOTQ1NjAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>HTML in Canvas — Stone Tablet Engraving</title>
 <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
 
-<canvas class="Slab" layoutsubtree><textarea class="StoneTextarea" autofocus>CODEGRID</textarea></canvas>
+<canvas class="Slab" content="drawable"><textarea class="StoneTextarea" drawable autofocus>CODEGRID</textarea></canvas>
 
 
 <script type="importmap">
@@ -22,6 +21,7 @@
 </script>
 <script type="module">
 import * as THREE from 'three';
+import '../html-in-canvas.js';
 
 const canvas   = document.querySelector( '.Slab' );
 const textarea = canvas.querySelector( '.StoneTextarea' );

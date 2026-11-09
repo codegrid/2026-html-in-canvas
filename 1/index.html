@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="origin-trial" content="Aoz/FbDm6uw51DTkyO4Ge5eTSwHw4xho6RjdHmKyGz2m5Hks5RgYHZjAB+X0X7asKiLI5lHMWnWQWka+kmT9UAQAAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxODAzOTQ1NjAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>HTML in Canvas — Card Demo</title>
 <link rel="stylesheet" href="./style.css" />
 </head>
@@ -11,21 +10,21 @@
 
 <p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
 
-<canvas class="CardCanvas" layoutsubtree>
-	<div class="Card">
+<canvas class="CardCanvas" content="drawable">
+	<div class="Card" drawable>
 		<div class="Card__Inner">
 
 			<div class="Card__Header">
-				<input class="Card__Name" type="text" value="運命の分岐器">
-				<input class="Card__Cost" type="text" value="④">
+				<input class="Card__Name" type="text" value="運命の分岐器" />
+				<input class="Card__Cost" type="text" value="④" />
 			</div>
 
 			<div class="Card__ArtFrame">
-				<img src="illus.webp" alt="">
+				<img src="illus.webp" alt="" />
 			</div>
 
 			<div class="Card__TypeBar">
-				<input class="Card__Type" type="text" value="伝説のアーティファクト">
+				<input class="Card__Type" type="text" value="伝説のアーティファクト" />
 			</div>
 
 			<div class="Card__TextBox">
@@ -50,7 +49,7 @@
 <button class="SaveButton">カードを保存</button>
 
 <script type="module">
-if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
+if ( ! ( 'content' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
 
 const canvas = document.querySelector( '.CardCanvas' );
 const ctx    = canvas.getContext( '2d' );
@@ -75,8 +74,7 @@ resizeObserver.observe( canvas, { box: 'device-pixel-content-box' } );
 canvas.onpaint = () => {
 
 	ctx.reset();
-	const transform = ctx.drawElementImage( card, 0, 0 );
-	card.style.transform = transform.toString();
+	ctx.drawElementImage( card, 0, 0 );
 
 };
 

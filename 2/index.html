@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="origin-trial" content="Aoz/FbDm6uw51DTkyO4Ge5eTSwHw4xho6RjdHmKyGz2m5Hks5RgYHZjAB+X0X7asKiLI5lHMWnWQWka+kmT9UAQAAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxODAzOTQ1NjAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>HTML in Canvas — 3D Foil Card Demo</title>
 <link rel="stylesheet" href="./style.css" />
 </head>
@@ -12,26 +11,26 @@
 <p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
 
 <div class="Controls">
-	<label><input type="radio" name="effect" value="voronoi" checked> ボロノイ</label>
-	<label><input type="radio" name="effect" value="flakes"> フレーク</label>
-	<label><input type="radio" name="effect" value="none"> 両方なし</label>
+	<label><input type="radio" name="effect" value="voronoi" checked /> ボロノイ</label>
+	<label><input type="radio" name="effect" value="flakes" /> フレーク</label>
+	<label><input type="radio" name="effect" value="none" /> 両方なし</label>
 </div>
 
-<canvas class="CardCanvas" layoutsubtree>
-	<div class="Card">
+<canvas class="CardCanvas" content="drawable">
+	<div class="Card" drawable>
 		<div class="Card__Inner">
 
 			<div class="Card__Header">
-				<input class="Card__Name" type="text" value="運命の分岐器">
-				<input class="Card__Cost" type="text" value="④">
+				<input class="Card__Name" type="text" value="運命の分岐器" />
+				<input class="Card__Cost" type="text" value="④" />
 			</div>
 
 			<div class="Card__ArtFrame">
-				<img src="../1/illus.webp" alt="">
+				<img src="../1/illus.webp" alt="" />
 			</div>
 
 			<div class="Card__TypeBar">
-				<input class="Card__Type" type="text" value="伝説のアーティファクト">
+				<input class="Card__Type" type="text" value="伝説のアーティファクト" />
 			</div>
 
 			<div class="Card__TextBox">
@@ -55,8 +54,9 @@
 
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js';
+import '../html-in-canvas.js';
 
-if ( ! ( 'requestPaint' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
+if ( ! ( 'content' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
 
 const card = document.querySelector( '.Card' );
 
@@ -374,47 +374,44 @@ document.querySelectorAll( 'input[name="effect"]' ).forEach( ( input ) => {
 } );
 
 // ---- DOM 同期 ----
-// WebGL で描画している mesh の位置・回転に合わせて .Card に CSS matrix3d を適用する。
+// WebGL で描画している mesh の位置・回転を、.Card のヒットテスト用の位置として登録する。
 // これにより DOM のヒットテスト位置が WebGL の見た目と一致する。
-// https://github.com/WICG/html-in-canvas — getElementTransform()
+// https://github.com/WICG/html-in-canvas — updateElementGeometry()
 //
-// 仕様によれば getElementTransform に渡す drawTransform は「canvas grid (= バックバッファ)
-// 座標系」での placement transform。grid → grid の写像にする必要があり、CSS pixel と
-// device pixel が混ざると DOM のヒットエリアと canvas 表示がズレる (DPR 倍ズレる)。
+// canvasTransform は「要素のボーダーボックス（CSS px）→ canvas の CSS px 座標」の写像。
+// canvas grid (= バックバッファ) の device pixel を混ぜると、ヒットエリアが DPR 倍ズレる。
 const planeWidth  = elWidth / elHeight * 2.0;
 const planeHeight = 2.0;
 
-card.style.transformOrigin = '0 0';
+function syncCardGeometry() {
 
-function syncCardTransform() {
+	const canvasW = canvas.clientWidth;
+	const canvasH = canvas.clientHeight;
 
-	const gridW = canvas.width;
-	const gridH = canvas.height;
-
-	// element grid 座標 (top-left 原点, y-down) → mesh ローカル座標 (中心原点, y-up)
+	// element 座標 (top-left 原点, y-down) → mesh ローカル座標 (中心原点, y-up)
 	const elementToLocal = new DOMMatrix( [
-		planeWidth / gridW,  0,                     0, 0,
-		0,                  -planeHeight / gridH,   0, 0,
-		0,                   0,                     1, 0,
-		-planeWidth / 2,     planeHeight / 2,       0, 1,
+		planeWidth / elWidth,  0,                       0, 0,
+		0,                    -planeHeight / elHeight,  0, 0,
+		0,                     0,                       1, 0,
+		-planeWidth / 2,       planeHeight / 2,         0, 1,
 	] );
 
-	// NDC → canvas grid pixel (top-left, y-down)
+	// NDC → canvas の CSS px 座標 (top-left, y-down)
 	const ndcToCanvas = new DOMMatrix( [
-		gridW / 2, 0,          0, 0,
-		0,        -gridH / 2,  0, 0,
-		0,         0,          1, 0,
-		gridW / 2, gridH / 2,  0, 1,
+		canvasW / 2, 0,            0, 0,
+		0,          -canvasH / 2,  0, 0,
+		0,           0,            1, 0,
+		canvasW / 2, canvasH / 2,  0, 1,
 	] );
 
-	// drawTransform = NDC→grid · projection · view · model · element→local
-	const drawTransform = ndcToCanvas
+	// canvasTransform = NDC→canvas · projection · view · model · element→local
+	const canvasTransform = ndcToCanvas
 		.multiply( new DOMMatrix( [ ...camera.projectionMatrix.elements ] ) )
 		.multiply( new DOMMatrix( [ ...camera.matrixWorldInverse.elements ] ) )
 		.multiply( new DOMMatrix( [ ...mesh.matrixWorld.elements ] ) )
 		.multiply( elementToLocal );
 
-	card.style.transform = canvas.getElementTransform( card, drawTransform ).toString();
+	canvas.updateElementGeometry( card, { canvasTransform } );
 
 }
 
@@ -430,7 +427,7 @@ function animate( time ) {
 	material.uniforms.uCameraPos.value.copy( camera.position );
 
 	renderer.render( scene, camera );
-	syncCardTransform();
+	syncCardGeometry();
 
 }
 

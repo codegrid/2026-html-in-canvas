@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="origin-trial" content="Aoz/FbDm6uw51DTkyO4Ge5eTSwHw4xho6RjdHmKyGz2m5Hks5RgYHZjAB+X0X7asKiLI5lHMWnWQWka+kmT9UAQAAABreyJvcmlnaW4iOiJodHRwczovL2NvZGVncmlkLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiSFRNTEluQ2FudmFzIiwiZXhwaXJ5IjoxODAzOTQ1NjAwLCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>HTML in Canvas — Glitch Effect Demo</title>
 <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
 
-<canvas class="PageEffect" layoutsubtree>
+<canvas class="PageEffect" content="drawable">
 
-<div class="Page">
+<div class="Page" drawable>
 
 	<header class="PageHeader">
 		<div class="PageHeader__Logo">
@@ -153,6 +152,7 @@
 
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js';
+import { syncElementGeometry } from '../html-in-canvas.js';
 
 const canvas      = document.querySelector( '.PageEffect' );
 const pageElement = canvas.querySelector( '.Page' );
@@ -166,6 +166,9 @@ const scene  = new THREE.Scene();
 const camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
 
 const pageTexture = new THREE.HTMLTexture( pageElement );
+
+// ページは canvas いっぱいに等倍で描くので、レイアウトどおりの位置をヒットテスト用に登録する
+syncElementGeometry( canvas, pageElement );
 pageTexture.minFilter = THREE.LinearFilter;
 pageTexture.magFilter = THREE.LinearFilter;
 pageTexture.flipY = false;
@@ -259,6 +262,7 @@ window.addEventListener( 'resize', () => {
 	renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
 	renderer.setSize( width, height );
 	material.uniforms.uResolution.value.set( width, height );
+	syncElementGeometry( canvas, pageElement );
 
 } );
 
