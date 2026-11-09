@@ -8,8 +8,6 @@
 </head>
 <body>
 
-<p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
-
 <canvas class="PC" content="drawable">
 	<div class="PC__Screen" drawable>
 
@@ -161,6 +159,15 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import '../html-in-canvas.js';
+
+if ( ! ( 'content' in HTMLCanvasElement.prototype ) ) {
+
+	document.body.prepend( Object.assign( document.createElement( 'p' ), {
+		className: 'PageNote',
+		textContent: 'HTML in Canvas が有効なブラウザで表示してください',
+	} ) );
+
+}
 
 const canvas        = document.querySelector( '.PC' );
 const screenElement = canvas.querySelector( '.PC__Screen' );

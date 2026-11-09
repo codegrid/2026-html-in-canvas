@@ -8,8 +8,6 @@
 </head>
 <body>
 
-<p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
-
 <div class="Controls">
 	<label><input type="radio" name="effect" value="voronoi" checked /> ボロノイ</label>
 	<label><input type="radio" name="effect" value="flakes" /> フレーク</label>
@@ -56,7 +54,14 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js';
 import '../html-in-canvas.js';
 
-if ( ! ( 'content' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
+if ( ! ( 'content' in HTMLCanvasElement.prototype ) ) {
+
+	document.body.prepend( Object.assign( document.createElement( 'p' ), {
+		className: 'PageNote',
+		textContent: 'HTML in Canvas が有効なブラウザで表示してください',
+	} ) );
+
+}
 
 const card = document.querySelector( '.Card' );
 

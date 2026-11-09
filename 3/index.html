@@ -8,8 +8,6 @@
 </head>
 <body>
 
-<p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
-
 <canvas class="PanelCanvas" content="drawable">
 	<div class="Panel" drawable>
 		<h1 class="Panel__Title">CODE GRID EXAMPLE</h1>
@@ -33,7 +31,14 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js';
 import { syncElementGeometry } from '../html-in-canvas.js';
 
-if ( ! ( 'content' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
+if ( ! ( 'content' in HTMLCanvasElement.prototype ) ) {
+
+	document.body.prepend( Object.assign( document.createElement( 'p' ), {
+		className: 'PageNote',
+		textContent: 'HTML in Canvas が有効なブラウザで表示してください',
+	} ) );
+
+}
 
 const panel  = document.querySelector( '.Panel' );
 const canvas = document.querySelector( '.PanelCanvas' );

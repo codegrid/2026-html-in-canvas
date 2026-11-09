@@ -8,8 +8,6 @@
 </head>
 <body>
 
-<p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
-
 <canvas class="StoryCanvas" content="drawable">
 	<div class="Story" drawable>
 		<div class="Story__Inner">
@@ -86,7 +84,14 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { syncElementGeometry } from '../html-in-canvas.js';
 
-if ( ! ( 'content' in HTMLCanvasElement.prototype ) ) alert( 'HTML in Canvas が有効なブラウザで表示してください' );
+if ( ! ( 'content' in HTMLCanvasElement.prototype ) ) {
+
+	document.body.prepend( Object.assign( document.createElement( 'p' ), {
+		className: 'PageNote',
+		textContent: 'HTML in Canvas が有効なブラウザで表示してください',
+	} ) );
+
+}
 
 const canvas     = document.querySelector( '.StoryCanvas' );
 const story      = document.querySelector( '.Story' );

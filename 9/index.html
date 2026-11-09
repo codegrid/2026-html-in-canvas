@@ -205,6 +205,15 @@
 	import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js';
 	import '../html-in-canvas.js';
 
+	if ( ! ( 'content' in HTMLCanvasElement.prototype ) ) {
+
+		document.body.prepend( Object.assign( document.createElement( 'p' ), {
+			className: 'PageNote',
+			textContent: 'HTML in Canvas が有効なブラウザで表示してください',
+		} ) );
+
+	}
+
 	const sections = {
 		'#hero-section': document.getElementById( 'hero-section' ),
 		'#bottle-section': document.getElementById( 'bottle-section' ),

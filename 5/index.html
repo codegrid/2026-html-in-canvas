@@ -8,8 +8,6 @@
 </head>
 <body>
 
-<p class="PageNote">HTML in Canvas が有効なブラウザで表示してください</p>
-
 <canvas class="PollenCanvas" content="drawable">
 	<div class="PollenText" drawable>
 		<p>花粉症で、お悩みの方へ</p>
@@ -19,6 +17,15 @@
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js';
 import { syncElementGeometry } from '../html-in-canvas.js';
+
+if ( ! ( 'content' in HTMLCanvasElement.prototype ) ) {
+
+	document.body.prepend( Object.assign( document.createElement( 'p' ), {
+		className: 'PageNote',
+		textContent: 'HTML in Canvas が有効なブラウザで表示してください',
+	} ) );
+
+}
 
 const canvas = document.querySelector( '.PollenCanvas' );
 const textEl = document.querySelector( '.PollenText' );

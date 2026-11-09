@@ -112,6 +112,52 @@ Canary 159 での実測: canvas の中の (471, 240) にレイアウトされた
 
 canvas の左上にある要素（全面に描く要素）では、登録前の `getBoundingClientRect()` がたまたま正しい位置になるので、ずれに気づきにくい。
 
+### 入れ子の `drawable` に登録した位置で、スクロールできる長さが伸びる
+
+入れ子の `drawable` 要素に `updateElementGeometry()` で `canvasTransform` を登録すると、その translate が CSS transform のように扱われ、祖先のスクロールできる長さ（scrollable overflow）の計算に足される。外側の `drawable` の中を `overflow: auto` でスクロールさせる作りでは、スクロールした先に何も無い領域ができる。
+
+Canary 159 での実測（デモ 8、375×667、`.Page` が `overflow: auto` の外側の `drawable`、ボタンが入れ子の `drawable`）:
+
+| 状態 | `.Page` の scrollHeight |
+|---|---|
+| ボタンに `translate( 0, 835 )` を登録（レイアウト位置そのまま） | 1737 |
+| ボタンから `drawable` を外す | 971（内容どおり） |
+| ボタンを `display: none` | 904 |
+
+ボタンの親 `.CTA` の scrollHeight は 1696 で、「`.CTA` の中のボタンの位置 795 + 登録した translate 835 + ボタンの高さ 67 = 1697」とほぼ一致する。レイアウト位置に translate がもう一度足されている。
+
+スクロール量を引いた位置を登録しても、登録した位置がまたスクロールできる長さを変えるので、うまく合わない。
+
+#### 対策
+
+入れ子の `drawable` があるときは、外側の `drawable` の中でスクロールさせない。canvas の高さを内容の高さに合わせ、ドキュメントごとスクロールさせる（デモ 8）:
+
+```css
+.CTA__Canvas { display: block; width: 100%; height: 100vh; } /* 高さは JS で上書き */
+.Page { width: 100%; }                  /* overflow: auto と height: 100vh を付けない */
+.Page__Inner { min-height: 100vh; }
+```
+
+```js
+function syncCanvasSize() {
+
+	const w = canvas.clientWidth;
+	const h = pageEl.offsetHeight;
+	if ( w === 0 || h === 0 ) return false;
+	if ( w === canvasCssW && h === canvasCssH ) return false;
+
+	canvasCssW = w;
+	canvasCssH = h;
+	canvas.style.height = `${ h }px`;
+	renderer.setSize( w, h, false );
+
+	return true;
+
+}
+```
+
+`onpaint` の中でも `syncCanvasSize()` を呼んでおけば、幅が変わって内容の高さが変わったときにも追従する。
+
 ### ヒットテスト（クリック・ホバー）は自動ではない
 
 `content="drawable"` の canvas の子孫要素は、**初期状態ではヒットテストの対象にならない**（Chrome 154 までの `layoutsubtree` では、子要素はレイアウトされた位置でそのままクリックできた）。
