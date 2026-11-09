@@ -197,18 +197,22 @@ function updateButton() {
 
 }
 
-// canvas を viewport サイズに同期 (100vw x 100vh)
+// canvas の高さをページの高さに合わせる。小さい画面ではドキュメントごとスクロールする。
+// .Page の中でスクロールさせると、入れ子の drawable (ボタン) に登録した位置が
+// スクロール領域の計算に足されてしまい、スクロール量とボタンの位置がずれるため。
 let canvasCssW = 0;
 let canvasCssH = 0;
 
 function syncCanvasSize() {
 
-	const w = window.innerWidth;
-	const h = window.innerHeight;
+	const w = canvas.clientWidth;
+	const h = pageEl.offsetHeight;
+	if ( w === 0 || h === 0 ) return false;
 	if ( w === canvasCssW && h === canvasCssH ) return false;
 
 	canvasCssW = w;
 	canvasCssH = h;
+	canvas.style.height = `${ h }px`;
 	renderer.setSize( w, h, false );
 	needButtonUpdate = true;
 
